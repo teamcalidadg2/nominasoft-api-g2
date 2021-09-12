@@ -1,5 +1,6 @@
 package nomina.soft.backend.controllers;
 import java.util.ArrayList;
+import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -20,8 +21,10 @@ public class EmpleadoController {
     EmpleadoService empleadoService;
 
     @GetMapping("/listar")
-    public ArrayList<EmpleadoModel> obtenerVentas(){
-        return (ArrayList<EmpleadoModel>) empleadoService.getAll();
+    public ResponseEntity<EmpleadoModel> obtenerVentas(){
+        //return (ArrayList<EmpleadoModel>) empleadoService.getAll();
+        List<EmpleadoModel> lista = empleadoService.getAll();
+        return new ResponseEntity(lista, HttpStatus.OK);
     }
 
     @PostMapping("/guardar")
