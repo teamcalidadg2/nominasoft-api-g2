@@ -21,6 +21,8 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
+import nomina.soft.backend.exception.domain.AfpExistsException;
+import nomina.soft.backend.exception.domain.AfpNotFoundException;
 import nomina.soft.backend.exception.domain.EmpleadoExistsException;
 import nomina.soft.backend.exception.domain.EmpleadoNotFoundException;
 import nomina.soft.backend.models.HttpResponse;
@@ -42,6 +44,16 @@ public class ExceptionHandling implements ErrorController {
     
     @ExceptionHandler(EmpleadoNotFoundException.class)
     public ResponseEntity<HttpResponse> recursoNotFoundException(EmpleadoNotFoundException exception) {
+        return createHttpResponse(BAD_REQUEST, exception.getMessage());
+    }
+    
+    @ExceptionHandler(AfpExistsException.class)
+    public ResponseEntity<HttpResponse> cursoExistsException(AfpExistsException exception) {
+        return createHttpResponse(BAD_REQUEST, exception.getMessage());
+    }
+    
+    @ExceptionHandler(AfpNotFoundException.class)
+    public ResponseEntity<HttpResponse> recursoNotFoundException(AfpNotFoundException exception) {
         return createHttpResponse(BAD_REQUEST, exception.getMessage());
     }
     

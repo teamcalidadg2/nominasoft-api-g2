@@ -37,9 +37,21 @@ public class EmpleadoController {
         return new ResponseEntity<>(lista, OK);
     }
     
-	@GetMapping("/buscar/{dni}")
-    public ResponseEntity<EmpleadoModel> getUser(@PathVariable("dni") String dni) {
+	@GetMapping("/buscar/dni/{dni}")
+    public ResponseEntity<EmpleadoModel> getEmpleadoByDni(@PathVariable("dni") String dni) throws EmpleadoNotFoundException {
 		EmpleadoModel empleado = empleadoService.buscarEmpleadoPorDni(dni);
+        return new ResponseEntity<>(empleado, OK);
+    }
+	
+	@GetMapping("/buscar/telefono/{telefono}")
+    public ResponseEntity<EmpleadoModel> getEmpleadoByTelefono(@PathVariable("telefono") String telefono) throws EmpleadoNotFoundException {
+		EmpleadoModel empleado = empleadoService.buscarEmpleadoPorTelefono(telefono);
+        return new ResponseEntity<>(empleado, OK);
+    }
+	
+	@GetMapping("/buscar/correo/{correo}")
+    public ResponseEntity<EmpleadoModel> getEmpleadoByCorreo(@PathVariable("correo") String correo) throws EmpleadoNotFoundException {
+		EmpleadoModel empleado = empleadoService.buscarEmpleadoPorCorreo(correo);
         return new ResponseEntity<>(empleado, OK);
     }
 

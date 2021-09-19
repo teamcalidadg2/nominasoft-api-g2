@@ -70,25 +70,37 @@ public class EmpleadoServiceImpl implements EmpleadoService{
 
 
 	@Override
-	public EmpleadoModel buscarEmpleadoPorDni(String dni) {
-		return this.empleadoRepository.findByDni(dni);
+	public EmpleadoModel buscarEmpleadoPorDni(String dni) throws EmpleadoNotFoundException {
+		EmpleadoModel empleado = this.empleadoRepository.findByDni(dni);
+		if(empleado == null) {
+			throw new EmpleadoNotFoundException(NO_EMPLEADO_FOUND_BY_DNI + dni);
+		}
+		return empleado;
 	}
 	
 	@Override
-	public EmpleadoModel buscarEmpleadoPorTelefono(String telefono) {
-		return this.empleadoRepository.findByTelefono(telefono);
+	public EmpleadoModel buscarEmpleadoPorTelefono(String telefono) throws EmpleadoNotFoundException {
+		EmpleadoModel empleado = this.empleadoRepository.findByTelefono(telefono);
+		if(empleado == null) {
+			throw new EmpleadoNotFoundException(NO_EMPLEADO_FOUND_BY_TELEFONO + telefono);
+		}
+		return empleado;
 	}
 
 	@Override
-	public EmpleadoModel buscarEmpleadoPorCorreo(String correo) {
-		return this.empleadoRepository.findByCorreo(correo);
+	public EmpleadoModel buscarEmpleadoPorCorreo(String correo) throws EmpleadoNotFoundException {
+		EmpleadoModel empleado = this.empleadoRepository.findByCorreo(correo);
+		if(empleado == null) {
+			throw new EmpleadoNotFoundException(NO_EMPLEADO_FOUND_BY_CORREO + correo);
+		}
+		return empleado;
 	}
 	
 	
 	private EmpleadoModel validateNewDni(String actualDni, String nuevoDni) throws EmpleadoNotFoundException, EmpleadoExistsException {
-		EmpleadoModel empleadoConNuevoDni = buscarEmpleadoPorDni(nuevoDni);
+		EmpleadoModel empleadoConNuevoDni = empleadoRepository.findByDni(nuevoDni);
         if(StringUtils.isNotBlank(actualDni)) {
-        	EmpleadoModel actualEmpleado = buscarEmpleadoPorDni(actualDni);
+        	EmpleadoModel actualEmpleado = empleadoRepository.findByDni(actualDni);
             if(actualEmpleado == null) {
                 throw new EmpleadoNotFoundException(NO_EMPLEADO_FOUND_BY_DNI + actualDni);
             }
@@ -105,9 +117,9 @@ public class EmpleadoServiceImpl implements EmpleadoService{
     }
 	
 	private EmpleadoModel validateNewTelefono(String actualTelefono, String nuevoTelefono) throws EmpleadoNotFoundException, EmpleadoExistsException {
-		EmpleadoModel empleadoConNuevoTelefono = buscarEmpleadoPorTelefono(nuevoTelefono);
+		EmpleadoModel empleadoConNuevoTelefono = empleadoRepository.findByTelefono(nuevoTelefono);
         if(StringUtils.isNotBlank(actualTelefono)) {
-        	EmpleadoModel actualEmpleado = buscarEmpleadoPorTelefono(actualTelefono);
+        	EmpleadoModel actualEmpleado = empleadoRepository.findByTelefono(actualTelefono);
             if(actualEmpleado == null) {
                 throw new EmpleadoNotFoundException(NO_EMPLEADO_FOUND_BY_TELEFONO + actualTelefono);
             }
@@ -124,9 +136,9 @@ public class EmpleadoServiceImpl implements EmpleadoService{
     }
 	
 	private EmpleadoModel validateNewCorreo(String actualCorreo, String nuevoCorreo) throws EmpleadoNotFoundException, EmpleadoExistsException {
-		EmpleadoModel empleadoConNuevoCorreo = buscarEmpleadoPorCorreo(nuevoCorreo);
+		EmpleadoModel empleadoConNuevoCorreo = empleadoRepository.findByCorreo(nuevoCorreo);
         if(StringUtils.isNotBlank(actualCorreo)) {
-        	EmpleadoModel actualEmpleado = buscarEmpleadoPorCorreo(actualCorreo);
+        	EmpleadoModel actualEmpleado = empleadoRepository.findByCorreo(actualCorreo);
             if(actualEmpleado == null) {
                 throw new EmpleadoNotFoundException(NO_EMPLEADO_FOUND_BY_CORREO + actualCorreo);
             }

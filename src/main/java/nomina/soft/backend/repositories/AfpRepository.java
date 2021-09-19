@@ -8,4 +8,7 @@ import nomina.soft.backend.models.AfpModel;
 @Repository
 public interface AfpRepository extends JpaRepository<AfpModel,Integer>{
     
+	public AfpModel findByNombre(String nombre);
+	public AfpModel findByPorcentajeDescuento(Double porcentajeDescuento);
+	
 }

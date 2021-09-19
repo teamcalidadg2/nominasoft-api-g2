@@ -20,8 +20,8 @@ public interface EmpleadoService {
     public EmpleadoModel guardarEmpleado(EmpleadoDto empleadoDto) throws EmpleadoNotFoundException, EmpleadoExistsException;
     public void delete(int id);
     
-    public EmpleadoModel buscarEmpleadoPorDni(String dni);
-    public EmpleadoModel buscarEmpleadoPorTelefono(String telefono);
-    public EmpleadoModel buscarEmpleadoPorCorreo(String correo);
+    public EmpleadoModel buscarEmpleadoPorDni(String dni) throws EmpleadoNotFoundException;
+    public EmpleadoModel buscarEmpleadoPorTelefono(String telefono) throws EmpleadoNotFoundException;
+    public EmpleadoModel buscarEmpleadoPorCorreo(String correo) throws EmpleadoNotFoundException;
     
 }
