@@ -36,8 +36,7 @@ public class ContratoDto {
     private int afp_id;
 	@Getter @Setter
 	private Set<IncidenciaLaboralModel> incidenciaLaborales;
-	@Getter @Setter
-	private Set<BoletaDePagoModel> boletasDePagos;
+
 
 
 }
