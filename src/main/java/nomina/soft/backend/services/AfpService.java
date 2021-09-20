@@ -1,14 +1,22 @@
 package nomina.soft.backend.services;
-import java.lang.reflect.Array;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-@Service
-public class AfpService {
+import java.util.List;
+
+import nomina.soft.backend.dto.AfpDto;
+import nomina.soft.backend.exception.domain.AfpExistsException;
+import nomina.soft.backend.exception.domain.AfpNotFoundException;
+import nomina.soft.backend.models.AfpModel;
+
+public interface AfpService {
     
+	public List<AfpModel> getAll();
+	
+	public AfpModel buscarAfpPorNombre(String nombre) throws AfpNotFoundException;
+	
+	public AfpModel guardarAFP(AfpDto afpDto) throws AfpNotFoundException, AfpExistsException;
+	
+	public AfpModel updateAfp(String actualNombre, String nombre, Double actualDescuento, Double descuento) throws AfpNotFoundException, AfpExistsException;
+	
+	public void deleteAfp(String nombre);
+	
 }
