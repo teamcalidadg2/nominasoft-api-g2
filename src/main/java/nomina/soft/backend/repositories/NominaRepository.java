@@ -7,5 +7,5 @@ import nomina.soft.backend.models.NominaModel;
 
 @Repository
 public interface NominaRepository extends JpaRepository<NominaModel,Integer>{
-    
+    public NominaModel findById(int id);
 }

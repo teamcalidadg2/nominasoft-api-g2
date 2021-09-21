@@ -6,7 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.*;
 import static org.apache.commons.lang3.StringUtils.EMPTY;
-
+import static nomina.soft.backend.constant.NominaImplConstant.NO_NOMINA_FOUND_BY_ID;
 import java.util.ArrayList;
 
 import nomina.soft.backend.dto.NominaDto;
@@ -49,6 +49,15 @@ public class NominaServiceImpl implements NominaService{
 	public void delete(int id) {
 		// TODO Auto-generated method stub
 		
+	}
+
+	@Override
+	public NominaModel buscarPorId(int id) throws NominaNotFoundException {
+		NominaModel nomina = this.nominaRepository.findById(id);
+		if(nomina == null){
+			throw new NominaNotFoundException(NO_NOMINA_FOUND_BY_ID + id);
+		}
+		return nomina;
 	}
 	
 	

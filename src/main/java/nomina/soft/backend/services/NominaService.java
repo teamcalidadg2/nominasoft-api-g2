@@ -15,6 +15,6 @@ public interface NominaService {
     
     public NominaModel guardarNomina(NominaDto nominaDto) throws NominaNotFoundException, NominaExistsException;
     public void delete (int id);
-
+    public NominaModel buscarPorId(int id) throws NominaNotFoundException;
 
 }

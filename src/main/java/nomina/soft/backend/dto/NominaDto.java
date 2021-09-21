@@ -23,7 +23,5 @@ public class NominaDto {
     private int periodo_nomina_id;
 	@Getter @Setter
 	private Set<BoletaDePagoModel> boletas;
-    public Object getDni() {
-        return null;
-    }
+
 }

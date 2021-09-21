@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import nomina.soft.backend.exception.domain.EmpleadoExistsException;
 import nomina.soft.backend.exception.domain.EmpleadoNotFoundException;
+import nomina.soft.backend.exception.domain.NominaNotFoundException;
 import nomina.soft.backend.models.HttpResponse;
 
 import nomina.soft.backend.models.NominaModel;
@@ -35,5 +36,10 @@ public class NominaController {
         return new ResponseEntity<>(lista,OK);
     }
 
-    
+    @GetMapping("/buscar/{id}")
+    public ResponseEntity<NominaModel> getNomina(@PathVariable("id") int id) throws NominaNotFoundException {
+        NominaModel nomina = nominaService.buscarPorId(id);
+        return new ResponseEntity<>(nomina,OK);
+
+    }
 }  
