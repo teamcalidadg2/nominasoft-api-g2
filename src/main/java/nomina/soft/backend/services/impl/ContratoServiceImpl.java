@@ -5,11 +5,13 @@ import javax.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+
 import nomina.soft.backend.dto.ContratoDto;
 import nomina.soft.backend.models.ContratoModel;
 import nomina.soft.backend.repositories.AfpRepository;
 import nomina.soft.backend.repositories.ContratoRepository;
 import nomina.soft.backend.repositories.EmpleadoRepository;
+
 import nomina.soft.backend.services.ContratoService;
 
 @Service
@@ -17,6 +19,7 @@ import nomina.soft.backend.services.ContratoService;
 public class ContratoServiceImpl implements ContratoService {
 
 	private ContratoRepository contratoRepository;
+
 	private EmpleadoRepository empleadoRepository;
 	private AfpRepository afpRepository;
 
@@ -43,6 +46,7 @@ public class ContratoServiceImpl implements ContratoService {
 		contrato.setAfp(afpRepository.getById(contratoDto.getAfp_id()));
 		contrato.setIncidenciaLaborales(contratoDto.getIncidenciaLaborales());
 		return contratoRepository.save(contrato);
+
 	}
 	
 	
