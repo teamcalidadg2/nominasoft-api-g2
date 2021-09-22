@@ -11,6 +11,7 @@ import java.time.Period;
 import java.time.ZoneId;
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 
 import javax.transaction.Transactional;
 
@@ -35,9 +36,6 @@ import nomina.soft.backend.services.ContratoService;
 public class ContratoServiceImpl implements ContratoService {
 
 	private ContratoRepository contratoRepository;
-	private EmpleadoRepository empleadoRepository;
-	private AfpRepository afpRepository;
-
 	private EmpleadoRepository empleadoRepository;
 	private AfpRepository afpRepository;
 
@@ -70,7 +68,9 @@ public class ContratoServiceImpl implements ContratoService {
 			throw new AfpNotFoundException(NO_AFP_FOUND);
 		}
 		
-		EmpleadoModel empleadoEncontrado = this.empleadoRepository.findById(contratoDto.getEmpleado_id());
+		
+		Optional<EmpleadoModel> optionalEmpleado = this.empleadoRepository.findById(contratoDto.getEmpleado_id());
+		EmpleadoModel empleadoEncontrado = optionalEmpleado.get();
 		if(empleadoEncontrado == null) {
 			throw new EmpleadoNotFoundException(NO_EMPLEADO_FOUND);
 		}
