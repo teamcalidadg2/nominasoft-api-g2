@@ -25,6 +25,8 @@ import nomina.soft.backend.exception.domain.AfpExistsException;
 import nomina.soft.backend.exception.domain.AfpNotFoundException;
 import nomina.soft.backend.exception.domain.EmpleadoExistsException;
 import nomina.soft.backend.exception.domain.EmpleadoNotFoundException;
+import nomina.soft.backend.exception.domain.NominaExistsException;
+import nomina.soft.backend.exception.domain.NominaNotFoundException;
 import nomina.soft.backend.models.HttpResponse;
 
 
@@ -56,6 +58,17 @@ public class ExceptionHandling implements ErrorController {
     public ResponseEntity<HttpResponse> recursoNotFoundException(AfpNotFoundException exception) {
         return createHttpResponse(BAD_REQUEST, exception.getMessage());
     }
+
+    @ExceptionHandler(NominaExistsException.class)
+    public ResponseEntity<HttpResponse> recursoNotFoundException(NominaExistsException exception) {
+        return createHttpResponse(BAD_REQUEST, exception.getMessage());
+    }
+
+    @ExceptionHandler(NominaNotFoundException.class)
+    public ResponseEntity<HttpResponse> recursoNotFoundException(NominaNotFoundException exception) {
+        return createHttpResponse(BAD_REQUEST, exception.getMessage());
+    }
+    
     
     @ExceptionHandler(HttpRequestMethodNotSupportedException.class)
     public ResponseEntity<HttpResponse> methodNotSupportedException(HttpRequestMethodNotSupportedException exception) {

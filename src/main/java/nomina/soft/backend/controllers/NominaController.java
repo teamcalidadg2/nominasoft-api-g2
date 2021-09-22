@@ -36,7 +36,7 @@ public class NominaController {
         return new ResponseEntity<>(lista,OK);
     }
 
-    @GetMapping("/buscar/{id}")
+    @GetMapping("/buscar/id/{id}")
     public ResponseEntity<NominaModel> getNomina(@PathVariable("id") int id) throws NominaNotFoundException {
         NominaModel nomina = nominaService.buscarPorId(id);
         return new ResponseEntity<>(nomina,OK);
