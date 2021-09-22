@@ -9,6 +9,7 @@ import static nomina.soft.backend.constant.EmpleadoImplConstant.TELEFONO_ALREADY
 import static org.apache.commons.lang3.StringUtils.EMPTY;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 
 import javax.transaction.Transactional;
 
@@ -19,6 +20,7 @@ import org.springframework.stereotype.Service;
 import nomina.soft.backend.dto.EmpleadoDto;
 import nomina.soft.backend.exception.domain.EmpleadoExistsException;
 import nomina.soft.backend.exception.domain.EmpleadoNotFoundException;
+import nomina.soft.backend.models.ContratoModel;
 import nomina.soft.backend.models.EmpleadoModel;
 import nomina.soft.backend.repositories.EmpleadoRepository;
 import nomina.soft.backend.services.EmpleadoService;
@@ -59,6 +61,7 @@ public class EmpleadoServiceImpl implements EmpleadoService{
         empleado.setTelefono(empleadoDto.getTelefono());
         empleado.setCorreo(empleadoDto.getCorreo());
         empleado.setDireccion(empleadoDto.getDireccion());
+        empleado.setContratos(new HashSet<ContratoModel>());
         empleadoRepository.save(empleado);
         return empleado;
     }
