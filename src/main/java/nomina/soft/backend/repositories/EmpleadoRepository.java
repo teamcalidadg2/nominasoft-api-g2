@@ -8,15 +8,11 @@ import nomina.soft.backend.models.EmpleadoModel;
 
 @Repository
 public interface EmpleadoRepository extends JpaRepository<EmpleadoModel,Integer>{
+	public EmpleadoModel findById(int idEmpleado);
     public EmpleadoModel findByDni(String dni);
     public EmpleadoModel findByTelefono(String telefono);
     public EmpleadoModel findByCorreo(String correo);
-    
- 
     public abstract boolean existsByCorreo(String correo);
-    
-    
-    
 
 }
 
