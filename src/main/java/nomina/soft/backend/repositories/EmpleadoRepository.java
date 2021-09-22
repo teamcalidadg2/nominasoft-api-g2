@@ -12,12 +12,7 @@ public interface EmpleadoRepository extends JpaRepository<EmpleadoModel,Integer>
     public EmpleadoModel findByDni(String dni);
     public EmpleadoModel findByTelefono(String telefono);
     public EmpleadoModel findByCorreo(String correo);
-    
- 
     public abstract boolean existsByCorreo(String correo);
-    
-    
-    
 
 }
 

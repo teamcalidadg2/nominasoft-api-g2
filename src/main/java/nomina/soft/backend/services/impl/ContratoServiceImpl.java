@@ -11,6 +11,7 @@ import java.time.Period;
 import java.time.ZoneId;
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 
 import javax.transaction.Transactional;
 
@@ -66,6 +67,7 @@ public class ContratoServiceImpl implements ContratoService {
 		if(afpEncontrado==null) {
 			throw new AfpNotFoundException(NO_AFP_FOUND);
 		}
+		
 		
 		EmpleadoModel empleadoEncontrado = this.empleadoRepository.findById(contratoDto.getEmpleado_id());
 		if(empleadoEncontrado == null) {
