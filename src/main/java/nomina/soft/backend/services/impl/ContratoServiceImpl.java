@@ -106,13 +106,13 @@ public class ContratoServiceImpl implements ContratoService {
 	private boolean ValidarFechas(Date fechaInicio, Date fechaFin) throws ContratoNotValidException {
 		boolean fechasValidas = true;
 		Date tiempoActual = java.sql.Timestamp.valueOf(LocalDateTime.now());
-		if(!(fechaInicio.equals(tiempoActual) ||
+		if(!(fechaInicio.equals(tiempoActual) ||	//REGLA02
 				fechaInicio.after(tiempoActual))) {
 			fechasValidas = false;
 			throw new ContratoNotValidException(FECHA_INICIO_NOT_VALID);
 		}
 		
-		if((fechaFin.after(fechaInicio))) {
+		if((fechaFin.after(fechaInicio))) {			//REGLA03
 			int mesesDeDiferencia = Period.between(LocalDate.ofInstant(fechaInicio.toInstant(), ZoneId.systemDefault()),
 													LocalDate.ofInstant(fechaFin.toInstant(), ZoneId.systemDefault()))
 													.getMonths();
@@ -127,7 +127,7 @@ public class ContratoServiceImpl implements ContratoService {
 		return fechasValidas;
 	}
 	
-	private boolean ValidarHorasContratadas(String horasContratadasCad) throws ContratoNotValidException {
+	private boolean ValidarHorasContratadas(String horasContratadasCad) throws ContratoNotValidException {	//REGLA 04
 		int horasContratadas = 0;
 		boolean horasContratadasValidas = true;
 		try {
@@ -148,7 +148,7 @@ public class ContratoServiceImpl implements ContratoService {
 		return horasContratadasValidas;
 	}
 	
-	private boolean ValidarPagoPorHora(String pagoPorHoraCad) throws ContratoNotValidException {
+	private boolean ValidarPagoPorHora(String pagoPorHoraCad) throws ContratoNotValidException { //REGLA05
 		int pagoPorHora = 0;
 		boolean pagoPorHoraValido = true;
 		try {
@@ -189,7 +189,7 @@ public class ContratoServiceImpl implements ContratoService {
 		return contratoVigente;
 	}
 	
-	private boolean ValidarVigencia(ContratoModel contratoModel) {
+	private boolean ValidarVigencia(ContratoModel contratoModel) {				//REGLA01
 		Date tiempoActual = java.sql.Timestamp.valueOf(LocalDateTime.now());
 		boolean vigenciaValida = true;
 		if(!((contratoModel.getFechaFin().after(tiempoActual) || 
