@@ -1,12 +1,11 @@
 package nomina.soft.backend.dto;
-import java.time.LocalDateTime;
+import java.util.Date;
 import java.util.Set;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import nomina.soft.backend.models.BoletaDePagoModel;
 import nomina.soft.backend.models.IncidenciaLaboralModel;
 
 @AllArgsConstructor
@@ -17,15 +16,15 @@ public class ContratoDto {
     @Getter @Setter
     private String nombres;
     @Getter @Setter
-    private LocalDateTime fechaInicio;
+    private Date fechaInicio;
     @Getter @Setter
-    private LocalDateTime fechaFin; 
+    private Date fechaFin; 
     @Getter @Setter
     private Boolean tieneAsignacionFamiliar;
     @Getter @Setter
-    private int horasPorSemana;
+    private String horasPorSemana;
     @Getter @Setter
-    private Double pagoPorHora;
+    private String pagoPorHora;
     @Getter @Setter
     private String puesto;
     @Getter @Setter

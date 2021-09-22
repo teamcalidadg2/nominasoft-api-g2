@@ -1,10 +1,18 @@
 package nomina.soft.backend.models;
 
-import java.time.LocalDateTime;
+import java.util.Date;
 import java.util.Set;
 
-import javax.persistence.*;
-
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
+import javax.persistence.Table;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -25,15 +33,15 @@ public class ContratoModel {
     @Getter @Setter
     private String nombres;
     @Getter @Setter
-    private LocalDateTime fechaInicio;
+    private Date fechaInicio;
     @Getter @Setter
-    private LocalDateTime fechaFin; 
+    private Date fechaFin; 
     @Getter @Setter
     private Boolean tieneAsignacionFamiliar;
     @Getter @Setter
-    private int horasPorSemana;
+    private String horasPorSemana;
     @Getter @Setter
-    private Double pagoPorHora;
+    private String pagoPorHora;
     @Getter @Setter
     private String puesto;
     @Getter @Setter

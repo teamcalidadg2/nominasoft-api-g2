@@ -48,6 +48,10 @@ public class EmpleadoModel {
 	@Getter @Setter
 	@JsonIgnore
 	private Set<ContratoModel> contratos;
+    
+    public void addContrato(ContratoModel contrato) {
+    	contratos.add(contrato);
+    }
 
 
 }

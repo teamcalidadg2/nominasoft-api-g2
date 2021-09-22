@@ -23,6 +23,9 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 import nomina.soft.backend.exception.domain.AfpExistsException;
 import nomina.soft.backend.exception.domain.AfpNotFoundException;
+import nomina.soft.backend.exception.domain.ContratoExistsException;
+import nomina.soft.backend.exception.domain.ContratoNotFoundException;
+import nomina.soft.backend.exception.domain.ContratoNotValidException;
 import nomina.soft.backend.exception.domain.EmpleadoExistsException;
 import nomina.soft.backend.exception.domain.EmpleadoNotFoundException;
 import nomina.soft.backend.exception.domain.NominaExistsException;
@@ -40,22 +43,37 @@ public class ExceptionHandling implements ErrorController {
 
     
     @ExceptionHandler(EmpleadoExistsException.class)
-    public ResponseEntity<HttpResponse> cursoExistsException(EmpleadoExistsException exception) {
+    public ResponseEntity<HttpResponse> empleadoExistsException(EmpleadoExistsException exception) {
         return createHttpResponse(BAD_REQUEST, exception.getMessage());
     }
     
     @ExceptionHandler(EmpleadoNotFoundException.class)
-    public ResponseEntity<HttpResponse> recursoNotFoundException(EmpleadoNotFoundException exception) {
+    public ResponseEntity<HttpResponse> empleadoNotFoundException(EmpleadoNotFoundException exception) {
         return createHttpResponse(BAD_REQUEST, exception.getMessage());
     }
     
     @ExceptionHandler(AfpExistsException.class)
-    public ResponseEntity<HttpResponse> cursoExistsException(AfpExistsException exception) {
+    public ResponseEntity<HttpResponse> afpExistsException(AfpExistsException exception) {
         return createHttpResponse(BAD_REQUEST, exception.getMessage());
     }
     
     @ExceptionHandler(AfpNotFoundException.class)
-    public ResponseEntity<HttpResponse> recursoNotFoundException(AfpNotFoundException exception) {
+    public ResponseEntity<HttpResponse> afpNotFoundException(AfpNotFoundException exception) {
+        return createHttpResponse(BAD_REQUEST, exception.getMessage());
+    }
+    
+    @ExceptionHandler(ContratoExistsException.class)
+    public ResponseEntity<HttpResponse> contratoExistsException(ContratoExistsException exception) {
+        return createHttpResponse(BAD_REQUEST, exception.getMessage());
+    }
+    
+    @ExceptionHandler(ContratoNotFoundException.class)
+    public ResponseEntity<HttpResponse> contratoNotFoundException(ContratoNotFoundException exception) {
+        return createHttpResponse(BAD_REQUEST, exception.getMessage());
+    }
+    
+    @ExceptionHandler(ContratoNotValidException.class)
+    public ResponseEntity<HttpResponse> contratoNotValidException(ContratoNotValidException exception) {
         return createHttpResponse(BAD_REQUEST, exception.getMessage());
     }
 
