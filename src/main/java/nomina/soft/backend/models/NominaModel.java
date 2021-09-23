@@ -1,11 +1,9 @@
 package nomina.soft.backend.models;
 import java.time.LocalDateTime;
-
+import java.util.Date;
 import java.util.Set;
 
 import javax.persistence.*;
-
-
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -25,7 +23,7 @@ public class NominaModel {
     @Getter @Setter
     private String descripcion;
     @Getter @Setter
-    private LocalDateTime fecha;
+    private Date fecha;
     @Getter @Setter
     private Boolean cerrada;
 
@@ -38,5 +36,6 @@ public class NominaModel {
 	@Getter @Setter
 	private Set<BoletaDePagoModel> boletas;
 
+    
     
 }

@@ -15,6 +15,7 @@ import lombok.Setter;
 @AllArgsConstructor
 @NoArgsConstructor
 public class IncidenciaLaboralModel {
+    
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(unique = true, nullable = false)
@@ -36,5 +37,5 @@ public class IncidenciaLaboralModel {
     @Getter @Setter
     private PeriodoNominaModel periodo_nomina;
 
-
+    
 }
