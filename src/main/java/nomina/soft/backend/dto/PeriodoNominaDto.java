@@ -1,5 +1,6 @@
 package nomina.soft.backend.dto;
 import java.time.LocalDateTime;
+import java.util.Date;
 import java.util.Set;
 
 import lombok.AllArgsConstructor;
@@ -17,9 +18,9 @@ public class PeriodoNominaDto {
     @Getter @Setter
     private String descripcion;
     @Getter @Setter
-    private LocalDateTime fechaInicio;
+    private Date fechaInicio;
     @Getter @Setter
-    private LocalDateTime fechaFin;
+    private Date fechaFin;
 	@Getter @Setter
 	private Set<IncidenciaLaboralModel> incidenciaLaboral;
 	@Getter @Setter

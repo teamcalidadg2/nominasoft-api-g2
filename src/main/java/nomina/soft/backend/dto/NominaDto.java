@@ -1,5 +1,6 @@
 package nomina.soft.backend.dto;
 import java.time.LocalDateTime;
+import java.util.Date;
 import java.util.Set;
 
 import lombok.AllArgsConstructor;
@@ -16,7 +17,7 @@ public class NominaDto {
     @Getter @Setter
     private String descripcion;
     @Getter @Setter
-    private LocalDateTime fecha;
+    private Date fecha;
     @Getter @Setter
     private Boolean cerrada;
     @Getter @Setter

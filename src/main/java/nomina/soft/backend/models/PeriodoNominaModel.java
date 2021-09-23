@@ -1,5 +1,6 @@
 package nomina.soft.backend.models;
 import java.time.LocalDateTime;
+import java.util.Date;
 import java.util.Set;
 
 import javax.persistence.*;
@@ -24,9 +25,9 @@ public class PeriodoNominaModel {
     @Getter @Setter
     private String descripcion;
     @Getter @Setter
-    private LocalDateTime fechaInicio;
+    private Date fechaInicio;
     @Getter @Setter
-    private LocalDateTime fechaFin;
+    private Date fechaFin;
 
     @OneToMany(fetch =FetchType.LAZY,mappedBy = "periodo_nomina")
 	@Getter @Setter
