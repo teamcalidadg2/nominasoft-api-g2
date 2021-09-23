@@ -13,7 +13,7 @@ public class ContratoImplConstant {
     public static final String HORAS_CONTRATADAS_NOT_VALID = "La horas contratadas por semana deben ser múltiplos de 4.";
     public static final String PAGO_POR_HORA_NOT_INTEGER = "El pago por hora deben ser un número entero.";
     public static final String PAGO_POR_HORA_RANGO_NOT_VALID = "El pago por hora debe estar en un rango de 10 a 60 soles.";
-	
-	
+	public static final String CONTRATO_NOT_FOUND = "El contrato no ha sido encontrado.";
+	public static final String CONTRATO_CERRADO = "El contrato se encuentra cerrado.";
 	
 }
