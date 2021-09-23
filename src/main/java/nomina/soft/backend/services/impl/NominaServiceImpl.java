@@ -80,6 +80,7 @@ public class NominaServiceImpl implements NominaService{
 		if(periodoNomina==null) {
 			throw new NominaNotFoundException(NO_PERIODO_FOUND_BY_ID);
 		}
+
 		ContratoModel contrato = this.contratoNominaRepository.getById(contrato_id);
 		if(contrato==null) {
 			throw new ContratoNotFoundException(CONTRATO_NOT_FOUND);
@@ -90,11 +91,11 @@ public class NominaServiceImpl implements NominaService{
 
 
 
+		// | REGLA 06
 		// el contrato no debe estar cancelado | REGLA 06
 		if(contrato.getCancelado()==true){
 			throw new ContratoNotValidException(CONTRATO_CERRADO);
 		}
-		// | REGLA 06
 		if(ValidarFechas(contrato.getFechaFin(), periodoNomina.getFechaInicio(), periodoNomina.getFechaFin(), fechaGeneracion)){
 			generarNominaValido = true;
 		}else{
@@ -106,16 +107,14 @@ public class NominaServiceImpl implements NominaService{
 			int total_de_horas = CalcularTotalDeHoras(periodoNomina,contrato.getHorasPorSemana());
 			// | REGLA 08
 			double sueldoBasico = CalcularSueldoBasico(total_de_horas,contrato.getPagoPorHora());
+
+			double montoPorAsignacionFamiliar = CalcularMontoPorAsignacionFamiliar(sueldoBasico,contrato);
 		}
-		// | REGLA 07
-		// CalcularTotalDeHoras(periodoNomina,contrato.getHorasPorSemana());
-		// | REGLA 08
-		//CalcularSueldoBasico(totalDeHoras)
 
 		return nuevaNomina;
 	}
 
-
+	// | REGLA 06
 	private boolean ValidarFechas(Date fechaFinalContrato, Date fechaInicioPeriodoNomina, Date fechaFinPeriodoNomina, Date fechaGeneracion) throws ContratoNotValidException  {
 		boolean fechasValidas = true;
 		// la fecha final del contrato debe ser superior a la fecha inicio del periodo de Nómina | REGLA 06
@@ -163,5 +162,16 @@ public class NominaServiceImpl implements NominaService{
 		return sueldoBasico;
 	}
 
+	// | REGLA 09
+	private double CalcularMontoPorAsignacionFamiliar(Double sueldoMinimo, ContratoModel contrato) throws ContratoNotValidException{
+		double montoPorAsignacionFamiliar = 0;
 
+		if(contrato.getTieneAsignacionFamiliar()){
+			montoPorAsignacionFamiliar = sueldoMinimo * 0.1;
+		}else{
+			throw new ContratoNotValidException("No tiene asignacion familiar.");
+		}
+
+		return montoPorAsignacionFamiliar;
+	}
 }
