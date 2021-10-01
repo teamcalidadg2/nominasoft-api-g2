@@ -1,11 +1,18 @@
 package nomina.soft.backend.models;
-import java.time.LocalDateTime;
 import java.util.Date;
-import java.util.Set;
+import java.util.List;
 
-import javax.persistence.*;
+import javax.persistence.CascadeType;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.OneToMany;
+import javax.persistence.Table;
 
-
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -20,21 +27,22 @@ public class PeriodoNominaModel {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(unique = true, nullable = false)
-    @Getter @Setter
-    private int periodo_nomina_id;
-    @Getter @Setter
-    private String descripcion;
-    @Getter @Setter
-    private Date fechaInicio;
-    @Getter @Setter
-    private Date fechaFin;
+    @Getter @Setter private Long idPeriodoNomina;
 
-    @OneToMany(fetch =FetchType.LAZY,mappedBy = "periodo_nomina")
-	@Getter @Setter
-	private Set<IncidenciaLaboralModel> incidenciaLaboral;
+    @Getter @Setter private String descripcion;
+    @Getter @Setter private Date fechaInicio;
+    @Getter @Setter private Date fechaFin;
 
-    @OneToMany(fetch =FetchType.LAZY,mappedBy = "periodo_nomina")
-	@Getter @Setter
-	private Set<NominaModel> nominas;
+    @OneToMany(cascade = {CascadeType.ALL},fetch = FetchType.LAZY, mappedBy="periodoNomina")
+    @JsonIgnore
+	@Getter @Setter private List<IncidenciaLaboralModel> incidenciasLaborales;
+
+    @OneToMany(cascade = {CascadeType.ALL},fetch = FetchType.LAZY, mappedBy="periodoNomina")
+    @JsonIgnore
+	@Getter @Setter private List<NominaModel> nominas;
+
+    public void addIncidenciaLaboral(IncidenciaLaboralModel nuevaIncidenciaLaboral) {
+        incidenciasLaborales.add(nuevaIncidenciaLaboral);
+    }
 
 }

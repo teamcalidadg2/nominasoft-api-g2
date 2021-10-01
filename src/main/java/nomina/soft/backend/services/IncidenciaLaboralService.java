@@ -1,7 +1,15 @@
 package nomina.soft.backend.services;
-import org.springframework.stereotype.Service;
+import java.util.List;
+
+import nomina.soft.backend.exception.domain.EmpleadoNotFoundException;
+import nomina.soft.backend.models.IncidenciaLaboralModel;
 
 
 public interface IncidenciaLaboralService {
     
+	
+	List<IncidenciaLaboralModel> buscarIncidenciasPorDni(String dni) throws EmpleadoNotFoundException;
+	IncidenciaLaboralModel reportarHoraFaltante(String dni) throws EmpleadoNotFoundException;
+	IncidenciaLaboralModel reportarHoraExtra(String dni) throws EmpleadoNotFoundException;
+	
 }

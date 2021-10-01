@@ -15,13 +15,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import nomina.soft.backend.dto.NominaDto;
 import nomina.soft.backend.exception.domain.ContratoNotFoundException;
 import nomina.soft.backend.exception.domain.ContratoNotValidException;
-import nomina.soft.backend.exception.domain.EmpleadoExistsException;
 import nomina.soft.backend.exception.domain.EmpleadoNotFoundException;
-import nomina.soft.backend.exception.domain.NominaExistsException;
 import nomina.soft.backend.exception.domain.NominaNotFoundException;
 import nomina.soft.backend.exception.domain.NominaNotValidException;
-import nomina.soft.backend.models.HttpResponse;
-
+import nomina.soft.backend.exception.domain.PeriodoNominaNotFoundException;
 import nomina.soft.backend.models.NominaModel;
 import nomina.soft.backend.services.NominaService;
 
@@ -41,17 +38,30 @@ public class NominaController {
         List<NominaModel> lista = nominaService.getAll();
         return new ResponseEntity<>(lista,OK);
     }
+	
+	@GetMapping("/listar/descripcion/{descripcion}")
+    public ResponseEntity<List<NominaModel>> obtenerNominasPorDescripcion(@PathVariable("descripcion") String descripcion) throws NominaNotFoundException{
+        List<NominaModel> lista = nominaService.getAllByDescripcion(descripcion);
+        return new ResponseEntity<>(lista,OK);
+    }
 
     @GetMapping("/buscar/id/{id}")
-    public ResponseEntity<NominaModel> getNomina(@PathVariable("id") int id) throws NominaNotFoundException {
+    public ResponseEntity<NominaModel> getNomina(@PathVariable("id") Long id) throws NominaNotFoundException {
         NominaModel nomina = nominaService.buscarPorId(id);
         return new ResponseEntity<>(nomina,OK);
 
     }
+    
+    @PostMapping("/generar")
+    public ResponseEntity<NominaModel> generate(@RequestBody NominaDto nominaDto) throws ContratoNotFoundException, EmpleadoNotFoundException, ContratoNotValidException, NominaNotValidException, PeriodoNominaNotFoundException {
+        NominaModel nomina = nominaService.generarNomina(nominaDto);
+        return new ResponseEntity<>(nomina,OK);
+    }
+    
 
     @PostMapping("/guardar")
-    public ResponseEntity<NominaModel> create(@RequestBody NominaDto nominaDto, int contrato_id) throws NominaNotFoundException, NominaNotValidException, NominaExistsException, ContratoNotFoundException, ContratoNotValidException {
-        NominaModel nomina = nominaService.guardarNomina(nominaDto,contrato_id);
+    public ResponseEntity<NominaModel> save(@RequestBody NominaDto nominaDto) {
+        NominaModel nomina = nominaService.guardarNomina(nominaDto);
         return new ResponseEntity<>(nomina,OK);
     }
 }  

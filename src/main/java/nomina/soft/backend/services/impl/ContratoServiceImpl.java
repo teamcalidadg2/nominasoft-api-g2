@@ -1,7 +1,16 @@
 package nomina.soft.backend.services.impl;
 
 import static nomina.soft.backend.constant.AfpImplConstant.NO_AFP_FOUND;
-import static nomina.soft.backend.constant.ContratoImplConstant.*;
+import static nomina.soft.backend.constant.ContratoImplConstant.CONTRATO_ALREADY_EXISTS;
+import static nomina.soft.backend.constant.ContratoImplConstant.FECHAS_NOT_VALID;
+import static nomina.soft.backend.constant.ContratoImplConstant.FECHA_FIN_NOT_VALID;
+import static nomina.soft.backend.constant.ContratoImplConstant.FECHA_INICIO_NOT_VALID;
+import static nomina.soft.backend.constant.ContratoImplConstant.HORAS_CONTRATADAS_NOT_INTEGER;
+import static nomina.soft.backend.constant.ContratoImplConstant.HORAS_CONTRATADAS_NOT_VALID;
+import static nomina.soft.backend.constant.ContratoImplConstant.HORAS_CONTRATADAS_RANGO_NOT_VALID;
+import static nomina.soft.backend.constant.ContratoImplConstant.NO_CONTRATO_FOUND_BY_DNI;
+import static nomina.soft.backend.constant.ContratoImplConstant.PAGO_POR_HORA_NOT_INTEGER;
+import static nomina.soft.backend.constant.ContratoImplConstant.PAGO_POR_HORA_RANGO_NOT_VALID;
 import static nomina.soft.backend.constant.EmpleadoImplConstant.NO_EMPLEADO_FOUND;
 import static nomina.soft.backend.constant.EmpleadoImplConstant.NO_EMPLEADO_FOUND_BY_DNI;
 
@@ -9,9 +18,9 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.Period;
 import java.time.ZoneId;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.Optional;
 
 import javax.transaction.Transactional;
 
@@ -20,15 +29,20 @@ import org.springframework.stereotype.Service;
 
 import nomina.soft.backend.dto.ContratoDto;
 import nomina.soft.backend.exception.domain.AfpNotFoundException;
+import nomina.soft.backend.exception.domain.ContratoExistsException;
 import nomina.soft.backend.exception.domain.ContratoNotFoundException;
 import nomina.soft.backend.exception.domain.ContratoNotValidException;
 import nomina.soft.backend.exception.domain.EmpleadoNotFoundException;
 import nomina.soft.backend.models.AfpModel;
 import nomina.soft.backend.models.ContratoModel;
 import nomina.soft.backend.models.EmpleadoModel;
+import nomina.soft.backend.models.IncidenciaLaboralModel;
+import nomina.soft.backend.models.PeriodoNominaModel;
 import nomina.soft.backend.repositories.AfpRepository;
 import nomina.soft.backend.repositories.ContratoRepository;
 import nomina.soft.backend.repositories.EmpleadoRepository;
+import nomina.soft.backend.repositories.IncidenciaLaboralRepository;
+import nomina.soft.backend.repositories.PeriodoNominaRepository;
 import nomina.soft.backend.services.ContratoService;
 
 @Service
@@ -38,15 +52,21 @@ public class ContratoServiceImpl implements ContratoService {
 	private ContratoRepository contratoRepository;
 	private EmpleadoRepository empleadoRepository;
 	private AfpRepository afpRepository;
+	private IncidenciaLaboralRepository incidenciaLaboralRepository;
+	private PeriodoNominaRepository periodoNominaRepository;
 
 	@Autowired
 	public ContratoServiceImpl(ContratoRepository contratoRepository,
 			EmpleadoRepository	empleadoRepository,
-			AfpRepository afpRepository) {
+			AfpRepository afpRepository,
+			IncidenciaLaboralRepository incidenciaLaboralRepository,
+			PeriodoNominaRepository periodoNominaRepository) {
 		super();
 		this.contratoRepository = contratoRepository;
 		this.empleadoRepository = empleadoRepository;
 		this.afpRepository = afpRepository;
+		this.incidenciaLaboralRepository = incidenciaLaboralRepository;
+		this.periodoNominaRepository = periodoNominaRepository;
 	}
 
 	@Override
@@ -61,22 +81,23 @@ public class ContratoServiceImpl implements ContratoService {
 	}
 
 	@Override
-	public ContratoModel guardarContrato(ContratoDto contratoDto) throws ContratoNotValidException, AfpNotFoundException, EmpleadoNotFoundException {
+	public ContratoModel guardarContrato(ContratoDto contratoDto) throws ContratoNotValidException, AfpNotFoundException, EmpleadoNotFoundException, ContratoExistsException {
 		ContratoModel nuevoContrato = null;
-		AfpModel afpEncontrado = afpRepository.findById(contratoDto.getAfp_id());
+		AfpModel afpEncontrado = afpRepository.findByIdAfp(contratoDto.getIdAfp());
 		if(afpEncontrado==null) {
 			throw new AfpNotFoundException(NO_AFP_FOUND);
 		}
-		
-		
-		EmpleadoModel empleadoEncontrado = this.empleadoRepository.findById(contratoDto.getEmpleado_id());
+		EmpleadoModel empleadoEncontrado = this.empleadoRepository.findByIdEmpleado(contratoDto.getIdEmpleado());
 		if(empleadoEncontrado == null) {
 			throw new EmpleadoNotFoundException(NO_EMPLEADO_FOUND);
 		}
 		if(obtenerContratoVigente(empleadoEncontrado)==null) {
 			if(validarContrato(contratoDto)) {
 				nuevoContrato = new ContratoModel();
+				nuevoContrato.setIncidenciasLaborales(new ArrayList<IncidenciaLaboralModel>());
 				nuevoContrato.setEmpleado(empleadoEncontrado);
+				this.contratoRepository.save(nuevoContrato);
+				evaluarIncidenciasLaborales(nuevoContrato);
 				nuevoContrato.setAfp(afpEncontrado);
 				nuevoContrato.setFechaInicio(contratoDto.getFechaInicio());
 				nuevoContrato.setFechaFin(contratoDto.getFechaFin());
@@ -84,15 +105,100 @@ public class ContratoServiceImpl implements ContratoService {
 				nuevoContrato.setHorasPorSemana(contratoDto.getHorasPorSemana());
 				nuevoContrato.setPagoPorHora(contratoDto.getPagoPorHora());
 				nuevoContrato.setPuesto(contratoDto.getPuesto());
-				nuevoContrato.setCancelado(false);
+				nuevoContrato.setEstaCancelado(false);
 				this.contratoRepository.save(nuevoContrato);
 			}
 		}else {
-			throw new EmpleadoNotFoundException(CONTRATO_ALREADY_EXISTS);
+			throw new ContratoExistsException(CONTRATO_ALREADY_EXISTS);
 		}
 		return nuevoContrato;
 	}
 	
+	private void evaluarIncidenciasLaborales(ContratoModel nuevoContrato) throws ContratoNotValidException {
+		EmpleadoModel empleado = this.empleadoRepository.findByDni(nuevoContrato.getEmpleado().getDni());
+		List<ContratoModel> listaContratos = this.contratoRepository.findAllByEmpleado(empleado);
+		if(!listaContratos.isEmpty()){
+			ContratoModel contratoMasReciente = listaContratos.get(listaContratos.size() - 1);
+			IncidenciaLaboralModel incidenciaLaboralMasReciente = obtenerIncidenciaLaboralMasReciente(contratoMasReciente);
+			if(incidenciaLaboralMasReciente!=null){
+				PeriodoNominaModel periodoNominaEncontrado = incidenciaLaboralMasReciente.getPeriodoNomina();
+				PeriodoNominaModel periodoNominaVigente = obtenerPeriodoNominaVigente();
+				if(periodoNominaVigente!=null && (periodoNominaEncontrado == periodoNominaVigente)){
+					IncidenciaLaboralModel nuevaIncidenciaLaboral =  new IncidenciaLaboralModel();
+					insertarHorasDeFaltaPasadas(nuevaIncidenciaLaboral, incidenciaLaboralMasReciente, periodoNominaVigente, contratoMasReciente);
+					nuevaIncidenciaLaboral.setTotalHorasExtras(incidenciaLaboralMasReciente.getTotalHorasExtras());
+					nuevoContrato.addIncidenciaLaboral(nuevaIncidenciaLaboral);
+					nuevaIncidenciaLaboral.setContrato(nuevoContrato);
+					nuevaIncidenciaLaboral.setPeriodoNomina(periodoNominaVigente);
+					this.incidenciaLaboralRepository.save(nuevaIncidenciaLaboral);
+					reemplazarIncidenciaLaboralDePeriodo(periodoNominaVigente, incidenciaLaboralMasReciente, nuevaIncidenciaLaboral);
+				}
+			}
+		}
+	}
+	private void insertarHorasDeFaltaPasadas(IncidenciaLaboralModel nuevaIncidenciaLaboral, 
+												IncidenciaLaboralModel incidenciaLaboralMasReciente,
+												PeriodoNominaModel periodoNomina, 
+												ContratoModel contratoMasReciente) {
+		int totalHorasDeFaltaPasadas = incidenciaLaboralMasReciente.getTotalHorasDeFalta();
+		int totalHorasDeFaltaPasadasPorContratoCaduco = obtenerTotalHorasDeFaltaPasadasPorContratoCaduco(periodoNomina, contratoMasReciente);
+		int totalHorasDeFaltaPorIncidenciaLaboral = totalHorasDeFaltaPasadas - totalHorasDeFaltaPasadasPorContratoCaduco;
+		if(totalHorasDeFaltaPorIncidenciaLaboral>=0){
+			nuevaIncidenciaLaboral.setTotalHorasDeFalta(totalHorasDeFaltaPorIncidenciaLaboral);
+		}
+	}
+
+	private int obtenerTotalHorasDeFaltaPasadasPorContratoCaduco(PeriodoNominaModel periodoNomina, ContratoModel contratoMasReciente) {
+		Date fechaInicio = periodoNomina.getFechaInicio();
+		Date fechaFin = periodoNomina.getFechaFin();
+		int duracionPeriodoNomina = Period.between(LocalDate.ofInstant(fechaInicio.toInstant(), ZoneId.systemDefault()),
+													LocalDate.ofInstant(fechaFin.toInstant(), ZoneId.systemDefault()))
+													.getDays();
+		int duracionLaburoDurantePeriodo = Period.between(LocalDate.ofInstant(fechaInicio.toInstant(), ZoneId.systemDefault()),
+															LocalDate.ofInstant(contratoMasReciente.getFechaFin().toInstant(), ZoneId.systemDefault()))
+															.getDays();
+		int cantidadDiasFaltantes = duracionPeriodoNomina - duracionLaburoDurantePeriodo;
+		int totalHorasDeFalta = cantidadDiasFaltantes / 24;
+		return totalHorasDeFalta;
+	}
+
+	private void reemplazarIncidenciaLaboralDePeriodo(PeriodoNominaModel periodoNominaVigente,
+			IncidenciaLaboralModel incidenciaLaboralMasReciente, IncidenciaLaboralModel nuevaIncidenciaLaboral) {
+		List<IncidenciaLaboralModel> listaIncidencias = periodoNominaVigente.getIncidenciasLaborales();
+		for(IncidenciaLaboralModel incidenciaLaboral: listaIncidencias ){
+			if(incidenciaLaboral == incidenciaLaboralMasReciente){
+				incidenciaLaboral.setContrato(nuevaIncidenciaLaboral.getContrato());
+				incidenciaLaboral.setIdIncidenciaLaboral(nuevaIncidenciaLaboral.getIdIncidenciaLaboral());
+				incidenciaLaboral.setTotalHorasDeFalta(nuevaIncidenciaLaboral.getTotalHorasDeFalta());
+				incidenciaLaboral.setTotalHorasExtras(nuevaIncidenciaLaboral.getTotalHorasExtras());
+			}
+		}
+		periodoNominaVigente.setIncidenciasLaborales(listaIncidencias);
+		this.periodoNominaRepository.save(periodoNominaVigente);
+	}
+
+	private PeriodoNominaModel obtenerPeriodoNominaVigente() {
+		List<PeriodoNominaModel> periodosNomina = this.periodoNominaRepository.findAll();
+		PeriodoNominaModel periodoNominaVigente = null;
+		Date tiempoActual = java.sql.Timestamp.valueOf(LocalDateTime.now());
+		for(PeriodoNominaModel periodoNomina:periodosNomina){
+			if(periodoNomina.getFechaInicio().before(tiempoActual) && periodoNomina.getFechaFin().after(tiempoActual)){
+				periodoNominaVigente = periodoNomina;
+			}
+		}
+		return periodoNominaVigente;
+	}
+
+	private IncidenciaLaboralModel obtenerIncidenciaLaboralMasReciente(ContratoModel contratoMasReciente) {
+		List<IncidenciaLaboralModel> listaIncidencias = this.incidenciaLaboralRepository.findAllByContrato(contratoMasReciente);
+		IncidenciaLaboralModel incidenciaLaboralMasReciente = null;
+		if(!listaIncidencias.isEmpty()){
+			incidenciaLaboralMasReciente  = listaIncidencias.get(listaIncidencias.size() - 1);
+		}
+		return incidenciaLaboralMasReciente;
+	}
+
+
 	private boolean validarContrato(ContratoDto contratoDto) throws ContratoNotValidException {
 		boolean contratoValido = true;
 		if(!(ValidarFechas(contratoDto.getFechaInicio(), contratoDto.getFechaFin()) &&
@@ -182,19 +288,19 @@ public class ContratoServiceImpl implements ContratoService {
 		List<ContratoModel> contratosDeEmpleado = this.contratoRepository.findAllByEmpleado(empleado);
 		ContratoModel contratoVigente = null;
 		for (ContratoModel contrato: contratosDeEmpleado) {
-		      if(ValidarVigencia(contrato)) {
+		      if(validarVigencia(contrato)) {
 		    	  contratoVigente = contrato;
 		      }		      
 		}
 		return contratoVigente;
 	}
 	
-	private boolean ValidarVigencia(ContratoModel contratoModel) {				//REGLA01
+	public boolean validarVigencia(ContratoModel contratoModel) {				//REGLA01
 		Date tiempoActual = java.sql.Timestamp.valueOf(LocalDateTime.now());
 		boolean vigenciaValida = true;
 		if(!((contratoModel.getFechaFin().after(tiempoActual) || 
 				contratoModel.getFechaFin().equals(tiempoActual)) &&
-				!contratoModel.getCancelado())) {
+				!contratoModel.getEstaCancelado())) {
 			vigenciaValida = false;
 		}
 		return vigenciaValida;

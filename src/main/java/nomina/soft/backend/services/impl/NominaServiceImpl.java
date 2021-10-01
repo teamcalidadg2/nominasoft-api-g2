@@ -1,34 +1,35 @@
 package nomina.soft.backend.services.impl;
 
+import static nomina.soft.backend.constant.ContratoImplConstant.CONTRATO_CANCELADO;
+import static nomina.soft.backend.constant.ContratoImplConstant.CONTRATO_FECHA_FIN_NOT_VALID;
+import static nomina.soft.backend.constant.NominaImplConstant.NO_NOMINAS_FOUND_BY_DESCRIPCION;
+import static nomina.soft.backend.constant.NominaImplConstant.NO_NOMINA_FOUND_BY_ID;
+import static nomina.soft.backend.constant.NominaImplConstant.PERIODO_FECHA_FIN_NOT_VALID;
+import static nomina.soft.backend.constant.PeriodoNominaImplConstant.PERIODO_NOT_FOUND_BY_ID;
+
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+
 import javax.transaction.Transactional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import static org.apache.commons.lang3.StringUtils.EMPTY;
-import static nomina.soft.backend.constant.NominaImplConstant.NO_NOMINA_FOUND_BY_ID;
-import static nomina.soft.backend.constant.NominaImplConstant.NO_PERIODO_FOUND_BY_ID;
-import static nomina.soft.backend.constant.ContratoImplConstant.CONTRATO_NOT_FOUND;
-import static nomina.soft.backend.constant.ContratoImplConstant.CONTRATO_CERRADO;
-import static nomina.soft.backend.constant.NominaImplConstant.FECHAS_INVALIDAS;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.Period;
-import java.time.ZoneId;
-import java.time.temporal.WeekFields;
-import java.util.ArrayList;
-import java.util.Date;
 
 import nomina.soft.backend.dto.NominaDto;
-import nomina.soft.backend.exception.domain.ContratoExistsException;
 import nomina.soft.backend.exception.domain.ContratoNotFoundException;
 import nomina.soft.backend.exception.domain.ContratoNotValidException;
-import nomina.soft.backend.exception.domain.NominaExistsException;
+import nomina.soft.backend.exception.domain.EmpleadoNotFoundException;
 import nomina.soft.backend.exception.domain.NominaNotFoundException;
 import nomina.soft.backend.exception.domain.NominaNotValidException;
+import nomina.soft.backend.exception.domain.PeriodoNominaNotFoundException;
+import nomina.soft.backend.models.BoletaDePagoModel;
 import nomina.soft.backend.models.ContratoModel;
+import nomina.soft.backend.models.EmpleadoModel;
 import nomina.soft.backend.models.NominaModel;
 import nomina.soft.backend.models.PeriodoNominaModel;
-import nomina.soft.backend.repositories.ContratoRepository;
+import nomina.soft.backend.repositories.EmpleadoRepository;
 import nomina.soft.backend.repositories.NominaRepository;
 import nomina.soft.backend.repositories.PeriodoNominaRepository;
 import nomina.soft.backend.services.NominaService;
@@ -39,14 +40,22 @@ public class NominaServiceImpl implements NominaService{
 
 	private NominaRepository nominaRepository;
 	private PeriodoNominaRepository periodoNominaRepository;
-	private ContratoRepository contratoNominaRepository;
+	private EmpleadoRepository empleadoRepository;
+	private ContratoServiceImpl contratoService;
+	private BoletaDePagoServiceImpl boletaDePagoService;
 
 	@Autowired
-	public NominaServiceImpl(NominaRepository nominaRepository, PeriodoNominaRepository periodoNominaRepository, ContratoRepository contratoNominaRepository) {
+	public NominaServiceImpl(NominaRepository nominaRepository, 
+							PeriodoNominaRepository periodoNominaRepository, 
+							EmpleadoRepository empleadoRepository,
+							ContratoServiceImpl contratoService,
+							BoletaDePagoServiceImpl boletaDePagoService) {
 		super();
 		this.nominaRepository = nominaRepository;
 		this.periodoNominaRepository = periodoNominaRepository;
-		this.contratoNominaRepository = contratoNominaRepository;
+		this.empleadoRepository = empleadoRepository;
+		this.contratoService = contratoService;
+		this.boletaDePagoService = boletaDePagoService;
 	}
 
 
@@ -54,124 +63,90 @@ public class NominaServiceImpl implements NominaService{
 	public ArrayList<NominaModel> getAll() {
 		return (ArrayList<NominaModel>)nominaRepository.findAll();
 	}
+	
 	@Override
-	public void delete(int id) {
+	public List<NominaModel> getAllByDescripcion(String descripcion) throws NominaNotFoundException {
+		List<NominaModel> lista = this.nominaRepository.findAllByDescripcion(descripcion);
+		if(lista==null) {
+			throw new NominaNotFoundException(NO_NOMINAS_FOUND_BY_DESCRIPCION + descripcion);
+		}
+		return lista;
+	}
+	
+	@Override
+	public void delete(Long idNomina) {
 		// TODO Auto-generated method stub
 		
 	}
 
 	@Override
-	public NominaModel buscarPorId(int id) throws NominaNotFoundException {
-		NominaModel nomina = this.nominaRepository.findById(id);
+	public NominaModel buscarPorId(Long idNomina) throws NominaNotFoundException {
+		NominaModel nomina = this.nominaRepository.findByIdNomina(idNomina);
 		if(nomina == null){
-			throw new NominaNotFoundException(NO_NOMINA_FOUND_BY_ID + id);
+			throw new NominaNotFoundException(NO_NOMINA_FOUND_BY_ID + idNomina);
 		}
 		return nomina;
 	}
 	
 	@Override
-	public NominaModel guardarNomina (NominaDto nominaDto, int contrato_id) throws NominaNotFoundException, NominaNotValidException, NominaExistsException, ContratoNotFoundException, ContratoNotValidException{
+	public NominaModel guardarNomina (NominaDto nominaDto){
+		
+		return null;
+	}
 
-		NominaModel nuevaNomina = null;
-		PeriodoNominaModel periodoNomina = this.periodoNominaRepository.getById(nominaDto.getPeriodo_nomina_id());
-		Boolean generarNominaValido = false;
-
+	@Override
+	public NominaModel generarNomina(NominaDto nominaDto) throws ContratoNotFoundException, EmpleadoNotFoundException, ContratoNotValidException, NominaNotValidException, PeriodoNominaNotFoundException {
+		NominaModel nuevaNomina = new NominaModel();
+		PeriodoNominaModel periodoNomina = this.periodoNominaRepository.getById(nominaDto.getIdPeriodoNomina());
 
 		if(periodoNomina==null) {
-			throw new NominaNotFoundException(NO_PERIODO_FOUND_BY_ID);
+			throw new PeriodoNominaNotFoundException(PERIODO_NOT_FOUND_BY_ID + nominaDto.getIdPeriodoNomina());
 		}
-
-		ContratoModel contrato = this.contratoNominaRepository.getById(contrato_id);
-		if(contrato==null) {
-			throw new ContratoNotFoundException(CONTRATO_NOT_FOUND);
+		else {
+			nuevaNomina.setPeriodoNomina(periodoNomina);
+			nuevaNomina.setBoletasDePago(GenerarBoletasDePago(nuevaNomina));
 		}
-		Date fechaGeneracion= java.sql.Timestamp.valueOf(LocalDateTime.now());
-
-
-
-
-
-		// | REGLA 06
-		// el contrato no debe estar cancelado | REGLA 06
-		if(contrato.getCancelado()==true){
-			throw new ContratoNotValidException(CONTRATO_CERRADO);
-		}
-		if(ValidarFechas(contrato.getFechaFin(), periodoNomina.getFechaInicio(), periodoNomina.getFechaFin(), fechaGeneracion)){
-			generarNominaValido = true;
-		}else{
-			throw new NominaNotValidException(FECHAS_INVALIDAS);
-		}
-
-		if(generarNominaValido){
-			// | REGLA 07
-			int total_de_horas = CalcularTotalDeHoras(periodoNomina,contrato.getHorasPorSemana());
-			// | REGLA 08
-			double sueldoBasico = CalcularSueldoBasico(total_de_horas,contrato.getPagoPorHora());
-
-			double montoPorAsignacionFamiliar = CalcularMontoPorAsignacionFamiliar(sueldoBasico,contrato);
-		}
-
-		return nuevaNomina;
+		return null;
 	}
 
-	// | REGLA 06
-	private boolean ValidarFechas(Date fechaFinalContrato, Date fechaInicioPeriodoNomina, Date fechaFinPeriodoNomina, Date fechaGeneracion) throws ContratoNotValidException  {
-		boolean fechasValidas = true;
-		// la fecha final del contrato debe ser superior a la fecha inicio del periodo de Nómina | REGLA 06
-		if(fechaFinalContrato.before(fechaInicioPeriodoNomina)){
-			fechasValidas = false;
-			throw new ContratoNotValidException("error la fecha final del contrato esta antes del inicio del periodo");
-		}
-		// la fecha fin del periodo de Nómina debe ser menor a la fecha de generación de la Nómina	| REGLA 06
-		if(fechaFinPeriodoNomina.after(fechaGeneracion)){
-			throw new ContratoNotValidException("error la fecha final del periodo es mayor a la actual ");
-		}
-
-		return fechasValidas;
+	private List<BoletaDePagoModel> GenerarBoletasDePago(NominaModel nuevaNomina) throws ContratoNotFoundException, EmpleadoNotFoundException, ContratoNotValidException, NominaNotValidException {
+		List<EmpleadoModel> listaEmpleados = this.empleadoRepository.findAll();
+		List<BoletaDePagoModel> boletasDePago = new ArrayList<BoletaDePagoModel>();
+		for (EmpleadoModel empleado: listaEmpleados) {
+			ContratoModel contratoVigente = this.contratoService.buscarContratoPorDni(empleado.getDni());
+			if(ValidarContratoConNomina(contratoVigente, nuevaNomina)){
+				boletasDePago.add(this.boletaDePagoService.GenerarBoletaDePago(contratoVigente,nuevaNomina));
+			}
+	  	}
+		return boletasDePago;
 	}
 
-	// | REGLA 07
-	private int CalcularTotalDeHoras(PeriodoNominaModel periodoNomina, String horasPorSemanaStr) throws ContratoNotValidException{
-		int total_de_horas = 0;
-		int horasPorSemana = 0;
-		try {
-			horasPorSemana = Integer.parseInt(horasPorSemanaStr);
-		} catch (NumberFormatException nfe){
-			throw new ContratoNotValidException("Error horas por semana Funcion CalcularTotalDeHoras");
+	private boolean ValidarContratoConNomina(ContratoModel contrato, NominaModel nomina) throws ContratoNotValidException, NominaNotValidException{
+		boolean contratoValido = true;
+		EmpleadoModel empleado = this.empleadoRepository.findByDni(contrato.getEmpleado().getDni());
+		if(contrato != null){
+			if(contrato.getFechaFin().after(nomina.getPeriodoNomina().getFechaFin())){
+				if(contrato.getEstaCancelado()){
+					contratoValido = false;
+					throw new ContratoNotValidException(CONTRATO_CANCELADO + empleado.getNombres() + " " + empleado.getApellidos());
+				}
+			}
+			else{
+				contratoValido = false;
+				throw new ContratoNotValidException(CONTRATO_FECHA_FIN_NOT_VALID + empleado.getNombres() + " " + empleado.getApellidos());
+			}
+		}else contratoValido = false;
+
+		Date tiempoActual = java.sql.Timestamp.valueOf(LocalDateTime.now());
+		if(!(nomina.getPeriodoNomina().getFechaFin().before(tiempoActual))){
+			contratoValido = false;
+			throw new NominaNotValidException(PERIODO_FECHA_FIN_NOT_VALID);
 		}
-
-		int cant_semanas_periodo = (Period.between(LocalDate.ofInstant(periodoNomina.getFechaInicio().toInstant(), ZoneId.systemDefault()),
-													LocalDate.ofInstant(periodoNomina.getFechaFin().toInstant(), ZoneId.systemDefault())).getDays())/7;
-		total_de_horas = horasPorSemana * cant_semanas_periodo;
-
-		return total_de_horas;
+		return contratoValido;
 	}
 
-	// | REGLA 08
-	private double CalcularSueldoBasico(int total_de_horas, String pagoPorHoraStr) throws ContratoNotValidException{
-		double sueldoBasico = 0;
-		double pagoPorHora = 0;
-		try {
-			pagoPorHora = Integer.parseInt(pagoPorHoraStr);
-		} catch (NumberFormatException nfe){
-			throw new ContratoNotValidException("Error cadena de pago por horas");
-		}
 
-		sueldoBasico = pagoPorHora * total_de_horas;
 
-		return sueldoBasico;
-	}
 
-	// | REGLA 09
-	private double CalcularMontoPorAsignacionFamiliar(Double sueldoMinimo, ContratoModel contrato) throws ContratoNotValidException{
-		double montoPorAsignacionFamiliar = 0;
 
-		if(contrato.getTieneAsignacionFamiliar()){
-			montoPorAsignacionFamiliar = sueldoMinimo * 0.1;
-		}else{
-			throw new ContratoNotValidException("No tiene asignacion familiar.");
-		}
-
-		return montoPorAsignacionFamiliar;
-	}
 }

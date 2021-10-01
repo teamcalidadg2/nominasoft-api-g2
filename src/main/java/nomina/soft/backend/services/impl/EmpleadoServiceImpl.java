@@ -9,11 +9,11 @@ import static nomina.soft.backend.constant.EmpleadoImplConstant.TELEFONO_ALREADY
 import static org.apache.commons.lang3.StringUtils.EMPTY;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 
 import javax.transaction.Transactional;
 
 import org.apache.commons.lang3.StringUtils;
+import org.hibernate.mapping.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -61,13 +61,13 @@ public class EmpleadoServiceImpl implements EmpleadoService{
         empleado.setTelefono(empleadoDto.getTelefono());
         empleado.setCorreo(empleadoDto.getCorreo());
         empleado.setDireccion(empleadoDto.getDireccion());
-        empleado.setContratos(new HashSet<ContratoModel>());
+        empleado.setContratos(new ArrayList<ContratoModel>());
         empleadoRepository.save(empleado);
         return empleado;
     }
 
 	@Override
-    public void delete(int id){
+    public void delete(Long id){
         empleadoRepository.deleteById(id);
     }
 
@@ -107,7 +107,7 @@ public class EmpleadoServiceImpl implements EmpleadoService{
             if(actualEmpleado == null) {
                 throw new EmpleadoNotFoundException(NO_EMPLEADO_FOUND_BY_DNI + actualDni);
             }
-            if(empleadoConNuevoDni != null && (actualEmpleado.getEmpleado_id() != empleadoConNuevoDni.getEmpleado_id())) {
+            if(empleadoConNuevoDni != null && (actualEmpleado.getIdEmpleado() != empleadoConNuevoDni.getIdEmpleado())) {
                 throw new EmpleadoExistsException(DNI_ALREADY_EXISTS);
             }
             return actualEmpleado;
@@ -126,7 +126,7 @@ public class EmpleadoServiceImpl implements EmpleadoService{
             if(actualEmpleado == null) {
                 throw new EmpleadoNotFoundException(NO_EMPLEADO_FOUND_BY_TELEFONO + actualTelefono);
             }
-            if(empleadoConNuevoTelefono != null && (actualEmpleado.getEmpleado_id() != empleadoConNuevoTelefono.getEmpleado_id())) {
+            if(empleadoConNuevoTelefono != null && (actualEmpleado.getIdEmpleado() != empleadoConNuevoTelefono.getIdEmpleado())) {
                 throw new EmpleadoExistsException(TELEFONO_ALREADY_EXISTS);
             }
             return actualEmpleado;
@@ -145,7 +145,7 @@ public class EmpleadoServiceImpl implements EmpleadoService{
             if(actualEmpleado == null) {
                 throw new EmpleadoNotFoundException(NO_EMPLEADO_FOUND_BY_CORREO + actualCorreo);
             }
-            if(empleadoConNuevoCorreo != null && (actualEmpleado.getEmpleado_id() != empleadoConNuevoCorreo.getEmpleado_id())) {
+            if(empleadoConNuevoCorreo != null && (actualEmpleado.getIdEmpleado() != empleadoConNuevoCorreo.getIdEmpleado())) {
                 throw new EmpleadoExistsException(CORREO_ALREADY_EXISTS);
             }
             return actualEmpleado;

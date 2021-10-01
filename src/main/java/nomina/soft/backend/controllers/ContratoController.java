@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 
 import nomina.soft.backend.dto.ContratoDto;
 import nomina.soft.backend.exception.domain.AfpNotFoundException;
+import nomina.soft.backend.exception.domain.ContratoExistsException;
 import nomina.soft.backend.exception.domain.ContratoNotFoundException;
 import nomina.soft.backend.exception.domain.ContratoNotValidException;
 import nomina.soft.backend.exception.domain.EmpleadoNotFoundException;
@@ -50,7 +51,7 @@ public class ContratoController {
 	
 
     @PostMapping("/guardar")
-    public ResponseEntity<ContratoModel> create(@RequestBody ContratoDto contratoDto) throws ContratoNotValidException, AfpNotFoundException, EmpleadoNotFoundException {
+    public ResponseEntity<ContratoModel> create(@RequestBody ContratoDto contratoDto) throws ContratoNotValidException, AfpNotFoundException, EmpleadoNotFoundException, ContratoExistsException {
         ContratoModel contrato = contratoService.guardarContrato(contratoDto);
         return new ResponseEntity<>(contrato, OK);
     }

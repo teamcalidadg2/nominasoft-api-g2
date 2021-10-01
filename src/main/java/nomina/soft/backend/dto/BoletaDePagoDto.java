@@ -7,30 +7,19 @@ import lombok.Setter;
 @AllArgsConstructor
 @NoArgsConstructor
 public class BoletaDePagoDto {
-    @Getter @Setter
-    private int boleta_id;
-    @Getter @Setter
-    private double sueldoBasico;
-    @Getter @Setter
-    private double asignacionFamiliar;
-    @Getter @Setter
-    private double montoPorHorasExtra;
-    @Getter @Setter
-    private double reintegros;
-    @Getter @Setter
-    private double movilidad;
-    @Getter @Setter
-    private double otrosIngresos;
-    @Getter @Setter
-    private double regimenPensionario;
-    @Getter @Setter
-    private double montoPorHorasDeFalta;
-    @Getter @Setter
-    private double adelantos;
-    @Getter @Setter
-    private double otrosDescuentos;
-    @Getter @Setter
-    private int nomina_id;
-    @Getter @Setter
-    private int contrato_id;
+    @Getter @Setter private Long idBoleta;
+    @Getter @Setter private float sueldoBasico;
+    @Getter @Setter private float asignacionFamiliar;
+    @Getter @Setter private float montoPorHorasExtra;
+    @Getter @Setter private float reintegros;
+    @Getter @Setter private float movilidad;
+    @Getter @Setter private float otrosIngresos;
+    @Getter @Setter private float regimenPensionario;
+    @Getter @Setter private float montoPorHorasDeFalta;
+    @Getter @Setter private float adelantos;
+    @Getter @Setter private float otrosDescuentos;
+    @Getter @Setter private float netoAPagar;
+    
+    @Getter @Setter private Long idNomina;
+    @Getter @Setter private Long idContrato;
 }

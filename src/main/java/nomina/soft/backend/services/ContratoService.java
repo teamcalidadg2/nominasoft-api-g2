@@ -4,6 +4,7 @@ import java.util.List;
 
 import nomina.soft.backend.dto.ContratoDto;
 import nomina.soft.backend.exception.domain.AfpNotFoundException;
+import nomina.soft.backend.exception.domain.ContratoExistsException;
 import nomina.soft.backend.exception.domain.ContratoNotFoundException;
 import nomina.soft.backend.exception.domain.ContratoNotValidException;
 import nomina.soft.backend.exception.domain.EmpleadoNotFoundException;
@@ -15,7 +16,7 @@ public interface ContratoService {
 	
 	public ContratoModel buscarContratoPorDni(String dniEmpleado) throws ContratoNotFoundException, EmpleadoNotFoundException;
 	
-	public ContratoModel guardarContrato(ContratoDto contratoDto) throws ContratoNotValidException, AfpNotFoundException, EmpleadoNotFoundException;
+	public ContratoModel guardarContrato(ContratoDto contratoDto) throws ContratoNotValidException, AfpNotFoundException, EmpleadoNotFoundException, ContratoExistsException;
 	
 	
 	

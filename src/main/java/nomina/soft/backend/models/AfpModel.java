@@ -1,7 +1,11 @@
 package nomina.soft.backend.models;
 
-import javax.persistence.*;
-
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.Table;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -16,12 +20,9 @@ public class AfpModel {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(unique = true, nullable = false)
-    @Getter @Setter
-    private int afp_id;
+    @Getter @Setter private Long idAfp;
 
-    @Getter @Setter
-    private String nombre;
-    @Getter @Setter
-    private Double porcentajeDescuento;  
+    @Getter @Setter private String nombre;
+    @Getter @Setter private float porcentajeDescuento;  
 
 }
