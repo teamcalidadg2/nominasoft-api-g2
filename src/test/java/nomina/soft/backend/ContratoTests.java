@@ -128,4 +128,42 @@ public class ContratoTests {
 
 	}
 
+	@Test
+	void pagoPorHoraValidoTest1() throws ContratoNotValidException {
+		String pagoPorHoraEntrada = new String();
+		ContratoModel contrato = new ContratoModel();
+		pagoPorHoraEntrada="15";
+		assertEquals(true,contrato.pagoPorHoraValido(pagoPorHoraEntrada));
+	}
+
+	@Test
+	void pagoPorHoraValidoTest2() throws ContratoNotValidException {
+		ContratoImplConstant exceptionMsg = new ContratoImplConstant();
+		String pagoPorHoraEntrada = new String();
+		ContratoModel contrato = new ContratoModel();
+		pagoPorHoraEntrada="90";
+		String resultado = new String();
+		try{
+			assertEquals(true,contrato.pagoPorHoraValido(pagoPorHoraEntrada));
+		}catch (Exception e) {
+			resultado = e.getMessage();
+			assertEquals(exceptionMsg.PAGO_POR_HORA_RANGO_NOT_VALID,resultado);
+		}
+	}
+
+	@Test
+	void pagoPorHoraValidoTest3() throws ContratoNotValidException {
+		ContratoImplConstant exceptionMsg = new ContratoImplConstant();
+		String pagoPorHoraEntrada = new String();
+		ContratoModel contrato = new ContratoModel();
+		pagoPorHoraEntrada="50asd";
+		String resultado = new String();
+		try{
+			assertEquals(true,contrato.pagoPorHoraValido(pagoPorHoraEntrada));
+		}catch (Exception e) {
+			resultado = e.getMessage();
+			assertEquals(exceptionMsg.PAGO_POR_HORA_NOT_INTEGER,resultado);
+		}
+	}
+
 }

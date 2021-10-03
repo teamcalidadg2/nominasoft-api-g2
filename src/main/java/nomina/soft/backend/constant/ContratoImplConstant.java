@@ -19,6 +19,4 @@ public class ContratoImplConstant {
 	public static final String CONTRATO_CERRADO = "El contrato se encuentra cerrado.";
     public static final String CONTRATO_CANCELADO = "Se encontró un contrato cancelado del empleado: ";
     public static final String CONTRATO_FECHA_FIN_NOT_VALID = "Se encontró un contrato con fecha fin menor a la fecha de inicio del periodo de nómina del empleado: ";
-
-	
 }
