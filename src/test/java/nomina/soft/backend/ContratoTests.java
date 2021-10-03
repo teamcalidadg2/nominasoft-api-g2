@@ -19,7 +19,10 @@ import org.springframework.boot.test.context.SpringBootTest;
 
 import nomina.soft.backend.constant.ContratoImplConstant;
 import nomina.soft.backend.exception.domain.ContratoNotValidException;
+import nomina.soft.backend.models.BoletaDePagoModel;
 import nomina.soft.backend.models.ContratoModel;
+import nomina.soft.backend.models.NominaModel;
+import nomina.soft.backend.models.PeriodoNominaModel;
 
 @SpringBootTest
 public class ContratoTests {
@@ -160,7 +163,7 @@ public class ContratoTests {
 			assertEquals(exceptionMsg.PAGO_POR_HORA_NOT_INTEGER,resultado);
 		}
 	}
-	
+
 	@Test
 	void horasContratadasValidasTest1(){
 		ContratoModel contratoTemporal = new ContratoModel();
@@ -206,5 +209,8 @@ public class ContratoTests {
 		String horasContratadas = "24";
         assertEquals(true, contratoTemporal.horasContratadasValidas(horasContratadas));
 	}
+
+
+	
 
 }

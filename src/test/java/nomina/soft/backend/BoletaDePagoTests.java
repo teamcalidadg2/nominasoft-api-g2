@@ -93,7 +93,36 @@ public class BoletaDePagoTests {
         int horasSemana = 32;
 
         int resultado = boletaDePagoModel.calcularTotalDeHoras(fechaInicio, fechaFin, horasSemana);
-        int exceptativa=96;
-        assertEquals(exceptativa ,resultado);
-    }    
+        int expectativa=96;
+        assertEquals(expectativa ,resultado);
+    }
+
+    @Test
+	void calcularTotalDeIngresosTest(){
+		int sueldoBasico = 1800;
+		float montoPorAsignacionFamiliar = 180;
+		int montoPorHorasExtras = 20;
+		float reintegros = 0;
+		float movilidad = 100;
+		float otrosIngresos = 50;
+        BoletaDePagoModel boletaDePago = new BoletaDePagoModel();
+        float resultado = boletaDePago.sumaTotalIngresos(sueldoBasico, montoPorAsignacionFamiliar, montoPorHorasExtras, reintegros, movilidad, otrosIngresos);
+
+        float expectativa = 2150;
+        assertEquals(expectativa ,resultado);
+	}
+
+    @Test
+	void calcularTotalDeRetencionesTest1(){
+        float regimenPensionarioTMP = 100f;
+        int montoPorHorasDeFaltaTMP = 8;
+        float adelantosTMP = 150;
+        float otrosDescuentosTMP = 10;
+        
+        BoletaDePagoModel boletaDePago = new BoletaDePagoModel();
+        float resultado = boletaDePago.sumaTotalDeRetenciones(regimenPensionarioTMP, montoPorHorasDeFaltaTMP, adelantosTMP,  otrosDescuentosTMP);
+
+        float expectativa = 268;
+        assertEquals(expectativa ,resultado);
+	}
 }

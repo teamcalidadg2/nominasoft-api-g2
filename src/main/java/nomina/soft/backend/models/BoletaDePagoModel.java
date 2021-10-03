@@ -77,7 +77,11 @@ public class BoletaDePagoModel {
 		boletaDePago.setReintegros(reintegrosTMP);
 		boletaDePago.setMovilidad(movilidadTMP);
 		boletaDePago.setOtrosIngresos(otrosIngresosTMP);
-		return sueldoBasicoTMP + montoPorAsignacionFamiliarTMP + montoPorHorasExtrasTMP + reintegrosTMP + movilidadTMP + otrosIngresosTMP;
+		return sumaTotalIngresos(sueldoBasicoTMP , montoPorAsignacionFamiliarTMP , montoPorHorasExtrasTMP , reintegrosTMP , movilidadTMP , otrosIngresosTMP);
+	}
+
+	public float sumaTotalIngresos(int sueldoBasico , float montoPorAsignacionFamiliar , int montoPorHorasExtras , float reintegros , float movilidad , float otrosIngresos){
+		return sueldoBasico + montoPorAsignacionFamiliar + montoPorHorasExtras + reintegros + movilidad + otrosIngresos;
 	}
 
     public float calcularTotalRetenciones(ContratoModel contrato, NominaModel nomina, BoletaDePagoModel boletaDePago) {
@@ -93,9 +97,12 @@ public class BoletaDePagoModel {
 		boletaDePago.setMontoPorHorasDeFalta(montoPorHorasDeFaltaTMP);
 		boletaDePago.setAdelantos(adelantosTMP);
 		boletaDePago.setOtrosDescuentos(otrosDescuentosTMP);
-		return 	regimenPensionarioTMP + montoPorHorasDeFaltaTMP + adelantosTMP + otrosDescuentosTMP;
+		return 	sumaTotalDeRetenciones(regimenPensionarioTMP,montoPorHorasDeFaltaTMP,adelantosTMP,otrosDescuentosTMP);
 	}
 
+	public float sumaTotalDeRetenciones(float regimenPensionarioTMP,int montoPorHorasDeFaltaTMP,float adelantosTMP, float otrosDescuentosTMP){
+		return regimenPensionarioTMP + montoPorHorasDeFaltaTMP + adelantosTMP + otrosDescuentosTMP;
+	}
 	
 
 	public int calcularMontoPorHorasDeFalta(int totalHorasDeFaltaIncidenciaLaboral, int pagoPorHoraContrato) {
