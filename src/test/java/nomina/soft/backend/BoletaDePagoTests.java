@@ -24,6 +24,7 @@ import nomina.soft.backend.models.ContratoModel;
 import nomina.soft.backend.services.impl.ContratoServiceImpl;
 import org.springframework.boot.test.context.SpringBootTest;
 
+
 @SpringBootTest
 public class BoletaDePagoTests {
     @Test
@@ -82,4 +83,17 @@ public class BoletaDePagoTests {
         assertEquals(result,4600);
     }
 
+    @Test
+    void CalcularHorasSemanaTest1() throws ParseException {
+        BoletaDePagoModel boletaDePagoModel = new BoletaDePagoModel();
+
+        DateFormat formatter = new SimpleDateFormat("dd/MM/yyyy");
+		Date fechaInicio = formatter.parse("3/10/2021");
+        Date fechaFin = formatter.parse("24/10/2021");
+        int horasSemana = 32;
+
+        int resultado = boletaDePagoModel.calcularTotalDeHoras(fechaInicio, fechaFin, horasSemana);
+        int exceptativa=96;
+        assertEquals(exceptativa ,resultado);
+    }    
 }
