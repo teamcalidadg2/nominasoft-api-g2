@@ -27,7 +27,7 @@ public class BoletaDePagoServiceImpl implements BoletaDePagoService {
 		BoletaDePagoModel boletaDePago = new BoletaDePagoModel();
 		float totalIngresos = boletaDePago.calcularTotalIngresos(contrato, nomina, boletaDePago);
 		float totalRetenciones = boletaDePago.calcularTotalRetenciones(contrato, nomina, boletaDePago);
-		float netoAPagar = boletaDePago.calcularNetoAPagar(totalIngresos, totalRetenciones); //
+		float netoAPagar = boletaDePago.calcularNetoAPagar(totalIngresos, totalRetenciones); 
 		boletaDePago.setNetoPorPagar(netoAPagar);
 		boletaDePago.setContrato(contrato);
 		boletaDePago.setNomina(nomina);
