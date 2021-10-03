@@ -17,6 +17,11 @@ public interface ContratoService {
 	public ContratoModel buscarContratoPorDni(String dniEmpleado) throws ContratoNotFoundException, EmpleadoNotFoundException;
 	
 	public ContratoModel guardarContrato(ContratoDto contratoDto) throws ContratoNotValidException, AfpNotFoundException, EmpleadoNotFoundException, ContratoExistsException;
+
+    public ContratoModel updateContrato(Long idContrato, String puesto, String horasPorSemana, Long idAfp,
+            								Boolean tieneAsignacionFamiliar, String pagoPorHora) throws ContratoNotValidException, AfpNotFoundException, ContratoNotFoundException;
+
+    public ContratoModel cancelarContrato(Long idContrato) throws ContratoNotFoundException;
 	
 	
 	

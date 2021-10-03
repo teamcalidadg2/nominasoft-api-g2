@@ -21,11 +21,13 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.ToString;
 
 @Entity
 @Table(name = "contrato")
 @NoArgsConstructor
 @AllArgsConstructor
+@ToString
 public class ContratoModel {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

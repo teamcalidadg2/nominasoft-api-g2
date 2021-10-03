@@ -5,7 +5,6 @@ import static org.springframework.http.HttpStatus.OK;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -13,15 +12,16 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import nomina.soft.backend.dto.ContratoDto;
+import nomina.soft.backend.exception.domain.AfpExistsException;
 import nomina.soft.backend.exception.domain.AfpNotFoundException;
 import nomina.soft.backend.exception.domain.ContratoExistsException;
 import nomina.soft.backend.exception.domain.ContratoNotFoundException;
 import nomina.soft.backend.exception.domain.ContratoNotValidException;
 import nomina.soft.backend.exception.domain.EmpleadoNotFoundException;
 import nomina.soft.backend.models.ContratoModel;
-import nomina.soft.backend.models.HttpResponse;
 import nomina.soft.backend.services.ContratoService;
 
 @Controller
@@ -55,10 +55,22 @@ public class ContratoController {
         ContratoModel contrato = contratoService.guardarContrato(contratoDto);
         return new ResponseEntity<>(contrato, OK);
     }
-    
-	private ResponseEntity<HttpResponse> response(HttpStatus httpStatus, String message) {
-        return new ResponseEntity<>(new HttpResponse(httpStatus.value(), httpStatus, httpStatus.getReasonPhrase().toUpperCase(),
-                message), httpStatus);
+
+    @PostMapping("/editar")
+    public ResponseEntity<ContratoModel> update(@RequestParam("idContrato") Long idContrato,
+                                       @RequestParam("puesto") String puesto,
+                                       @RequestParam("horasPorSemana") String horasPorSemana,
+                                       @RequestParam("idAfp") Long idAfp,
+                                       @RequestParam("tieneAsignacionFamiliar") Boolean tieneAsignacionFamiliar,
+                                       @RequestParam("pagoPorHora") String pagoPorHora) throws AfpNotFoundException, AfpExistsException, ContratoNotValidException, ContratoNotFoundException {
+    	ContratoModel updatedContrato = contratoService.updateContrato(idContrato, puesto, horasPorSemana, idAfp,tieneAsignacionFamiliar,pagoPorHora);
+        return new ResponseEntity<>(updatedContrato, OK);
+    }
+
+    @PostMapping("/cancelar/{idContrato}")
+    public ResponseEntity<ContratoModel> cancelar(@PathVariable("idContrato") Long idContrato) throws ContratoNotValidException, AfpNotFoundException, EmpleadoNotFoundException, ContratoExistsException, ContratoNotFoundException {
+        ContratoModel contrato = contratoService.cancelarContrato(idContrato);
+        return new ResponseEntity<>(contrato, OK);
     }
 
 }

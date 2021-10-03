@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
+import nomina.soft.backend.exception.domain.ContratoNotFoundException;
 import nomina.soft.backend.exception.domain.EmpleadoNotFoundException;
 import nomina.soft.backend.models.IncidenciaLaboralModel;
 import nomina.soft.backend.services.IncidenciaLaboralService;
@@ -29,7 +30,7 @@ public class IncidenciaLaboralController {
 	}
     
 	@GetMapping("/listar/{dni}")
-    public ResponseEntity<List<IncidenciaLaboralModel>> getIncidenciasLaboralByDni(@PathVariable("dni") String dni) throws EmpleadoNotFoundException {
+    public ResponseEntity<List<IncidenciaLaboralModel>> getIncidenciasLaboralByDni(@PathVariable("dni") String dni) throws EmpleadoNotFoundException, ContratoNotFoundException {
 		List<IncidenciaLaboralModel> incidenciasLaborales = incidenciaLaboralService.buscarIncidenciasPorDni(dni);
         return new ResponseEntity<>(incidenciasLaborales, OK);
     }

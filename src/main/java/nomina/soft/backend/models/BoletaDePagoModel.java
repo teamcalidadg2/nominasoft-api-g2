@@ -16,11 +16,13 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.ToString;
 
 @Entity
 @Table(name = "boleta_de_pago")
 @AllArgsConstructor
 @NoArgsConstructor
+@ToString
 public class BoletaDePagoModel {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -37,7 +39,7 @@ public class BoletaDePagoModel {
     @Getter @Setter private float montoPorHorasDeFalta;
     @Getter @Setter private float adelantos;
     @Getter @Setter private float otrosDescuentos;
-    @Getter @Setter private float netoAPagar;
+    @Getter @Setter private float netoPorPagar;
 
     @ManyToOne(cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.REFRESH, CascadeType.PERSIST},
 			fetch = FetchType.LAZY)

@@ -51,11 +51,32 @@ public class BoletaDePagoServiceImpl implements BoletaDePagoService{
 		float totalIngresos = calcularTotalIngresos(contrato,nomina,boletaDePago);
 		float totalRetenciones = calcularTotalRetenciones(contrato,nomina,boletaDePago);		
 		float netoAPagar = totalIngresos - totalRetenciones;
-		boletaDePago.setNetoAPagar(netoAPagar);
+		boletaDePago.setNetoPorPagar(netoAPagar);
 		boletaDePago.setContrato(contrato);
 		boletaDePago.setNomina(nomina);
+		System.out.println("\n---------------------" + 
+							"\nBOLETA DE PAGO ----> " + contrato.getEmpleado().getNombres() + " " + contrato.getEmpleado().getApellidos() + "\n" +
+							boletaDePago.toString() +
+							"\n--------------------\n");
 		return boletaDePago;
 	}
+
+	public BoletaDePagoModel GuardarBoletaDePago(ContratoModel contrato, NominaModel nomina) {
+		BoletaDePagoModel boletaDePago = new BoletaDePagoModel();
+		float totalIngresos = calcularTotalIngresos(contrato,nomina,boletaDePago);
+		float totalRetenciones = calcularTotalRetenciones(contrato,nomina,boletaDePago);		
+		float netoAPagar = totalIngresos - totalRetenciones;
+		boletaDePago.setNetoPorPagar(netoAPagar);
+		boletaDePago.setContrato(contrato);
+		boletaDePago.setNomina(nomina);
+		System.out.println("\n---------------------" + 
+							"\nBOLETA DE PAGO ----> " + contrato.getEmpleado().getNombres() + " " + contrato.getEmpleado().getApellidos() + "\n" +
+							boletaDePago.toString() +
+							"\n--------------------\n");
+		this.boletaDePagoRepository.save(boletaDePago);
+		return boletaDePago;
+	}
+	
 
 
 
@@ -99,7 +120,7 @@ public class BoletaDePagoServiceImpl implements BoletaDePagoService{
 
 	private float calcularRegimenPensionario(int sueldoBasico, ContratoModel contrato) {
 		AfpModel afpDeContrato = contrato.getAfp();
-		float porcentajeAFP = afpDeContrato.getPorcentajeDescuento();
+		float porcentajeAFP = afpDeContrato.getPorcentajeDescuento() * 0.01f;
 		return sueldoBasico * porcentajeAFP;
 	}
 
@@ -141,8 +162,6 @@ public class BoletaDePagoServiceImpl implements BoletaDePagoService{
 		return Period.between(LocalDate.ofInstant(periodoNomina.getFechaInicio().toInstant(), ZoneId.systemDefault()),
 							LocalDate.ofInstant(periodoNomina.getFechaFin().toInstant(), ZoneId.systemDefault()))
 							.getDays()/7;
-	}
-	
-	
+	}	
 	
 }

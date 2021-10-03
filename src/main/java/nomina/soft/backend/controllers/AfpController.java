@@ -54,7 +54,7 @@ public class AfpController {
         return new ResponseEntity<>(afp, OK);
     }
     
-    @PostMapping("/update")
+    @PostMapping("/editar")
     public ResponseEntity<AfpModel> update(@RequestParam("actualNombre") String actualNombre,
                                        @RequestParam("nombre") String nombre,
                                        @RequestParam("actualDescuento") float actualDescuento,
@@ -64,7 +64,7 @@ public class AfpController {
     }
 	
 	
-	@DeleteMapping("/delete/{nombre}")
+	@DeleteMapping("/eliminar/{nombre}")
     public ResponseEntity<HttpResponse> deleteAfp(@PathVariable("nombre") String nombre) {
 		afpService.deleteAfp(nombre);
         return response(OK, AFP_DELETED_SUCCESSFULLY);

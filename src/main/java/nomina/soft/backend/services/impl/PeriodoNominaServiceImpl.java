@@ -7,15 +7,22 @@ import static nomina.soft.backend.constant.PeriodoNominaImplConstant.NO_NOMINA_F
 import static nomina.soft.backend.constant.PeriodoNominaImplConstant.NO_NOMINA_FOUND_BY_FECHA_INICIO;
 import static nomina.soft.backend.constant.PeriodoNominaImplConstant.NO_PERIODOS_FOUND;
 import static nomina.soft.backend.constant.PeriodoNominaImplConstant.PERIODO_NOT_FOUND_BY_ID;
+import static nomina.soft.backend.constant.PeriodoNominaImplConstant.RANGO_NOT_VALID;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.Period;
 import java.time.ZoneId;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 
 import javax.transaction.Transactional;
 
+import org.joda.time.DateTime;
+import org.joda.time.Interval;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -26,6 +33,7 @@ import nomina.soft.backend.exception.domain.PeriodoNominaNotValidException;
 import nomina.soft.backend.models.ContratoModel;
 import nomina.soft.backend.models.EmpleadoModel;
 import nomina.soft.backend.models.IncidenciaLaboralModel;
+import nomina.soft.backend.models.NominaModel;
 import nomina.soft.backend.models.PeriodoNominaModel;
 import nomina.soft.backend.repositories.ContratoRepository;
 import nomina.soft.backend.repositories.EmpleadoRepository;
@@ -62,11 +70,22 @@ public class PeriodoNominaServiceImpl implements PeriodoNominaService{
 	@Override
 	public List<PeriodoNominaModel> getAll() throws PeriodoNominaNotFoundException {
 		List<PeriodoNominaModel> lista = this.periodoNominaRepository.findAll();
+		List<PeriodoNominaModel> listaFinal = new ArrayList<PeriodoNominaModel>();
 		if(lista == null) {
 			throw new PeriodoNominaNotFoundException(NO_PERIODOS_FOUND);
+		}else{
+			for(PeriodoNominaModel periodoNomina: lista){
+				List<NominaModel> listaNominas = periodoNomina.getNominas();
+				boolean periodoDisponible = true;
+				for(NominaModel nomina: listaNominas){
+					if(nomina.getEstaCerrada()) periodoDisponible = false;
+				}
+				if(periodoDisponible) listaFinal.add(periodoNomina);
+			}
 		}
-		return lista;
+		return listaFinal;
 	}
+
 
 
 	@Override
@@ -75,18 +94,40 @@ public class PeriodoNominaServiceImpl implements PeriodoNominaService{
 		validateNewFechaInicio(null,periodoNominaDto.getFechaInicio());
 		validateNewFechaFin(null,periodoNominaDto.getFechaFin());
 		if(validarFechas(periodoNominaDto)){
+			periodoNomina.setIncidenciasLaborales(new ArrayList<IncidenciaLaboralModel>());
 			periodoNomina.setDescripcion(periodoNominaDto.getDescripcion());
 			periodoNomina.setFechaInicio(periodoNominaDto.getFechaInicio());
 			periodoNomina.setFechaFin(periodoNominaDto.getFechaFin());
+			generarCamposIncidenciaLaboral(periodoNomina);
         	this.periodoNominaRepository.save(periodoNomina);
-			PeriodoNominaModel periodoNominaNuevo = this.periodoNominaRepository.findByFechaInicio(periodoNomina.getFechaFin());
-			generarCamposIncidenciaLaboral(periodoNominaNuevo);
-        	this.periodoNominaRepository.save(periodoNominaNuevo);
 		}
         return periodoNomina;
 	}
 
 
+	private boolean validateRangoFechas(Date fechaInicio, Date fechaFin) throws PeriodoNominaExistsException {		
+		boolean rangoFechasValido = true;
+		List<PeriodoNominaModel> listaPeriodosNomina =  this.periodoNominaRepository.findAll();
+		for(PeriodoNominaModel periodoNomina: listaPeriodosNomina){
+			if(periodoNomina.getFechaInicio().after(fechaInicio) || 
+				periodoNomina.getFechaInicio().equals(fechaInicio)){
+					DateTime fechaInicioExistente = new DateTime(periodoNomina.getFechaInicio());
+					DateTime fechaFinExistente = new DateTime(periodoNomina.getFechaFin());
+					Interval rangoExistente = new Interval( fechaInicioExistente, fechaFinExistente);
+
+					DateTime fechaInicioNuevo = new DateTime(fechaInicio);
+					DateTime fechaFinNuevo = new DateTime(fechaFin);
+					Interval rangoNuevo = new Interval( fechaInicioNuevo, fechaFinNuevo);
+					
+					if(rangoExistente.overlaps(rangoNuevo)) rangoFechasValido = false;
+				}
+		}
+
+		if(!rangoFechasValido){
+			throw new PeriodoNominaExistsException(RANGO_NOT_VALID);
+		}
+		return rangoFechasValido;
+	}
 
 
 	private void generarCamposIncidenciaLaboral(PeriodoNominaModel periodoNomina) {
@@ -99,14 +140,13 @@ public class PeriodoNominaServiceImpl implements PeriodoNominaService{
 					IncidenciaLaboralModel nuevaIncidenciaLaboral = new IncidenciaLaboralModel();
 					nuevaIncidenciaLaboral.setTotalHorasDeFalta(0);
 					nuevaIncidenciaLaboral.setTotalHorasExtras(0);
-					nuevaIncidenciaLaboral.setContrato(contratoMasReciente);
 					nuevaIncidenciaLaboral.setPeriodoNomina(periodoNomina);
-					this.incidenciaLaboralRepository.save(nuevaIncidenciaLaboral);
 					evaluarIncidenciasLaborales(contratoMasReciente,nuevaIncidenciaLaboral);
+					nuevaIncidenciaLaboral.setContrato(contratoMasReciente);
 					this.incidenciaLaboralRepository.save(nuevaIncidenciaLaboral);
-					periodoNomina.addIncidenciaLaboral(nuevaIncidenciaLaboral);
 					contratoMasReciente.addIncidenciaLaboral(nuevaIncidenciaLaboral);
 					this.contratoRepository.save(contratoMasReciente);
+					periodoNomina.addIncidenciaLaboral(nuevaIncidenciaLaboral);
 				}
 			}
 		}
@@ -137,7 +177,7 @@ public class PeriodoNominaServiceImpl implements PeriodoNominaService{
 	}
 
 
-	private boolean validarFechas(PeriodoNominaDto periodoNominaDto) throws PeriodoNominaNotValidException{
+	private boolean validarFechas(PeriodoNominaDto periodoNominaDto) throws PeriodoNominaNotValidException, PeriodoNominaExistsException{
 		boolean fechasValidas = true;
 		Date fechaInicio = periodoNominaDto.getFechaInicio();
 		Date fechaFin = periodoNominaDto.getFechaFin();
@@ -148,6 +188,9 @@ public class PeriodoNominaServiceImpl implements PeriodoNominaService{
 			fechasValidas = false;
 			throw new PeriodoNominaNotValidException(FECHAS_NOT_VALID);
 		}
+
+		if(!(validateRangoFechas(periodoNominaDto.getFechaInicio(),periodoNominaDto.getFechaFin()))) fechasValidas = false;
+
 		return fechasValidas;								
 	}
 

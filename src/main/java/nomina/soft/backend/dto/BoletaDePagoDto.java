@@ -18,7 +18,7 @@ public class BoletaDePagoDto {
     @Getter @Setter private float montoPorHorasDeFalta;
     @Getter @Setter private float adelantos;
     @Getter @Setter private float otrosDescuentos;
-    @Getter @Setter private float netoAPagar;
+    @Getter @Setter private float netoPorPagar;
     
     @Getter @Setter private Long idNomina;
     @Getter @Setter private Long idContrato;
