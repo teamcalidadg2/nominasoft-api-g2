@@ -160,7 +160,8 @@ public class ContratoTests {
 			assertEquals(exceptionMsg.PAGO_POR_HORA_NOT_INTEGER,resultado);
 		}
 	}
-
+	
+	@Test
 	void horasContratadasValidasTest1(){
 		ContratoModel contratoTemporal = new ContratoModel();
 		String horasContratadas = "10.3";
