@@ -40,7 +40,7 @@ class BackendApplicationTests {
 		contrato.setFechaInicio(fechaInicio);
 		contrato.setFechaFin(fechaFin);
 		contrato.setEstaCancelado(false);
-		assertTrue(contratoService.validarVigencia(contrato));
+		assertTrue(contrato.vigenciaValida(contrato));
 	}
 	
 	@Test
@@ -54,7 +54,7 @@ class BackendApplicationTests {
 		contrato.setFechaFin(fechaFin);
 		//CASO DE PRUEBA DONDE CONTRATO YA ESTA CANCELADO
 		contrato.setEstaCancelado(true);
-		assertFalse(contratoService.validarVigencia(contrato));
+		assertFalse(contrato.vigenciaValida(contrato));
 	}
 
 	@Test
@@ -68,7 +68,7 @@ class BackendApplicationTests {
 		contrato.setFechaInicio(fechaInicio);
 		contrato.setFechaFin(fechaFin);
 		contrato.setEstaCancelado(true);
-		assertFalse(contratoService.validarVigencia(contrato));
+		assertFalse(contrato.vigenciaValida(contrato));
 	}
 
 
