@@ -5,26 +5,21 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import java.util.Date;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
+
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
-import java.util.Calendar;
+import java.util.Date;
 
-import org.joda.time.DateTime;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
 import nomina.soft.backend.constant.ContratoImplConstant;
 import nomina.soft.backend.exception.domain.ContratoNotValidException;
 import nomina.soft.backend.models.ContratoModel;
-import nomina.soft.backend.services.impl.ContratoServiceImpl;
-import org.springframework.boot.test.context.SpringBootTest;
 
 @SpringBootTest
 public class ContratoTests {
@@ -164,6 +159,51 @@ public class ContratoTests {
 			resultado = e.getMessage();
 			assertEquals(exceptionMsg.PAGO_POR_HORA_NOT_INTEGER,resultado);
 		}
+	}
+
+	void horasContratadasValidasTest1(){
+		ContratoModel contratoTemporal = new ContratoModel();
+		String horasContratadas = "10.3";
+		try {
+            assertEquals(false, contratoTemporal.horasContratadasValidas(horasContratadas));
+        } 
+        catch (Exception e) {
+            String expectedMessage = "Las horas contratadas por semana deben ser números enteros.";
+            assertEquals( expectedMessage, e.getMessage() );
+        }
+	}
+
+	@Test
+	void horasContratadasValidasTest2(){
+		ContratoModel contratoTemporal = new ContratoModel();
+		String horasContratadas = "50";
+		try {
+            assertEquals(false, contratoTemporal.horasContratadasValidas(horasContratadas));
+        } 
+        catch (Exception e) {
+            String expectedMessage = "Las horas contratadas por semana deben estar en un rango de 8 a 40 horas.";
+            assertEquals( expectedMessage, e.getMessage() );
+        }
+	}
+
+	@Test
+	void horasContratadasValidasTest3(){
+		ContratoModel contratoTemporal = new ContratoModel();
+		String horasContratadas = "14";
+		try {
+            assertEquals(false, contratoTemporal.horasContratadasValidas(horasContratadas));
+        } 
+        catch (Exception e) {
+            String expectedMessage = "La horas contratadas por semana deben ser múltiplos de 4.";
+            assertEquals( expectedMessage, e.getMessage() );
+        }
+	}
+
+	@Test
+	void horasContratadasValidasTest4() throws ContratoNotValidException{
+		ContratoModel contratoTemporal = new ContratoModel();
+		String horasContratadas = "24";
+        assertEquals(true, contratoTemporal.horasContratadasValidas(horasContratadas));
 	}
 
 }
