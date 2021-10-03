@@ -1,9 +1,17 @@
 package nomina.soft.backend.models;
 
+import javax.persistence.CascadeType;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.Table;
 
-import javax.persistence.*;
-
-
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -19,23 +27,35 @@ public class IncidenciaLaboralModel {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(unique = true, nullable = false)
-    @Getter @Setter
-    private int incidencia_laboral_id;
-    @Getter @Setter
-    private int totalHorasDeFalta;
-    @Getter @Setter
-    private int totalHorasExtras;
+    @Getter @Setter private Long idIncidenciaLaboral;
 
-    @ManyToOne(fetch=FetchType.EAGER)
-    @JoinColumn(name = "contrato_id")
-    @Getter @Setter
-    private ContratoModel contrato;
+    @Getter @Setter private int totalHorasDeFalta;
+    @Getter @Setter private int totalHorasExtras;
+
+    @ManyToOne(cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.REFRESH, CascadeType.PERSIST},
+			fetch = FetchType.LAZY)
+    @JoinColumn(name = "id_contrato")
+    @JsonIgnore
+    @Getter @Setter private ContratoModel contrato;
 
     
-    @ManyToOne(fetch=FetchType.EAGER)
-    @JoinColumn(name = "periodo_nomina_id")
-    @Getter @Setter
-    private PeriodoNominaModel periodo_nomina;
+    @ManyToOne(cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.REFRESH, CascadeType.PERSIST},
+			fetch = FetchType.LAZY)
+    @JoinColumn(name = "id_periodo_nomina")
+    @JsonIgnore
+    @Getter @Setter private PeriodoNominaModel periodoNomina;
+
+    public void reportarHoraFaltante(){
+        this.totalHorasDeFalta++;
+    }
+
+    public void reportarHoraExtra(){
+        this.totalHorasExtras++;
+    }
+
+    public void addTotalHorasDeFalta(int horasDeFalta){
+        this.totalHorasDeFalta+=horasDeFalta;
+    }
 
     
 }

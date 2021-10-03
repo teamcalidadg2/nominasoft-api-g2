@@ -1,23 +1,25 @@
 package nomina.soft.backend.services;
-import java.util.ArrayList;
-
-import org.springframework.stereotype.Service;
+import java.util.List;
 
 import nomina.soft.backend.dto.NominaDto;
 import nomina.soft.backend.exception.domain.ContratoNotFoundException;
 import nomina.soft.backend.exception.domain.ContratoNotValidException;
-import nomina.soft.backend.exception.domain.NominaExistsException;
+import nomina.soft.backend.exception.domain.EmpleadoNotFoundException;
 import nomina.soft.backend.exception.domain.NominaNotFoundException;
 import nomina.soft.backend.exception.domain.NominaNotValidException;
+import nomina.soft.backend.exception.domain.PeriodoNominaNotFoundException;
+import nomina.soft.backend.models.BoletaDePagoModel;
 import nomina.soft.backend.models.NominaModel;
 
 
 public interface NominaService {
     
-    public ArrayList<NominaModel> getAll();
-    
-    public NominaModel guardarNomina(NominaDto nominaDto, int contrato_id) throws NominaNotFoundException, NominaExistsException, NominaNotValidException, ContratoNotFoundException, ContratoNotValidException;
-    public void delete (int id);
-    public NominaModel buscarPorId(int id) throws NominaNotFoundException;
+    public List<NominaModel> getAll();
+    public List<NominaModel> getAllByDescripcion(String descripcion) throws NominaNotFoundException;
+    public List<BoletaDePagoModel> guardarNomina(NominaDto nominaDto) throws PeriodoNominaNotFoundException, ContratoNotFoundException, EmpleadoNotFoundException, ContratoNotValidException, NominaNotValidException;
+    public List<BoletaDePagoModel> generarNomina(NominaDto nominaDto) throws ContratoNotFoundException, EmpleadoNotFoundException, ContratoNotValidException, NominaNotValidException, PeriodoNominaNotFoundException;
+    public NominaModel buscarPorId(Long idNomina) throws NominaNotFoundException;
+    public NominaModel cerrarNomina(Long idNomina) throws NominaNotFoundException;
+    public void eliminarNomina(Long idNomina) throws NominaNotFoundException;
 
 }

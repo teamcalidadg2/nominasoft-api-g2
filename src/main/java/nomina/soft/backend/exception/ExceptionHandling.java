@@ -28,6 +28,9 @@ import nomina.soft.backend.exception.domain.ContratoNotFoundException;
 import nomina.soft.backend.exception.domain.ContratoNotValidException;
 import nomina.soft.backend.exception.domain.EmpleadoExistsException;
 import nomina.soft.backend.exception.domain.EmpleadoNotFoundException;
+import nomina.soft.backend.exception.domain.PeriodoNominaExistsException;
+import nomina.soft.backend.exception.domain.PeriodoNominaNotFoundException;
+import nomina.soft.backend.exception.domain.PeriodoNominaNotValidException;
 import nomina.soft.backend.models.HttpResponse;
 
 
@@ -72,6 +75,21 @@ public class ExceptionHandling implements ErrorController {
     
     @ExceptionHandler(ContratoNotValidException.class)
     public ResponseEntity<HttpResponse> contratoNotValidException(ContratoNotValidException exception) {
+        return createHttpResponse(BAD_REQUEST, exception.getMessage());
+    }
+
+    @ExceptionHandler(PeriodoNominaExistsException.class)
+    public ResponseEntity<HttpResponse> periodoNominaExistsException(PeriodoNominaExistsException exception) {
+        return createHttpResponse(BAD_REQUEST, exception.getMessage());
+    }
+    
+    @ExceptionHandler(PeriodoNominaNotFoundException.class)
+    public ResponseEntity<HttpResponse> periodoNominaNotFoundException(PeriodoNominaNotFoundException exception) {
+        return createHttpResponse(BAD_REQUEST, exception.getMessage());
+    }
+    
+    @ExceptionHandler(PeriodoNominaNotValidException.class)
+    public ResponseEntity<HttpResponse> periodoNominaNotValidException(PeriodoNominaNotValidException exception) {
         return createHttpResponse(BAD_REQUEST, exception.getMessage());
     }
     

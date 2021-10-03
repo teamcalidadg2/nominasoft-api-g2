@@ -1,7 +1,6 @@
 package nomina.soft.backend.dto;
-import java.time.LocalDateTime;
 import java.util.Date;
-import java.util.Set;
+import java.util.List;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -12,17 +11,10 @@ import nomina.soft.backend.models.BoletaDePagoModel;
 @AllArgsConstructor
 @NoArgsConstructor
 public class NominaDto {
-    @Getter @Setter
-    private int nomina_id;
-    @Getter @Setter
-    private String descripcion;
-    @Getter @Setter
-    private Date fecha;
-    @Getter @Setter
-    private Boolean cerrada;
-    @Getter @Setter
-    private int periodo_nomina_id;
-	@Getter @Setter
-	private Set<BoletaDePagoModel> boletas;
-
+    @Getter @Setter private Long idNomina;
+    @Getter @Setter private String descripcion;
+    @Getter @Setter private Date fecha;
+    @Getter @Setter private Boolean estaCerrada;
+    @Getter @Setter private Long idPeriodoNomina;
+	@Getter @Setter private List<BoletaDePagoModel> boletasDePago;
 }

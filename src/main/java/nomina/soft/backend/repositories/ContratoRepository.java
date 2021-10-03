@@ -1,5 +1,4 @@
 package nomina.soft.backend.repositories;
-
 import java.util.List;
 
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -9,7 +8,7 @@ import nomina.soft.backend.models.ContratoModel;
 import nomina.soft.backend.models.EmpleadoModel;
 
 @Repository
-public interface ContratoRepository extends JpaRepository<ContratoModel,Integer>{
+public interface ContratoRepository extends JpaRepository<ContratoModel,Long>{
         
 	public List<ContratoModel> findAllByEmpleado(EmpleadoModel empleado);
 	
