@@ -1,13 +1,6 @@
 package nomina.soft.backend.services.impl;
 
-import static nomina.soft.backend.constant.PeriodoNominaImplConstant.FECHAS_NOT_VALID;
-import static nomina.soft.backend.constant.PeriodoNominaImplConstant.FECHA_FIN_ALREADY_EXISTS;
-import static nomina.soft.backend.constant.PeriodoNominaImplConstant.FECHA_INICIO_ALREADY_EXISTS;
-import static nomina.soft.backend.constant.PeriodoNominaImplConstant.NO_NOMINA_FOUND_BY_FECHA_FIN;
-import static nomina.soft.backend.constant.PeriodoNominaImplConstant.NO_NOMINA_FOUND_BY_FECHA_INICIO;
-import static nomina.soft.backend.constant.PeriodoNominaImplConstant.NO_PERIODOS_FOUND;
-import static nomina.soft.backend.constant.PeriodoNominaImplConstant.PERIODO_NOT_FOUND_BY_ID;
-import static nomina.soft.backend.constant.PeriodoNominaImplConstant.RANGO_NOT_VALID;
+import static nomina.soft.backend.constant.PeriodoNominaImplConstant.*;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -93,7 +86,8 @@ public class PeriodoNominaServiceImpl implements PeriodoNominaService{
 		PeriodoNominaModel periodoNomina = new PeriodoNominaModel();
 		validateNewFechaInicio(null,periodoNominaDto.getFechaInicio());
 		validateNewFechaFin(null,periodoNominaDto.getFechaFin());
-		if(validarFechas(periodoNominaDto)){
+		if(periodoNomina.fechasValidas(periodoNominaDto.getFechaInicio(), periodoNomina.getFechaFin()) &&
+			validateOverlapingFechas(periodoNominaDto.getFechaInicio(), periodoNomina.getFechaFin())){
 			periodoNomina.setIncidenciasLaborales(new ArrayList<IncidenciaLaboralModel>());
 			periodoNomina.setDescripcion(periodoNominaDto.getDescripcion());
 			periodoNomina.setFechaInicio(periodoNominaDto.getFechaInicio());
@@ -105,7 +99,7 @@ public class PeriodoNominaServiceImpl implements PeriodoNominaService{
 	}
 
 
-	private boolean validateRangoFechas(Date fechaInicio, Date fechaFin) throws PeriodoNominaExistsException {		
+	private boolean validateOverlapingFechas(Date fechaInicio, Date fechaFin) throws PeriodoNominaExistsException {		
 		boolean rangoFechasValido = true;
 		List<PeriodoNominaModel> listaPeriodosNomina =  this.periodoNominaRepository.findAll();
 		for(PeriodoNominaModel periodoNomina: listaPeriodosNomina){
@@ -154,7 +148,8 @@ public class PeriodoNominaServiceImpl implements PeriodoNominaService{
 
 	private boolean validarContratoConPeriodoNomina(ContratoModel contratoMasReciente, PeriodoNominaModel periodo){
 		boolean contratoValido = true;
-		if(!(this.contratoService.validarVigencia(contratoMasReciente))) contratoValido = false;
+		ContratoModel contratoTemporal = new ContratoModel();
+		if(!(contratoTemporal.vigenciaValida(contratoMasReciente))) contratoValido = false;
 		if(contratoMasReciente.getEstaCancelado()) contratoValido = false;
 		if(contratoMasReciente.getFechaFin().before(periodo.getFechaInicio())) contratoValido = false;
 		return contratoValido;
@@ -174,24 +169,6 @@ public class PeriodoNominaServiceImpl implements PeriodoNominaService{
 			int totalHorasDeFalta = cantidadDiasFaltantes / 24;
 			nuevaIncidenciaLaboral.addTotalHorasDeFalta(totalHorasDeFalta);
 		}
-	}
-
-
-	private boolean validarFechas(PeriodoNominaDto periodoNominaDto) throws PeriodoNominaNotValidException, PeriodoNominaExistsException{
-		boolean fechasValidas = true;
-		Date fechaInicio = periodoNominaDto.getFechaInicio();
-		Date fechaFin = periodoNominaDto.getFechaFin();
-		int duracionDias = Period.between(LocalDate.ofInstant(fechaInicio.toInstant(), ZoneId.systemDefault()),
-										LocalDate.ofInstant(fechaFin.toInstant(), ZoneId.systemDefault()))
-										.getDays();
-		if(!(duracionDias>15 && duracionDias<30)){
-			fechasValidas = false;
-			throw new PeriodoNominaNotValidException(FECHAS_NOT_VALID);
-		}
-
-		if(!(validateRangoFechas(periodoNominaDto.getFechaInicio(),periodoNominaDto.getFechaFin()))) fechasValidas = false;
-
-		return fechasValidas;								
 	}
 
 

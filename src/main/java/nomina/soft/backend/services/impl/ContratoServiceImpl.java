@@ -200,7 +200,7 @@ public class ContratoServiceImpl implements ContratoService {
 		this.periodoNominaRepository.save(periodoNominaVigente);
 	}
 
-	private PeriodoNominaModel obtenerPeriodoNominaVigente() {
+	public PeriodoNominaModel obtenerPeriodoNominaVigente() {
 		List<PeriodoNominaModel> periodosNomina = this.periodoNominaRepository.findAll();
 		PeriodoNominaModel periodoNominaVigente = null;
 		Date tiempoActual = java.sql.Timestamp.valueOf(LocalDateTime.now());
@@ -224,75 +224,14 @@ public class ContratoServiceImpl implements ContratoService {
 
 	private boolean validarContrato(ContratoDto contratoDto) throws ContratoNotValidException {
 		boolean contratoValido = true;
-		if(!(ValidarFechas(contratoDto.getFechaInicio(), contratoDto.getFechaFin()) &&
-				ValidarHorasContratadas(contratoDto.getHorasPorSemana()) &&	
-				ValidarPagoPorHora(contratoDto.getPagoPorHora()))) {
+		ContratoModel contratoTemporal = new ContratoModel();
+		if(!((contratoTemporal.fechasValidas(contratoDto.getFechaInicio(),contratoDto.getFechaFin())) &&
+				contratoTemporal.horasContratadasValidas(contratoDto.getHorasPorSemana()) &&	
+				contratoTemporal.pagoPorHoraValido(contratoDto.getPagoPorHora()))) {
 			contratoValido = false;
 		}
 		return contratoValido;
 	}
-	
-	private boolean ValidarFechas(Date fechaInicio, Date fechaFin) throws ContratoNotValidException {
-		boolean fechasValidas = true;
-		Date tiempoActual = java.sql.Timestamp.valueOf(LocalDateTime.now());
-		if(!(fechaInicio.equals(tiempoActual) ||	//REGLA02
-				fechaInicio.after(tiempoActual))) {
-			fechasValidas = false;
-			throw new ContratoNotValidException(FECHA_INICIO_NOT_VALID);
-		}
-		
-		if((fechaFin.after(fechaInicio))) {			//REGLA03
-			int mesesDeDiferencia = Period.between(LocalDate.ofInstant(fechaInicio.toInstant(), ZoneId.systemDefault()),
-													LocalDate.ofInstant(fechaFin.toInstant(), ZoneId.systemDefault()))
-													.getMonths();
-			if(!(mesesDeDiferencia>=3 && mesesDeDiferencia<=12)) {
-				fechasValidas = false;
-				throw new ContratoNotValidException(FECHA_FIN_NOT_VALID);
-			}
-		}else {
-			fechasValidas = false;
-			throw new ContratoNotValidException(FECHAS_NOT_VALID);
-		}
-		return fechasValidas;
-	}
-	
-	private boolean ValidarHorasContratadas(String horasContratadasCad) throws ContratoNotValidException {	//REGLA 04
-		int horasContratadas = 0;
-		boolean horasContratadasValidas = true;
-		try {
-			horasContratadas = Integer.parseInt(horasContratadasCad);
-		} catch (NumberFormatException nfe){
-			horasContratadasValidas = false;
-			throw new ContratoNotValidException(HORAS_CONTRATADAS_NOT_INTEGER);
-		}
-		if(horasContratadas>=8 && horasContratadas<=40) {
-			if(!(horasContratadas%4==0)) {
-				horasContratadasValidas = false;
-				throw new ContratoNotValidException(HORAS_CONTRATADAS_NOT_VALID);
-			}
-		}else {
-			horasContratadasValidas = false;
-			throw new ContratoNotValidException(HORAS_CONTRATADAS_RANGO_NOT_VALID);
-		}
-		return horasContratadasValidas;
-	}
-	
-	private boolean ValidarPagoPorHora(String pagoPorHoraCad) throws ContratoNotValidException { //REGLA05
-		int pagoPorHora = 0;
-		boolean pagoPorHoraValido = true;
-		try {
-			pagoPorHora = Integer.parseInt(pagoPorHoraCad);
-		} catch (NumberFormatException nfe){
-			pagoPorHoraValido = false;
-			throw new ContratoNotValidException(PAGO_POR_HORA_NOT_INTEGER);
-		}
-		if(!(pagoPorHora>=10 && pagoPorHora<=60)) {
-			pagoPorHoraValido = false;
-			throw new ContratoNotValidException(PAGO_POR_HORA_RANGO_NOT_VALID);
-		}
-		return pagoPorHoraValido;
-	}
-	
 	
 	@Override
 	public ContratoModel buscarContratoPorDni(String dniEmpleado) throws ContratoNotFoundException, EmpleadoNotFoundException {
@@ -309,35 +248,24 @@ public class ContratoServiceImpl implements ContratoService {
 	
 	private ContratoModel obtenerContratoVigente(EmpleadoModel empleado) {
 		List<ContratoModel> contratosDeEmpleado = this.contratoRepository.findAllByEmpleado(empleado);
-		ContratoModel contratoVigente = null;
+		ContratoModel contratoVigente = null, contratoTemporal = new ContratoModel();
 		for (ContratoModel contrato: contratosDeEmpleado) {
-		      if(validarVigencia(contrato)) {
+		      if(contratoTemporal.vigenciaValida(contrato)) {
 		    	  contratoVigente = contrato;
 		      }		      
 		}
 		return contratoVigente;
 	}
 	
-	public boolean validarVigencia(ContratoModel contratoModel) {				//REGLA01
-		Date tiempoActual = java.sql.Timestamp.valueOf(LocalDateTime.now());
-		boolean vigenciaValida = true;
-		if(!((contratoModel.getFechaFin().after(tiempoActual) || 
-				contratoModel.getFechaFin().equals(tiempoActual)) &&
-				!contratoModel.getEstaCancelado())) {
-			vigenciaValida = false;
-		}
-		return vigenciaValida;
-	}
-
 	@Override
 	public ContratoModel updateContrato(Long idContrato, String puesto, String horasPorSemana, Long idAfp,
 			Boolean tieneAsignacionFamiliar, String pagoPorHora) throws ContratoNotValidException, AfpNotFoundException, ContratoNotFoundException {
-		ContratoModel contratoAEditar = this.contratoRepository.getById(idContrato);
+		ContratoModel contratoAEditar = this.contratoRepository.getById(idContrato), contratoTemporal = new ContratoModel();
 		AfpModel afpEncontrado = this.afpRepository.findByIdAfp(idAfp);
 		if(contratoAEditar!=null){
 			if(afpEncontrado!=null){
-				if(ValidarHorasContratadas(contratoAEditar.getHorasPorSemana()) &&	
-				ValidarPagoPorHora(contratoAEditar.getPagoPorHora())){
+				if(contratoTemporal.horasContratadasValidas(contratoAEditar.getHorasPorSemana()) &&	
+				    contratoTemporal.pagoPorHoraValido(contratoAEditar.getPagoPorHora())){
 					contratoAEditar.setPuesto(puesto);
 					contratoAEditar.setHorasPorSemana(horasPorSemana);
 					contratoAEditar.setAfp(afpEncontrado);

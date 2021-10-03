@@ -57,8 +57,8 @@ public class AfpController {
     @PostMapping("/editar")
     public ResponseEntity<AfpModel> update(@RequestParam("actualNombre") String actualNombre,
                                        @RequestParam("nombre") String nombre,
-                                       @RequestParam("actualDescuento") float actualDescuento,
-                                       @RequestParam("descuento") float descuento) throws AfpNotFoundException, AfpExistsException {
+                                       @RequestParam("actualDescuento") int actualDescuento,
+                                       @RequestParam("descuento") int descuento) throws AfpNotFoundException, AfpExistsException {
     	AfpModel updatedAfp = afpService.updateAfp(actualNombre, nombre, actualDescuento, descuento);
         return new ResponseEntity<>(updatedAfp, OK);
     }

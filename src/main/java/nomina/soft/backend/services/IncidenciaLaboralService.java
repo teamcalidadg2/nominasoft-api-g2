@@ -10,7 +10,7 @@ public interface IncidenciaLaboralService {
     
 	
 	List<IncidenciaLaboralModel> buscarIncidenciasPorDni(String dni) throws EmpleadoNotFoundException, ContratoNotFoundException;
-	IncidenciaLaboralModel reportarHoraFaltante(String dni) throws EmpleadoNotFoundException;
-	IncidenciaLaboralModel reportarHoraExtra(String dni) throws EmpleadoNotFoundException;
+	IncidenciaLaboralModel reportarHoraFaltante(String dni) throws EmpleadoNotFoundException, ContratoNotFoundException;
+	IncidenciaLaboralModel reportarHoraExtra(String dni) throws EmpleadoNotFoundException, ContratoNotFoundException;
 	
 }
