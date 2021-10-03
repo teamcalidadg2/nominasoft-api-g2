@@ -23,6 +23,6 @@ public class AfpModel {
     @Getter @Setter private Long idAfp;
 
     @Getter @Setter private String nombre;
-    @Getter @Setter private float porcentajeDescuento;  
+    @Getter @Setter private int porcentajeDescuento;  
 
 }

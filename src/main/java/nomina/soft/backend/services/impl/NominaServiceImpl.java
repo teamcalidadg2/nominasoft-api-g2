@@ -104,10 +104,11 @@ public class NominaServiceImpl implements NominaService{
 	private List<BoletaDePagoModel> GuardarBoletasDePago(NominaModel nuevaNomina) throws ContratoNotFoundException, EmpleadoNotFoundException, ContratoNotValidException, NominaNotValidException {
 		List<EmpleadoModel> listaEmpleados = this.empleadoRepository.findAll();
 		List<BoletaDePagoModel> boletasDePago = new ArrayList<BoletaDePagoModel>();
+		NominaModel nominaTemporal = new NominaModel();
 		for (EmpleadoModel empleado: listaEmpleados) {
 			ContratoModel contratoVigente = this.contratoService.buscarContratoPorDni(empleado.getDni());
-			if(ValidarContratoConNomina(contratoVigente, nuevaNomina)){
-				boletasDePago.add(this.boletaDePagoService.GuardarBoletaDePago(contratoVigente,nuevaNomina));
+			if(nominaTemporal.validarContratoConNomina(contratoVigente, nuevaNomina)){
+				boletasDePago.add(this.boletaDePagoService.guardarBoletaDePago(contratoVigente,nuevaNomina));
 			}
 	  	}
 		return boletasDePago;
@@ -136,38 +137,17 @@ public class NominaServiceImpl implements NominaService{
 	private List<BoletaDePagoModel> GenerarBoletasDePago(NominaModel nuevaNomina) throws ContratoNotFoundException, EmpleadoNotFoundException, ContratoNotValidException, NominaNotValidException {
 		List<EmpleadoModel> listaEmpleados = this.empleadoRepository.findAll();
 		List<BoletaDePagoModel> boletasDePago = new ArrayList<BoletaDePagoModel>();
+		NominaModel nominaTemporal = new NominaModel();
 		for (EmpleadoModel empleado: listaEmpleados) {
 			ContratoModel contratoVigente = this.contratoService.buscarContratoPorDni(empleado.getDni());
-			if(ValidarContratoConNomina(contratoVigente, nuevaNomina)){
-				boletasDePago.add(this.boletaDePagoService.GenerarBoletaDePago(contratoVigente,nuevaNomina));
+			if(nominaTemporal.validarContratoConNomina(contratoVigente, nuevaNomina)){
+				boletasDePago.add(this.boletaDePagoService.generarBoletaDePago(contratoVigente,nuevaNomina));
 			}
 	  	}
 		return boletasDePago;
 	}
 
-	private boolean ValidarContratoConNomina(ContratoModel contratoVigente, NominaModel nuevaNomina) throws ContratoNotValidException, NominaNotValidException{
-		boolean contratoValido = true;
-		EmpleadoModel empleado = this.empleadoRepository.findByDni(contratoVigente.getEmpleado().getDni());
-		if(contratoVigente != null){
-			if(contratoVigente.getFechaFin().after(nuevaNomina.getPeriodoNomina().getFechaFin())){
-				if(contratoVigente.getEstaCancelado()){
-					contratoValido = false;
-					throw new ContratoNotValidException(CONTRATO_CANCELADO + empleado.getNombres() + " " + empleado.getApellidos());
-				}
-			}
-			else{
-				contratoValido = false;
-				throw new ContratoNotValidException(CONTRATO_FECHA_FIN_NOT_VALID + empleado.getNombres() + " " + empleado.getApellidos());
-			}
-		}else contratoValido = false;
-		
-		Date tiempoActual = java.sql.Timestamp.valueOf(LocalDateTime.now());
-		if(!(nuevaNomina.getPeriodoNomina().getFechaFin().before(nuevaNomina.getFecha()))){
-			contratoValido = false;
-			throw new NominaNotValidException(PERIODO_FECHA_FIN_NOT_VALID);
-		}
-		return contratoValido;
-	}
+	
 
 
 	@Override

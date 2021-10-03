@@ -11,5 +11,6 @@ import nomina.soft.backend.models.EmpleadoModel;
 public interface ContratoRepository extends JpaRepository<ContratoModel,Long>{
         
 	public List<ContratoModel> findAllByEmpleado(EmpleadoModel empleado);
-	
+
+
 }

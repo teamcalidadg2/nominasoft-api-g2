@@ -36,13 +36,13 @@ public class IncidenciaLaboralController {
     }
 
     @PostMapping("/reportarHoraFaltante/{dni}")
-    public ResponseEntity<IncidenciaLaboralModel> saveHoraFaltante(@PathVariable("dni") String dni) throws EmpleadoNotFoundException{
+    public ResponseEntity<IncidenciaLaboralModel> saveHoraFaltante(@PathVariable("dni") String dni) throws EmpleadoNotFoundException, ContratoNotFoundException{
     	IncidenciaLaboralModel horaFaltante = incidenciaLaboralService.reportarHoraFaltante(dni);
         return new ResponseEntity<>(horaFaltante, OK);
     }
     
     @PostMapping("/reportarHoraExtra/{dni}")
-    public ResponseEntity<IncidenciaLaboralModel> saveHoraExtra(@PathVariable("dni") String dni) throws EmpleadoNotFoundException{
+    public ResponseEntity<IncidenciaLaboralModel> saveHoraExtra(@PathVariable("dni") String dni) throws EmpleadoNotFoundException, ContratoNotFoundException{
     	IncidenciaLaboralModel horaExtra = incidenciaLaboralService.reportarHoraExtra(dni);
         return new ResponseEntity<>(horaExtra, OK);
     }

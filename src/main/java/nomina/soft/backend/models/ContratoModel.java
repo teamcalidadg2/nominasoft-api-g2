@@ -1,5 +1,11 @@
 package nomina.soft.backend.models;
 
+import static nomina.soft.backend.constant.ContratoImplConstant.*;
+
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.Period;
+import java.time.ZoneId;
 import java.util.Date;
 import java.util.List;
 
@@ -22,6 +28,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
+import nomina.soft.backend.exception.domain.ContratoNotValidException;
 
 @Entity
 @Table(name = "contrato")
@@ -59,4 +66,78 @@ public class ContratoModel {
     public void addIncidenciaLaboral(IncidenciaLaboralModel nuevaIncidenciaLaboral) {
         incidenciasLaborales.add(nuevaIncidenciaLaboral);
     }
+
+
+    public boolean fechasValidas(Date fechaInicio, Date fechaFin) throws ContratoNotValidException {
+		boolean fechasValidas = true;
+		Date tiempoActual = java.sql.Timestamp.valueOf(LocalDateTime.now());
+		if(!(fechaInicio.after(tiempoActual) || fechaInicio.equals(tiempoActual))) {//REGLA02
+			fechasValidas = false;
+			throw new ContratoNotValidException(FECHA_INICIO_NOT_VALID);
+		}
+		
+		if((fechaFin.after(fechaInicio))) {			//REGLA03
+			int mesesDeDiferencia = Period.between(LocalDate.ofInstant(fechaInicio.toInstant(), ZoneId.systemDefault()),
+													LocalDate.ofInstant(fechaFin.toInstant(), ZoneId.systemDefault()))
+													.getMonths();
+			if(!(mesesDeDiferencia>=3 && mesesDeDiferencia<=12)) {
+				fechasValidas = false;
+				throw new ContratoNotValidException(FECHA_FIN_NOT_VALID);
+			}
+		}else {
+			fechasValidas = false;
+			throw new ContratoNotValidException(FECHAS_NOT_VALID);
+		}
+		return fechasValidas;
+	}
+
+    public boolean horasContratadasValidas(String horasContratadasCad) throws ContratoNotValidException { //REGLA 04
+		int horasContratadas = 0;
+		boolean horasContratadasValidas = true;
+		try {
+			horasContratadas = Integer.parseInt(horasContratadasCad);
+		} catch (NumberFormatException nfe){
+			horasContratadasValidas = false;
+			throw new ContratoNotValidException(HORAS_CONTRATADAS_NOT_INTEGER);
+		}
+		if(horasContratadas>=8 && horasContratadas<=40) {
+			if(horasContratadas % 4 != 0) {
+				horasContratadasValidas = false;
+				throw new ContratoNotValidException(HORAS_CONTRATADAS_NOT_VALID);
+			}
+		}else {
+			horasContratadasValidas = false;
+			throw new ContratoNotValidException(HORAS_CONTRATADAS_RANGO_NOT_VALID);
+		}
+		return horasContratadasValidas;
+	}
+
+    public boolean pagoPorHoraValido(String pagoPorHoraCad) throws ContratoNotValidException { //REGLA05
+		int pagoPorHoraTemporal = 0;
+		boolean pagoPorHoraValido = true;
+		try {
+			pagoPorHoraTemporal = Integer.parseInt(pagoPorHoraCad);
+		} catch (NumberFormatException nfe){
+			pagoPorHoraValido = false;
+			throw new ContratoNotValidException(PAGO_POR_HORA_NOT_INTEGER);
+		}
+		if(!(pagoPorHoraTemporal>=10 && pagoPorHoraTemporal<=60)) {
+			pagoPorHoraValido = false;
+			throw new ContratoNotValidException(PAGO_POR_HORA_RANGO_NOT_VALID);
+		}
+		return pagoPorHoraValido;
+	}
+
+    public boolean vigenciaValida(ContratoModel contratoModel) {				//REGLA01
+		Date tiempoActual = java.sql.Timestamp.valueOf(LocalDateTime.now());
+		boolean vigenciaValida = true;
+		if(!((contratoModel.getFechaFin().after(tiempoActual) || 
+				contratoModel.getFechaFin().equals(tiempoActual)) &&
+				!contratoModel.getEstaCancelado())) {
+			vigenciaValida = false;
+		}
+		return vigenciaValida;
+	}
+
+
 }

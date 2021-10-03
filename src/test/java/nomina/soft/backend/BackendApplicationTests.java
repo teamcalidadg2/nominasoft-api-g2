@@ -21,6 +21,7 @@ import nomina.soft.backend.exception.domain.ContratoNotValidException;
 import nomina.soft.backend.models.ContratoModel;
 import nomina.soft.backend.services.impl.ContratoServiceImpl;
 
+
 @SpringBootTest
 class BackendApplicationTests {
 

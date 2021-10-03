@@ -1,7 +1,5 @@
 package nomina.soft.backend.services.impl;
 
-import static nomina.soft.backend.constant.EmpleadoImplConstant.NO_EMPLEADO_FOUND_BY_DNI;
-
 import java.util.List;
 
 import javax.transaction.Transactional;
@@ -12,9 +10,8 @@ import org.springframework.stereotype.Service;
 import nomina.soft.backend.exception.domain.ContratoNotFoundException;
 import nomina.soft.backend.exception.domain.EmpleadoNotFoundException;
 import nomina.soft.backend.models.ContratoModel;
-import nomina.soft.backend.models.EmpleadoModel;
 import nomina.soft.backend.models.IncidenciaLaboralModel;
-import nomina.soft.backend.repositories.ContratoRepository;
+import nomina.soft.backend.models.PeriodoNominaModel;
 import nomina.soft.backend.repositories.EmpleadoRepository;
 import nomina.soft.backend.repositories.IncidenciaLaboralRepository;
 import nomina.soft.backend.services.IncidenciaLaboralService;
@@ -24,19 +21,13 @@ import nomina.soft.backend.services.IncidenciaLaboralService;
 public class IncidenciaLaboralServiceImpl implements IncidenciaLaboralService{
 
 	private IncidenciaLaboralRepository incidenciaLaboralRepository;
-	private EmpleadoRepository empleadoRepository;
-	private ContratoRepository contratoRepository;
 	private ContratoServiceImpl contratoService;
 
 	@Autowired
-	public IncidenciaLaboralServiceImpl(IncidenciaLaboralRepository incidenciaLaboralRepository, 
-											EmpleadoRepository empleadoRepository,
-											ContratoRepository contratoRepository,
-											ContratoServiceImpl contratoService) {
+	public IncidenciaLaboralServiceImpl(IncidenciaLaboralRepository incidenciaLaboralRepository,
+										ContratoServiceImpl contratoService) {
 		super();
 		this.incidenciaLaboralRepository = incidenciaLaboralRepository;
-		this.empleadoRepository = empleadoRepository;
-		this.contratoRepository = contratoRepository;
 		this.contratoService = contratoService;
 	}
 
@@ -46,32 +37,53 @@ public class IncidenciaLaboralServiceImpl implements IncidenciaLaboralService{
 		List<IncidenciaLaboralModel> lista = null;
 		if(contratoVigente!= null) {
 			lista = contratoVigente.getIncidenciasLaborales();
-		}		
+		}
 		return lista;
 	}
 
 	@Override
-	public IncidenciaLaboralModel reportarHoraFaltante(String dni) throws EmpleadoNotFoundException {
-		EmpleadoModel empleado = this.empleadoRepository.findByDni(dni);
-		if(empleado == null) {
-			throw new EmpleadoNotFoundException(NO_EMPLEADO_FOUND_BY_DNI + dni);
+	public IncidenciaLaboralModel reportarHoraFaltante(String dni) throws EmpleadoNotFoundException, ContratoNotFoundException {
+		ContratoModel contratoVigente = this.contratoService.buscarContratoPorDni(dni);
+		IncidenciaLaboralModel incidenciaLaboralVigente = null;
+		List<IncidenciaLaboralModel> lista = null;
+		if(contratoVigente!= null) {
+			incidenciaLaboralVigente = obtenerIncidenciaLaboralVigente(contratoVigente);
+			incidenciaLaboralVigente.reportarHoraFaltante();
+			this.incidenciaLaboralRepository.save(incidenciaLaboralVigente);
 		}
-		/*IncidenciaLaboralModel incidenciaLaboral = incidenciaLaboralRepository.findByEmpleado(empleado);
-		incidenciaLaboral.reportarHoraFaltante();
-		this.incidenciaLaboralRepository.save(incidenciaLaboral);*/
-		return null;
+		return incidenciaLaboralVigente;
+	}
+
+	private IncidenciaLaboralModel obtenerIncidenciaLaboralVigente(ContratoModel contrato) {
+		List<IncidenciaLaboralModel> incidenciasLaborales = contrato.getIncidenciasLaborales();
+		IncidenciaLaboralModel incidenciaLaboralVigente = null;
+		for(IncidenciaLaboralModel incidenciaLaboral: incidenciasLaborales){
+			if(validarPeriodoNomina(incidenciaLaboral.getPeriodoNomina())){
+				incidenciaLaboralVigente = incidenciaLaboral;
+			}
+		}
+		return incidenciaLaboralVigente;
+	}
+
+	private boolean validarPeriodoNomina(PeriodoNominaModel periodoNomina) {
+		boolean periodoNominaValido = true;
+		if(periodoNomina != this.contratoService.obtenerPeriodoNominaVigente()){
+			periodoNominaValido = false;
+		}
+		return periodoNominaValido;
 	}
 
 	@Override
-	public IncidenciaLaboralModel reportarHoraExtra(String dni) throws EmpleadoNotFoundException {
-		EmpleadoModel empleado = this.empleadoRepository.findByDni(dni);
-		if(empleado == null) {
-			throw new EmpleadoNotFoundException(NO_EMPLEADO_FOUND_BY_DNI + dni);
+	public IncidenciaLaboralModel reportarHoraExtra(String dni) throws EmpleadoNotFoundException, ContratoNotFoundException {
+		ContratoModel contratoVigente = this.contratoService.buscarContratoPorDni(dni);
+		IncidenciaLaboralModel incidenciaLaboralVigente = null;
+		List<IncidenciaLaboralModel> lista = null;
+		if(contratoVigente!= null) {
+			incidenciaLaboralVigente = obtenerIncidenciaLaboralVigente(contratoVigente);
+			incidenciaLaboralVigente.reportarHoraExtra();
+			this.incidenciaLaboralRepository.save(incidenciaLaboralVigente);
 		}
-		/*IncidenciaLaboralModel incidenciaLaboral = incidenciaLaboralRepository.findByEmpleado(empleado);
-		incidenciaLaboral.reportarHoraExtra();
-		this.incidenciaLaboralRepository.save(incidenciaLaboral);*/
-		return null;
+		return incidenciaLaboralVigente;
 	}
 	
 	

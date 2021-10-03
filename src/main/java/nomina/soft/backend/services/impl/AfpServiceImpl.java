@@ -50,7 +50,7 @@ public class AfpServiceImpl implements AfpService{
 	public AfpModel guardarAFP(AfpDto afpDto) throws AfpNotFoundException, AfpExistsException {
 		AfpModel afp = new AfpModel();
 		validateNewNombre(EMPTY,afpDto.getNombre());
-		validateNewDescuento(0.0f,afpDto.getPorcentajeDescuento());
+		validateNewDescuento(0,afpDto.getPorcentajeDescuento());
 		
         afp.setNombre(afpDto.getNombre());
         afp.setPorcentajeDescuento(afpDto.getPorcentajeDescuento());
@@ -59,7 +59,7 @@ public class AfpServiceImpl implements AfpService{
 	}
 
 	@Override
-	public AfpModel updateAfp(String actualNombre, String nombre, float actualDescuento, float descuento) throws AfpNotFoundException, AfpExistsException {
+	public AfpModel updateAfp(String actualNombre, String nombre, int actualDescuento, int descuento) throws AfpNotFoundException, AfpExistsException {
 		AfpModel currentAfp = validateNewNombre(actualNombre, nombre);
 		currentAfp = validateNewDescuento(actualDescuento, descuento);
 		currentAfp.setNombre(nombre);
@@ -82,7 +82,7 @@ public class AfpServiceImpl implements AfpService{
             if(actualAfp == null) {
                 throw new AfpNotFoundException(NO_AFP_FOUND_BY_NOMBRE + actualNombre);
             }
-            if(afpConNuevoNombre != null && (actualAfp.getIdAfp() != afpConNuevoNombre.getIdAfp())) {
+            if(afpConNuevoNombre != null && (!(actualAfp.getIdAfp().equals(afpConNuevoNombre.getIdAfp())))) {
                 throw new AfpExistsException(NOMBRE_ALREADY_EXISTS);
             }
             return actualAfp;
@@ -94,14 +94,14 @@ public class AfpServiceImpl implements AfpService{
         }
     }
 	
-	private AfpModel validateNewDescuento(float actualDescuento, float nuevoDescuento) throws AfpNotFoundException, AfpExistsException{
+	private AfpModel validateNewDescuento(int actualDescuento, int nuevoDescuento) throws AfpNotFoundException, AfpExistsException{
 		AfpModel afpConNuevoDescuento = afpRepository.findByPorcentajeDescuento(nuevoDescuento);
-        if(actualDescuento!=0.0) {
+        if(actualDescuento!=0) {
         	AfpModel actualAfp = afpRepository.findByPorcentajeDescuento(actualDescuento);
             if(actualAfp == null) {
                 throw new AfpNotFoundException(NO_AFP_FOUND_BY_DESCUENTO + actualDescuento);
             }
-            if(afpConNuevoDescuento != null && (actualAfp.getIdAfp() != afpConNuevoDescuento.getIdAfp())) {
+            if(afpConNuevoDescuento != null && (!(actualAfp.getIdAfp().equals(afpConNuevoDescuento.getIdAfp())))) {
                 throw new AfpExistsException(DESCUENTO_ALREADY_EXISTS);
             }
             return actualAfp;

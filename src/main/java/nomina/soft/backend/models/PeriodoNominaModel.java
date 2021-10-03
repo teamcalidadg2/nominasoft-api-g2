@@ -1,4 +1,7 @@
 package nomina.soft.backend.models;
+import java.time.LocalDate;
+import java.time.Period;
+import java.time.ZoneId;
 import java.util.Date;
 import java.util.List;
 
@@ -19,7 +22,10 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
-
+import nomina.soft.backend.dto.PeriodoNominaDto;
+import nomina.soft.backend.exception.domain.PeriodoNominaExistsException;
+import nomina.soft.backend.exception.domain.PeriodoNominaNotValidException;
+import static nomina.soft.backend.constant.PeriodoNominaImplConstant.*;
 @Entity
 @Table(name = "periodo_nomina")
 @AllArgsConstructor
@@ -46,5 +52,18 @@ public class PeriodoNominaModel {
     public void addIncidenciaLaboral(IncidenciaLaboralModel nuevaIncidenciaLaboral) {
         incidenciasLaborales.add(nuevaIncidenciaLaboral);
     }
+
+    public boolean fechasValidas(Date fechaInicioPeriodoNomina, Date fechaFinPeriodoNomina) //REGLA 13
+                                throws PeriodoNominaNotValidException{
+		boolean fechasValidas = true;
+		int duracionDias = Period.between(LocalDate.ofInstant(fechaInicioPeriodoNomina.toInstant(), ZoneId.systemDefault()),
+										LocalDate.ofInstant(fechaFinPeriodoNomina.toInstant(), ZoneId.systemDefault()))
+										.getDays();
+		if(!(duracionDias>15 && duracionDias<30)){
+			fechasValidas = false;
+			throw new PeriodoNominaNotValidException(FECHAS_NOT_VALID);
+		}
+		return fechasValidas;								
+	}
 
 }

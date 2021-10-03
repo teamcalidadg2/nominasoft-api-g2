@@ -1,5 +1,4 @@
 package nomina.soft.backend.services;
-import java.text.ParseException;
 import java.util.List;
 
 import nomina.soft.backend.dto.PeriodoNominaDto;

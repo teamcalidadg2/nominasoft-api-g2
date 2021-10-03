@@ -9,6 +9,6 @@ public interface AfpRepository extends JpaRepository<AfpModel,Long>{
     
 	public AfpModel findByIdAfp(Long idAFP);
 	public AfpModel findByNombre(String nombre);
-	public AfpModel findByPorcentajeDescuento(float porcentajeDescuento);
+	public AfpModel findByPorcentajeDescuento(int porcentajeDescuento);
 	
 }
