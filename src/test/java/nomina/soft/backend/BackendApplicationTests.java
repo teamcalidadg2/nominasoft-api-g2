@@ -25,51 +25,6 @@ import nomina.soft.backend.services.impl.ContratoServiceImpl;
 @SpringBootTest
 class BackendApplicationTests {
 
-	@Autowired
-	private ContratoServiceImpl contratoService;
-
-
-	//Regla 1
-	@Test 
-	void validarVigenciaTestCasoValido() throws ParseException {
-		ContratoModel contrato = new ContratoModel();
-		DateFormat formatter = new SimpleDateFormat("dd/MM/yyyy");
-		Date fechaInicio = formatter.parse("3/10/2021");
-		Date fechaFin = formatter.parse("3/01/2022");
-		//TODOS LOS ARGUMENTOS SON VALIDOS
-		contrato.setFechaInicio(fechaInicio);
-		contrato.setFechaFin(fechaFin);
-		contrato.setEstaCancelado(false);
-		assertTrue(contrato.vigenciaValida(contrato));
-	}
-	
-	@Test
-	void validarVigenciaTestEstaCancelado() throws ParseException {
-		
-		ContratoModel contrato = new ContratoModel();
-		DateFormat formatter = new SimpleDateFormat("dd/MM/yyyy");
-		Date fechaInicio = formatter.parse("3/10/2021");
-		Date fechaFin = formatter.parse("3/01/2022");
-		contrato.setFechaInicio(fechaInicio);
-		contrato.setFechaFin(fechaFin);
-		//CASO DE PRUEBA DONDE CONTRATO YA ESTA CANCELADO
-		contrato.setEstaCancelado(true);
-		assertFalse(contrato.vigenciaValida(contrato));
-	}
-
-	@Test
-	void validarVigenciaTestFechaNoValida() throws ParseException {
-		
-		ContratoModel contrato = new ContratoModel();
-		DateFormat formatter = new SimpleDateFormat("dd/MM/yyyy");
-		Date fechaInicio = formatter.parse("3/9/2021");
-		//CASO DE PRUEBA DONDE FECHA FIN ES ANTERIOR A LA ACTUAL
-		Date fechaFin = formatter.parse("2/10/2021");
-		contrato.setFechaInicio(fechaInicio);
-		contrato.setFechaFin(fechaFin);
-		contrato.setEstaCancelado(true);
-		assertFalse(contrato.vigenciaValida(contrato));
-	}
 
 
 }
