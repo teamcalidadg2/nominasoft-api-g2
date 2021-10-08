@@ -45,6 +45,7 @@ public class FechaNominaTest {
         catch (Exception e) {
             String expectedMessage = "La fecha fin del periodo de nómina debe ser mayor en 15 días "+
             "y no mayor a 30 días a su fecha de inicio.";
+            
             assertEquals( expectedMessage, e.getMessage() );
         }
     }
