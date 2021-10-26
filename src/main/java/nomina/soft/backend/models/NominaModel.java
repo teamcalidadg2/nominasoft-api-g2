@@ -71,10 +71,10 @@ public class NominaModel {
 			}
 		}else contratoValido = false;
         
-		if(!(nuevaNomina.getPeriodoNomina().getFechaFin().before(nuevaNomina.getFecha()))){
-			contratoValido = false;
-			throw new NominaNotValidException(PERIODO_FECHA_FIN_NOT_VALID);
-		}
+		// if(!(nuevaNomina.getPeriodoNomina().getFechaFin().before(nuevaNomina.getFecha()))){
+		// 	contratoValido = false;
+		// 	throw new NominaNotValidException(PERIODO_FECHA_FIN_NOT_VALID);
+		// }
 		return contratoValido;
 	}
 

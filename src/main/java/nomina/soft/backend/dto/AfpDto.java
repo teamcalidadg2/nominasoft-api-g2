@@ -10,6 +10,6 @@ public class AfpDto {
   
     @Getter @Setter private Long idAfp;
     @Getter @Setter private String nombre;
-    @Getter @Setter private int porcentajeDescuento;
+    @Getter @Setter private float porcentajeDescuento;
 
 }

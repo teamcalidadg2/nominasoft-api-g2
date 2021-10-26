@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 
 import nomina.soft.backend.exception.domain.ContratoNotFoundException;
 import nomina.soft.backend.exception.domain.EmpleadoNotFoundException;
+import nomina.soft.backend.exception.domain.EmpleadoNotValidException;
 import nomina.soft.backend.models.IncidenciaLaboralModel;
 import nomina.soft.backend.services.IncidenciaLaboralService;
 
@@ -30,19 +31,19 @@ public class IncidenciaLaboralController {
 	}
     
 	@GetMapping("/listar/{dni}")
-    public ResponseEntity<List<IncidenciaLaboralModel>> getIncidenciasLaboralByDni(@PathVariable("dni") String dni) throws EmpleadoNotFoundException, ContratoNotFoundException {
+    public ResponseEntity<List<IncidenciaLaboralModel>> getIncidenciasLaboralByDni(@PathVariable("dni") String dni) throws EmpleadoNotFoundException, ContratoNotFoundException, EmpleadoNotValidException {
 		List<IncidenciaLaboralModel> incidenciasLaborales = incidenciaLaboralService.buscarIncidenciasPorDni(dni);
         return new ResponseEntity<>(incidenciasLaborales, OK);
     }
 
     @PostMapping("/reportarHoraFaltante/{dni}")
-    public ResponseEntity<IncidenciaLaboralModel> saveHoraFaltante(@PathVariable("dni") String dni) throws EmpleadoNotFoundException, ContratoNotFoundException{
+    public ResponseEntity<IncidenciaLaboralModel> saveHoraFaltante(@PathVariable("dni") String dni) throws EmpleadoNotFoundException, ContratoNotFoundException, EmpleadoNotValidException{
     	IncidenciaLaboralModel horaFaltante = incidenciaLaboralService.reportarHoraFaltante(dni);
         return new ResponseEntity<>(horaFaltante, OK);
     }
     
     @PostMapping("/reportarHoraExtra/{dni}")
-    public ResponseEntity<IncidenciaLaboralModel> saveHoraExtra(@PathVariable("dni") String dni) throws EmpleadoNotFoundException, ContratoNotFoundException{
+    public ResponseEntity<IncidenciaLaboralModel> saveHoraExtra(@PathVariable("dni") String dni) throws EmpleadoNotFoundException, ContratoNotFoundException, EmpleadoNotValidException{
     	IncidenciaLaboralModel horaExtra = incidenciaLaboralService.reportarHoraExtra(dni);
         return new ResponseEntity<>(horaExtra, OK);
     }

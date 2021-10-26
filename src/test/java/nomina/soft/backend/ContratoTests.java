@@ -3,11 +3,7 @@ package nomina.soft.backend;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.junit.jupiter.api.Assertions.fail;
 
 import java.text.DateFormat;
 import java.text.ParseException;
@@ -19,10 +15,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 
 import nomina.soft.backend.constant.ContratoImplConstant;
 import nomina.soft.backend.exception.domain.ContratoNotValidException;
-import nomina.soft.backend.models.BoletaDePagoModel;
 import nomina.soft.backend.models.ContratoModel;
-import nomina.soft.backend.models.NominaModel;
-import nomina.soft.backend.models.PeriodoNominaModel;
 
 @SpringBootTest
 public class ContratoTests {
@@ -106,7 +99,7 @@ public class ContratoTests {
 			assertTrue(contrato.fechasValidas(fechaInicio,fechaFin));
 		} catch (Exception e) {
 			resultado = e.getMessage();
-			assertEquals(exceptionMsg.FECHA_FIN_NOT_VALID,resultado);
+			assertEquals(exceptionMsg.FECHA_FIN_3_MESES_NOT_VALID,resultado);
 		}
 	}
 
@@ -145,7 +138,7 @@ public class ContratoTests {
 			assertEquals(true,contrato.pagoPorHoraValido(pagoPorHoraEntrada));
 		}catch (Exception e) {
 			resultado = e.getMessage();
-			assertEquals(exceptionMsg.PAGO_POR_HORA_RANGO_NOT_VALID,resultado);
+			assertEquals(exceptionMsg.PAGO_POR_HORA_MAYOR_60,resultado);
 		}
 	}
 

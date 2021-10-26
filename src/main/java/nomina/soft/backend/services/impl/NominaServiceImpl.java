@@ -19,6 +19,7 @@ import nomina.soft.backend.dto.NominaDto;
 import nomina.soft.backend.exception.domain.ContratoNotFoundException;
 import nomina.soft.backend.exception.domain.ContratoNotValidException;
 import nomina.soft.backend.exception.domain.EmpleadoNotFoundException;
+import nomina.soft.backend.exception.domain.EmpleadoNotValidException;
 import nomina.soft.backend.exception.domain.NominaNotFoundException;
 import nomina.soft.backend.exception.domain.NominaNotValidException;
 import nomina.soft.backend.exception.domain.PeriodoNominaNotFoundException;
@@ -81,7 +82,7 @@ public class NominaServiceImpl implements NominaService{
 	}
 	
 	@Override
-	public List<BoletaDePagoModel> guardarNomina (NominaDto nominaDto) throws PeriodoNominaNotFoundException, ContratoNotFoundException, EmpleadoNotFoundException, ContratoNotValidException, NominaNotValidException{
+	public List<BoletaDePagoModel> guardarNomina (NominaDto nominaDto) throws PeriodoNominaNotFoundException, ContratoNotFoundException, EmpleadoNotFoundException, ContratoNotValidException, NominaNotValidException, EmpleadoNotValidException{
 		NominaModel nuevaNomina = new NominaModel();
 		PeriodoNominaModel periodoNomina = this.periodoNominaRepository.getById(nominaDto.getIdPeriodoNomina());
 		List<BoletaDePagoModel> listaBoletas = null;
@@ -101,7 +102,7 @@ public class NominaServiceImpl implements NominaService{
 		return nuevaNomina.getBoletasDePago();
 	}
 	
-	private List<BoletaDePagoModel> GuardarBoletasDePago(NominaModel nuevaNomina) throws ContratoNotFoundException, EmpleadoNotFoundException, ContratoNotValidException, NominaNotValidException {
+	private List<BoletaDePagoModel> GuardarBoletasDePago(NominaModel nuevaNomina) throws ContratoNotFoundException, EmpleadoNotFoundException, ContratoNotValidException, NominaNotValidException, EmpleadoNotValidException {
 		List<EmpleadoModel> listaEmpleados = this.empleadoRepository.findAll();
 		List<BoletaDePagoModel> boletasDePago = new ArrayList<BoletaDePagoModel>();
 		NominaModel nominaTemporal = new NominaModel();
@@ -116,7 +117,7 @@ public class NominaServiceImpl implements NominaService{
 
 
 	@Override
-	public List<BoletaDePagoModel> generarNomina(NominaDto nominaDto) throws ContratoNotFoundException, EmpleadoNotFoundException, ContratoNotValidException, NominaNotValidException, PeriodoNominaNotFoundException {
+	public List<BoletaDePagoModel> generarNomina(NominaDto nominaDto) throws ContratoNotFoundException, EmpleadoNotFoundException, ContratoNotValidException, NominaNotValidException, PeriodoNominaNotFoundException, EmpleadoNotValidException {
 		NominaModel nuevaNomina = new NominaModel();
 		PeriodoNominaModel periodoNomina = this.periodoNominaRepository.getById(nominaDto.getIdPeriodoNomina());
 		List<BoletaDePagoModel> listaBoletas = null;
@@ -134,7 +135,7 @@ public class NominaServiceImpl implements NominaService{
 		return nuevaNomina.getBoletasDePago();
 	}
 
-	private List<BoletaDePagoModel> GenerarBoletasDePago(NominaModel nuevaNomina) throws ContratoNotFoundException, EmpleadoNotFoundException, ContratoNotValidException, NominaNotValidException {
+	private List<BoletaDePagoModel> GenerarBoletasDePago(NominaModel nuevaNomina) throws ContratoNotFoundException, EmpleadoNotFoundException, ContratoNotValidException, NominaNotValidException, EmpleadoNotValidException {
 		List<EmpleadoModel> listaEmpleados = this.empleadoRepository.findAll();
 		List<BoletaDePagoModel> boletasDePago = new ArrayList<BoletaDePagoModel>();
 		NominaModel nominaTemporal = new NominaModel();

@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 
 import nomina.soft.backend.exception.domain.ContratoNotFoundException;
 import nomina.soft.backend.exception.domain.EmpleadoNotFoundException;
+import nomina.soft.backend.exception.domain.EmpleadoNotValidException;
 import nomina.soft.backend.models.ContratoModel;
 import nomina.soft.backend.models.IncidenciaLaboralModel;
 import nomina.soft.backend.models.PeriodoNominaModel;
@@ -32,7 +33,7 @@ public class IncidenciaLaboralServiceImpl implements IncidenciaLaboralService{
 	}
 
 	@Override
-	public List<IncidenciaLaboralModel> buscarIncidenciasPorDni(String dni) throws EmpleadoNotFoundException, ContratoNotFoundException {
+	public List<IncidenciaLaboralModel> buscarIncidenciasPorDni(String dni) throws EmpleadoNotFoundException, ContratoNotFoundException, EmpleadoNotValidException {
 		ContratoModel contratoVigente = this.contratoService.buscarContratoPorDni(dni);
 		List<IncidenciaLaboralModel> lista = null;
 		if(contratoVigente!= null) {
@@ -42,9 +43,9 @@ public class IncidenciaLaboralServiceImpl implements IncidenciaLaboralService{
 	}
 
 	@Override
-	public IncidenciaLaboralModel reportarHoraFaltante(String dni) throws EmpleadoNotFoundException, ContratoNotFoundException {
+	public IncidenciaLaboralModel reportarHoraFaltante(String dni) throws EmpleadoNotFoundException, ContratoNotFoundException, EmpleadoNotValidException {
 		ContratoModel contratoVigente = this.contratoService.buscarContratoPorDni(dni);
-		IncidenciaLaboralModel incidenciaLaboralVigente = null;
+		IncidenciaLaboralModel incidenciaLaboralVigente = new IncidenciaLaboralModel();
 		List<IncidenciaLaboralModel> lista = null;
 		if(contratoVigente!= null) {
 			incidenciaLaboralVigente = obtenerIncidenciaLaboralVigente(contratoVigente);
@@ -74,7 +75,7 @@ public class IncidenciaLaboralServiceImpl implements IncidenciaLaboralService{
 	}
 
 	@Override
-	public IncidenciaLaboralModel reportarHoraExtra(String dni) throws EmpleadoNotFoundException, ContratoNotFoundException {
+	public IncidenciaLaboralModel reportarHoraExtra(String dni) throws EmpleadoNotFoundException, ContratoNotFoundException, EmpleadoNotValidException {
 		ContratoModel contratoVigente = this.contratoService.buscarContratoPorDni(dni);
 		IncidenciaLaboralModel incidenciaLaboralVigente = null;
 		List<IncidenciaLaboralModel> lista = null;

@@ -37,15 +37,17 @@ public class BoletaDePagoModel {
 
     @Getter @Setter private float sueldoBasico;
     @Getter @Setter private float asignacionFamiliar;
-    @Getter @Setter private int montoPorHorasExtra;
+    @Getter @Setter private float montoPorHorasExtra;
     @Getter @Setter private float reintegros;
     @Getter @Setter private float movilidad;
     @Getter @Setter private float otrosIngresos;
+    @Getter @Setter private float totalIngresos;
     @Getter @Setter private float regimenPensionario;
     @Getter @Setter private float montoPorHorasDeFalta;
     @Getter @Setter private float adelantos;
     @Getter @Setter private float otrosDescuentos;
-    @Getter @Setter private float netoPorPagar;
+    @Getter @Setter private float totalRetenciones;
+    @Getter @Setter private float sueldoNeto;
 
     @ManyToOne(cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.REFRESH, CascadeType.PERSIST},
 			fetch = FetchType.LAZY)
@@ -122,7 +124,7 @@ public class BoletaDePagoModel {
 		return calcularMontoPorHorasDeFalta(totalHorasDeFalta, pagoPorHora);
 	}
 
-    public float calcularRegimenPensionario(int sueldoBasico, int porcentajeAFP) {
+    public float calcularRegimenPensionario(int sueldoBasico, float porcentajeAFP) {
 		return sueldoBasico * porcentajeAFP * 0.01f;
 	}
 
@@ -158,8 +160,8 @@ public class BoletaDePagoModel {
 
 
     public int calcularTotalDeHoras(Date fechaInicioPeriodoNomina, Date fechaFinPeriodoNomina, int horasPorSemanaContrato) { //REGLA 06.2
-		int totalSemanasPeriodoNomina = Period.between(LocalDate.ofInstant(fechaInicioPeriodoNomina.toInstant(), ZoneId.systemDefault()),
-                                        LocalDate.ofInstant(fechaFinPeriodoNomina.toInstant(), ZoneId.systemDefault()))
+		int totalSemanasPeriodoNomina = Period.between(LocalDate.ofInstant(fechaInicioPeriodoNomina.toInstant(), ZoneId.of("America/Lima")),
+                                        LocalDate.ofInstant(fechaFinPeriodoNomina.toInstant(), ZoneId.of("America/Lima")))
                                         .getDays()/7;
 		return totalSemanasPeriodoNomina * horasPorSemanaContrato;
 	}

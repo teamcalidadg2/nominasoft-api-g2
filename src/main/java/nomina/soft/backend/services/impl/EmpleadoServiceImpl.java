@@ -20,6 +20,7 @@ import org.springframework.stereotype.Service;
 import nomina.soft.backend.dto.EmpleadoDto;
 import nomina.soft.backend.exception.domain.EmpleadoExistsException;
 import nomina.soft.backend.exception.domain.EmpleadoNotFoundException;
+import nomina.soft.backend.exception.domain.EmpleadoNotValidException;
 import nomina.soft.backend.models.ContratoModel;
 import nomina.soft.backend.models.EmpleadoModel;
 import nomina.soft.backend.repositories.EmpleadoRepository;
@@ -48,21 +49,22 @@ public class EmpleadoServiceImpl implements EmpleadoService{
     }
     
 	@Override
-    public EmpleadoModel guardarEmpleado(EmpleadoDto empleadoDto) throws EmpleadoNotFoundException, EmpleadoExistsException{
+    public EmpleadoModel guardarEmpleado(EmpleadoDto empleadoDto) throws EmpleadoNotFoundException, EmpleadoExistsException, EmpleadoNotValidException{
         EmpleadoModel empleado = new EmpleadoModel();
 		validateNewDni(EMPTY,empleadoDto.getDni());
 		validateNewTelefono(EMPTY,empleadoDto.getTelefono());
 		validateNewCorreo(EMPTY,empleadoDto.getCorreo());
-		
-        empleado.setNombres(empleadoDto.getNombres());
-        empleado.setApellidos(empleadoDto.getApellidos());
-        empleado.setDni(empleadoDto.getDni());
-        empleado.setFechaNacimiento(empleadoDto.getFechaNacimiento());
-        empleado.setTelefono(empleadoDto.getTelefono());
-        empleado.setCorreo(empleadoDto.getCorreo());
-        empleado.setDireccion(empleadoDto.getDireccion());
-        empleado.setContratos(new ArrayList<ContratoModel>());
-        empleadoRepository.save(empleado);
+		if(empleado.validarDni(empleadoDto.getDni())){
+            empleado.setNombres(empleadoDto.getNombres());
+            empleado.setApellidos(empleadoDto.getApellidos());
+            empleado.setDni(empleadoDto.getDni());
+            empleado.setFechaNacimiento(empleadoDto.getFechaNacimiento());
+            empleado.setTelefono(empleadoDto.getTelefono());
+            empleado.setCorreo(empleadoDto.getCorreo());
+            empleado.setDireccion(empleadoDto.getDireccion());
+            empleado.setContratos(new ArrayList<ContratoModel>());
+            empleadoRepository.save(empleado);
+        }
         return empleado;
     }
 

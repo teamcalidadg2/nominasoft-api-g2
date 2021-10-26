@@ -28,7 +28,7 @@ public class BoletaDePagoServiceImpl implements BoletaDePagoService {
 		float totalIngresos = boletaDePago.calcularTotalIngresos(contrato, nomina, boletaDePago);
 		float totalRetenciones = boletaDePago.calcularTotalRetenciones(contrato, nomina, boletaDePago);
 		float netoAPagar = boletaDePago.calcularNetoAPagar(totalIngresos, totalRetenciones); 
-		boletaDePago.setNetoPorPagar(netoAPagar);
+		boletaDePago.setSueldoNeto(netoAPagar);
 		boletaDePago.setContrato(contrato);
 		boletaDePago.setNomina(nomina);
 		return boletaDePago;
@@ -39,7 +39,7 @@ public class BoletaDePagoServiceImpl implements BoletaDePagoService {
 		float totalIngresos = boletaDePago.calcularTotalIngresos(contrato, nomina, boletaDePago);
 		float totalRetenciones = boletaDePago.calcularTotalRetenciones(contrato, nomina, boletaDePago);
 		float netoAPagar = totalIngresos - totalRetenciones;
-		boletaDePago.setNetoPorPagar(netoAPagar);
+		boletaDePago.setSueldoNeto(netoAPagar);
 		boletaDePago.setContrato(contrato);
 		boletaDePago.setNomina(nomina);
 		this.boletaDePagoRepository.save(boletaDePago);

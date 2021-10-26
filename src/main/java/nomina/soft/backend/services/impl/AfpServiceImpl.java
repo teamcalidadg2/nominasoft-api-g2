@@ -50,7 +50,7 @@ public class AfpServiceImpl implements AfpService{
 	public AfpModel guardarAFP(AfpDto afpDto) throws AfpNotFoundException, AfpExistsException {
 		AfpModel afp = new AfpModel();
 		validateNewNombre(EMPTY,afpDto.getNombre());
-		validateNewDescuento(0,afpDto.getPorcentajeDescuento());
+		validateNewDescuento(0.0f,afpDto.getPorcentajeDescuento());
 		
         afp.setNombre(afpDto.getNombre());
         afp.setPorcentajeDescuento(afpDto.getPorcentajeDescuento());
@@ -94,9 +94,9 @@ public class AfpServiceImpl implements AfpService{
         }
     }
 	
-	private AfpModel validateNewDescuento(int actualDescuento, int nuevoDescuento) throws AfpNotFoundException, AfpExistsException{
+	private AfpModel validateNewDescuento(float actualDescuento, float nuevoDescuento) throws AfpNotFoundException, AfpExistsException{
 		AfpModel afpConNuevoDescuento = afpRepository.findByPorcentajeDescuento(nuevoDescuento);
-        if(actualDescuento!=0) {
+        if(actualDescuento!=0.0f) {
         	AfpModel actualAfp = afpRepository.findByPorcentajeDescuento(actualDescuento);
             if(actualAfp == null) {
                 throw new AfpNotFoundException(NO_AFP_FOUND_BY_DESCUENTO + actualDescuento);

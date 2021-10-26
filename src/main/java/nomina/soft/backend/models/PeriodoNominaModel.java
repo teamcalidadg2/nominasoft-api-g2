@@ -56,8 +56,8 @@ public class PeriodoNominaModel {
     public boolean fechasValidas(Date fechaInicioPeriodoNomina, Date fechaFinPeriodoNomina) //REGLA 13
                                 throws PeriodoNominaNotValidException{
 		boolean fechasValidas = true;
-		int duracionDias = Period.between(LocalDate.ofInstant(fechaInicioPeriodoNomina.toInstant(), ZoneId.systemDefault()),
-										LocalDate.ofInstant(fechaFinPeriodoNomina.toInstant(), ZoneId.systemDefault()))
+		int duracionDias = Period.between(LocalDate.ofInstant(fechaInicioPeriodoNomina.toInstant(), ZoneId.of("America/Lima")),
+										LocalDate.ofInstant(fechaFinPeriodoNomina.toInstant(), ZoneId.of("America/Lima")))
 										.getDays();
 		if(!(duracionDias>15 && duracionDias<30)){
 			fechasValidas = false;

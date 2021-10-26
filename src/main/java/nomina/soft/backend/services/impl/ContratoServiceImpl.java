@@ -24,6 +24,7 @@ import nomina.soft.backend.exception.domain.ContratoExistsException;
 import nomina.soft.backend.exception.domain.ContratoNotFoundException;
 import nomina.soft.backend.exception.domain.ContratoNotValidException;
 import nomina.soft.backend.exception.domain.EmpleadoNotFoundException;
+import nomina.soft.backend.exception.domain.EmpleadoNotValidException;
 import nomina.soft.backend.models.AfpModel;
 import nomina.soft.backend.models.ContratoModel;
 import nomina.soft.backend.models.EmpleadoModel;
@@ -73,15 +74,13 @@ public class ContratoServiceImpl implements ContratoService {
 
 	@Override
 	public ContratoModel guardarContrato(ContratoDto contratoDto) throws ContratoNotValidException, AfpNotFoundException, EmpleadoNotFoundException, ContratoExistsException {
-		ContratoModel nuevoContrato = null;
-		AfpModel afpEncontrado = afpRepository.findByIdAfp(contratoDto.getIdAfp());
-		if(afpEncontrado==null) {
-			throw new AfpNotFoundException(NO_AFP_FOUND);
-		}
-		EmpleadoModel empleadoEncontrado = this.empleadoRepository.findByIdEmpleado(contratoDto.getIdEmpleado());
-		if(empleadoEncontrado == null) {
-			throw new EmpleadoNotFoundException(NO_EMPLEADO_FOUND);
-		}
+		ContratoModel nuevoContrato = new ContratoModel();
+		AfpModel afpEncontrado = new AfpModel();
+		EmpleadoModel empleadoEncontrado = new EmpleadoModel(); 
+		if(nuevoContrato.afpValido(contratoDto.getIdAfp())) afpEncontrado = afpRepository.findByIdAfp(Long.parseLong(contratoDto.getIdAfp()));
+		if(afpEncontrado==null) throw new AfpNotFoundException(NO_AFP_FOUND);
+		if(nuevoContrato.empleadoValido(contratoDto.getIdEmpleado())) empleadoEncontrado = this.empleadoRepository.findByIdEmpleado(Long.parseLong(contratoDto.getIdEmpleado()));
+		if(empleadoEncontrado == null) throw new EmpleadoNotFoundException(NO_EMPLEADO_FOUND);
 		if(obtenerContratoVigente(empleadoEncontrado)==null) {
 			if(validarContrato(contratoDto)) {
 				nuevoContrato = new ContratoModel();
@@ -225,19 +224,25 @@ public class ContratoServiceImpl implements ContratoService {
 	private boolean validarContrato(ContratoDto contratoDto) throws ContratoNotValidException {
 		boolean contratoValido = true;
 		ContratoModel contratoTemporal = new ContratoModel();
-		if(!((contratoTemporal.fechasValidas(contratoDto.getFechaInicio(),contratoDto.getFechaFin())) &&
+		contratoDto.arreglarZonaHorariaFechas();
+		if(!(contratoTemporal.fechasValidas(contratoDto.getFechaInicio(),contratoDto.getFechaFin()) &&
 				contratoTemporal.horasContratadasValidas(contratoDto.getHorasPorSemana()) &&	
-				contratoTemporal.pagoPorHoraValido(contratoDto.getPagoPorHora()))) {
+				contratoTemporal.pagoPorHoraValido(contratoDto.getPagoPorHora()) &&
+				contratoTemporal.puestoValido(contratoDto.getPuesto()) &&
+				contratoTemporal.asignacionFamiliarValido(contratoDto.getTieneAsignacionFamiliar()))){
 			contratoValido = false;
 		}
 		return contratoValido;
 	}
 	
 	@Override
-	public ContratoModel buscarContratoPorDni(String dniEmpleado) throws ContratoNotFoundException, EmpleadoNotFoundException {
-		EmpleadoModel empleado = this.empleadoRepository.findByDni(dniEmpleado);
+	public ContratoModel buscarContratoPorDni(String dniEmpleado) throws ContratoNotFoundException, EmpleadoNotFoundException, EmpleadoNotValidException {
+		EmpleadoModel empleado = new EmpleadoModel();
+		if(empleado.validarDni(dniEmpleado)){
+			empleado = this.empleadoRepository.findByDni(dniEmpleado);
+		}
 		if(empleado == null) {
-			throw new EmpleadoNotFoundException(NO_EMPLEADO_FOUND_BY_DNI + dniEmpleado);
+			throw new EmpleadoNotFoundException(NO_EMPLEADO_FOUND_BY_DNI);
 		}
 		ContratoModel contratoVigente = obtenerContratoVigente(empleado);
 		if(contratoVigente==null) {
@@ -250,50 +255,47 @@ public class ContratoServiceImpl implements ContratoService {
 		List<ContratoModel> contratosDeEmpleado = this.contratoRepository.findAllByEmpleado(empleado);
 		ContratoModel contratoVigente = null, contratoTemporal = new ContratoModel();
 		for (ContratoModel contrato: contratosDeEmpleado) {
-		      if(contratoTemporal.vigenciaValida(contrato)) {
-		    	  contratoVigente = contrato;
-		      }		      
+			if(contratoTemporal.vigenciaValida(contrato)) contratoVigente = contrato;
 		}
 		return contratoVigente;
 	}
 	
 	@Override
-	public ContratoModel updateContrato(Long idContrato, String puesto, String horasPorSemana, Long idAfp,
+	public ContratoModel updateContrato(String idContrato, String puesto, String horasPorSemana, String idAfp,
 			Boolean tieneAsignacionFamiliar, String pagoPorHora) throws ContratoNotValidException, AfpNotFoundException, ContratoNotFoundException {
-		ContratoModel contratoAEditar = this.contratoRepository.getById(idContrato), contratoTemporal = new ContratoModel();
-		AfpModel afpEncontrado = this.afpRepository.findByIdAfp(idAfp);
-		if(contratoAEditar!=null){
-			if(afpEncontrado!=null){
-				if(contratoTemporal.horasContratadasValidas(contratoAEditar.getHorasPorSemana()) &&	
-				    contratoTemporal.pagoPorHoraValido(contratoAEditar.getPagoPorHora())){
+		ContratoModel contratoAEditar = null, contratoTemporal = new ContratoModel();
+		AfpModel afpEncontrado = new AfpModel();
+		if(contratoTemporal.identificadorValido(idContrato)) contratoAEditar = this.contratoRepository.findByIdContrato(Long.parseLong(idContrato));
+		if(contratoAEditar==null) throw new ContratoNotFoundException(CONTRATO_NOT_FOUND);
+		if(contratoTemporal.afpValido(idAfp)) afpEncontrado = this.afpRepository.findByIdAfp(Long.parseLong(idAfp));
+		if(afpEncontrado==null) throw new ContratoNotFoundException(NO_AFP_FOUND);
+		if(contratoAEditar.vigenciaValida(contratoAEditar)){
+			if(contratoAEditar.puestoValido(puesto) && 
+				contratoAEditar.horasContratadasValidas(horasPorSemana) &&
+				contratoAEditar.asignacionFamiliarValido(tieneAsignacionFamiliar) &&
+				contratoAEditar.pagoPorHoraValido(pagoPorHora))
+				{	
 					contratoAEditar.setPuesto(puesto);
 					contratoAEditar.setHorasPorSemana(horasPorSemana);
 					contratoAEditar.setAfp(afpEncontrado);
 					contratoAEditar.setTieneAsignacionFamiliar(tieneAsignacionFamiliar);
 					contratoAEditar.setPagoPorHora(pagoPorHora);
 					this.contratoRepository.save(contratoAEditar);
-				}
-			}else{
-				throw new AfpNotFoundException(NO_AFP_FOUND);
 			}
-
-		}else{
-			throw new ContratoNotFoundException(CONTRATO_NOT_FOUND + idContrato.toString());
-		}
-
+		}else throw new ContratoNotValidException(CONTRATO_NOT_VIGENTE);
 		return contratoAEditar;
 	}
 
 	@Override
-	public ContratoModel cancelarContrato(Long idContrato) throws ContratoNotFoundException {
-		ContratoModel contratoAEditar = this.contratoRepository.getById(idContrato);
+	public ContratoModel cancelarContrato(String idContrato) throws ContratoNotFoundException, NumberFormatException, ContratoNotValidException {
+		ContratoModel contratoAEditar = new ContratoModel();
+		if(contratoAEditar.identificadorValido(idContrato)) contratoAEditar = this.contratoRepository.findByIdContrato(Long.parseLong(idContrato));
 		if(contratoAEditar!=null){
-				contratoAEditar.setEstaCancelado(true);
-				this.contratoRepository.save(contratoAEditar);
+			contratoAEditar.setEstaCancelado(true);
+			this.contratoRepository.save(contratoAEditar);
 		}else{
-			throw new ContratoNotFoundException(CONTRATO_NOT_FOUND + idContrato.toString());
+			throw new ContratoNotFoundException(CONTRATO_NOT_FOUND);
 		}
-
 		return contratoAEditar;
 	}
 	

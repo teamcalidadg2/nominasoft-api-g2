@@ -21,6 +21,7 @@ import nomina.soft.backend.exception.domain.ContratoExistsException;
 import nomina.soft.backend.exception.domain.ContratoNotFoundException;
 import nomina.soft.backend.exception.domain.ContratoNotValidException;
 import nomina.soft.backend.exception.domain.EmpleadoNotFoundException;
+import nomina.soft.backend.exception.domain.EmpleadoNotValidException;
 import nomina.soft.backend.models.ContratoModel;
 import nomina.soft.backend.services.ContratoService;
 
@@ -44,7 +45,7 @@ public class ContratoController {
     
 	
 	@GetMapping("/buscarVigente/{dni}")
-    public ResponseEntity<ContratoModel> getEmpleadoByDni(@PathVariable("dni") String dni) throws ContratoNotFoundException, EmpleadoNotFoundException {
+    public ResponseEntity<ContratoModel> getEmpleadoByDni(@PathVariable("dni") String dni) throws ContratoNotFoundException, EmpleadoNotFoundException, EmpleadoNotValidException {
 		ContratoModel contrato = contratoService.buscarContratoPorDni(dni);
         return new ResponseEntity<>(contrato, OK);
     }
@@ -57,18 +58,18 @@ public class ContratoController {
     }
 
     @PostMapping("/editar")
-    public ResponseEntity<ContratoModel> update(@RequestParam("idContrato") Long idContrato,
-                                       @RequestParam("puesto") String puesto,
-                                       @RequestParam("horasPorSemana") String horasPorSemana,
-                                       @RequestParam("idAfp") Long idAfp,
-                                       @RequestParam("tieneAsignacionFamiliar") Boolean tieneAsignacionFamiliar,
-                                       @RequestParam("pagoPorHora") String pagoPorHora) throws AfpNotFoundException, AfpExistsException, ContratoNotValidException, ContratoNotFoundException {
-    	ContratoModel updatedContrato = contratoService.updateContrato(idContrato, puesto, horasPorSemana, idAfp,tieneAsignacionFamiliar,pagoPorHora);
+    public ResponseEntity<ContratoModel> update(@RequestParam("idContrato") String idContrato,
+                                    @RequestParam("puesto") String puesto,
+                                    @RequestParam("horasPorSemana") String horasPorSemana,
+                                    @RequestParam("idAfp") String idAfp,
+                                    @RequestParam(value = "tieneAsignacionFamiliar", required = false) Boolean tieneAsignacionFamiliar,
+                                    @RequestParam("pagoPorHora") String pagoPorHora) throws AfpNotFoundException, AfpExistsException, ContratoNotValidException, ContratoNotFoundException {
+        ContratoModel updatedContrato = contratoService.updateContrato(idContrato, puesto, horasPorSemana, idAfp,tieneAsignacionFamiliar,pagoPorHora);
         return new ResponseEntity<>(updatedContrato, OK);
     }
 
     @PostMapping("/cancelar/{idContrato}")
-    public ResponseEntity<ContratoModel> cancelar(@PathVariable("idContrato") Long idContrato) throws ContratoNotValidException, AfpNotFoundException, EmpleadoNotFoundException, ContratoExistsException, ContratoNotFoundException {
+    public ResponseEntity<ContratoModel> cancelar(@PathVariable("idContrato") String idContrato) throws ContratoNotValidException, AfpNotFoundException, EmpleadoNotFoundException, ContratoExistsException, ContratoNotFoundException {
         ContratoModel contrato = contratoService.cancelarContrato(idContrato);
         return new ResponseEntity<>(contrato, OK);
     }

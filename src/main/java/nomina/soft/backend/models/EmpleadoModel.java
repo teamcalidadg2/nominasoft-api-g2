@@ -13,12 +13,15 @@ import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-
+import nomina.soft.backend.exception.domain.EmpleadoNotValidException;
+import static nomina.soft.backend.constant.EmpleadoImplConstant.*;
+@JsonIgnoreProperties({"hibernateLazyInitializer"})
 @Entity
 @Table(name = "empleado")
 @AllArgsConstructor
@@ -44,4 +47,18 @@ public class EmpleadoModel {
     public void addContrato(ContratoModel contrato) {
     	contratos.add(contrato);
     }
+
+    public boolean validarDni(String dniCad) throws EmpleadoNotValidException{
+        int dniTMP = 0;
+        if(dniCad.length()==0) throw new EmpleadoNotValidException(DNI_VACIO);
+        if(dniCad.length()<8) throw new EmpleadoNotValidException(DNI_MENOS_DE_8_DIGITOS);
+        if(dniCad.length()>8) throw new EmpleadoNotValidException(DNI_MAS_DE_8_DIGITOS);
+        try {
+			dniTMP = Integer.parseInt(dniCad);
+		} catch (NumberFormatException nfe){
+		    throw new EmpleadoNotValidException(DNI_CARACTERES_NO_NUMERICOS);
+		}
+        return true;
+    }
+
 }

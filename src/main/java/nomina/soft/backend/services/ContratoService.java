@@ -8,20 +8,20 @@ import nomina.soft.backend.exception.domain.ContratoExistsException;
 import nomina.soft.backend.exception.domain.ContratoNotFoundException;
 import nomina.soft.backend.exception.domain.ContratoNotValidException;
 import nomina.soft.backend.exception.domain.EmpleadoNotFoundException;
+import nomina.soft.backend.exception.domain.EmpleadoNotValidException;
 import nomina.soft.backend.models.ContratoModel;
 
 public interface ContratoService {
     
 	public List<ContratoModel> getAll(String dniEmpleado) throws EmpleadoNotFoundException;
 	
-	public ContratoModel buscarContratoPorDni(String dniEmpleado) throws ContratoNotFoundException, EmpleadoNotFoundException;
+	public ContratoModel buscarContratoPorDni(String dniEmpleado) throws ContratoNotFoundException, EmpleadoNotFoundException, EmpleadoNotValidException;
 	
 	public ContratoModel guardarContrato(ContratoDto contratoDto) throws ContratoNotValidException, AfpNotFoundException, EmpleadoNotFoundException, ContratoExistsException;
 
-    public ContratoModel updateContrato(Long idContrato, String puesto, String horasPorSemana, Long idAfp,
-            								Boolean tieneAsignacionFamiliar, String pagoPorHora) throws ContratoNotValidException, AfpNotFoundException, ContratoNotFoundException;
+    public ContratoModel updateContrato(String idContrato, String puesto, String horasPorSemana, String idAfp, Boolean tieneAsignacionFamiliar, String pagoPorHora) throws ContratoNotValidException, AfpNotFoundException, ContratoNotFoundException;
 
-    public ContratoModel cancelarContrato(Long idContrato) throws ContratoNotFoundException;
+    public ContratoModel cancelarContrato(String idContrato) throws ContratoNotFoundException, NumberFormatException, ContratoNotValidException;
 	
 	
 	

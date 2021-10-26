@@ -14,11 +14,13 @@ public class BoletaDePagoDto {
     @Getter @Setter private float reintegros;
     @Getter @Setter private float movilidad;
     @Getter @Setter private float otrosIngresos;
+    @Getter @Setter private float totalIngresos;
     @Getter @Setter private float regimenPensionario;
     @Getter @Setter private float montoPorHorasDeFalta;
     @Getter @Setter private float adelantos;
     @Getter @Setter private float otrosDescuentos;
-    @Getter @Setter private float netoPorPagar;
+    @Getter @Setter private float totalRetenciones;
+    @Getter @Setter private float sueldoNeto;
     
     @Getter @Setter private Long idNomina;
     @Getter @Setter private Long idContrato;

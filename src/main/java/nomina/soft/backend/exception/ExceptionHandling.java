@@ -28,6 +28,7 @@ import nomina.soft.backend.exception.domain.ContratoNotFoundException;
 import nomina.soft.backend.exception.domain.ContratoNotValidException;
 import nomina.soft.backend.exception.domain.EmpleadoExistsException;
 import nomina.soft.backend.exception.domain.EmpleadoNotFoundException;
+import nomina.soft.backend.exception.domain.EmpleadoNotValidException;
 import nomina.soft.backend.exception.domain.NominaExistsException;
 import nomina.soft.backend.exception.domain.NominaNotFoundException;
 import nomina.soft.backend.exception.domain.NominaNotValidException;
@@ -53,6 +54,11 @@ public class ExceptionHandling implements ErrorController {
     
     @ExceptionHandler(EmpleadoNotFoundException.class)
     public ResponseEntity<HttpResponse> empleadoNotFoundException(EmpleadoNotFoundException exception) {
+        return createHttpResponse(BAD_REQUEST, exception.getMessage());
+    }
+
+    @ExceptionHandler(EmpleadoNotValidException.class)
+    public ResponseEntity<HttpResponse> empleadoNotValidException(EmpleadoNotValidException exception) {
         return createHttpResponse(BAD_REQUEST, exception.getMessage());
     }
     
@@ -110,6 +116,8 @@ public class ExceptionHandling implements ErrorController {
     public ResponseEntity<HttpResponse> nominaNotValidException(NominaNotValidException exception) {
         return createHttpResponse(BAD_REQUEST, exception.getMessage());
     }
+
+    
     
     @ExceptionHandler(HttpRequestMethodNotSupportedException.class)
     public ResponseEntity<HttpResponse> methodNotSupportedException(HttpRequestMethodNotSupportedException exception) {

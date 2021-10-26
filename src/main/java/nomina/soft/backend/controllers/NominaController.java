@@ -20,6 +20,7 @@ import nomina.soft.backend.exception.domain.ContratoExistsException;
 import nomina.soft.backend.exception.domain.ContratoNotFoundException;
 import nomina.soft.backend.exception.domain.ContratoNotValidException;
 import nomina.soft.backend.exception.domain.EmpleadoNotFoundException;
+import nomina.soft.backend.exception.domain.EmpleadoNotValidException;
 import nomina.soft.backend.exception.domain.NominaNotFoundException;
 import nomina.soft.backend.exception.domain.NominaNotValidException;
 import nomina.soft.backend.exception.domain.PeriodoNominaNotFoundException;
@@ -61,14 +62,14 @@ public class NominaController {
     }
     
     @PostMapping("/generar")
-    public ResponseEntity<List<BoletaDePagoModel>> generate(@RequestBody NominaDto nominaDto) throws ContratoNotFoundException, EmpleadoNotFoundException, ContratoNotValidException, NominaNotValidException, PeriodoNominaNotFoundException {
+    public ResponseEntity<List<BoletaDePagoModel>> generate(@RequestBody NominaDto nominaDto) throws ContratoNotFoundException, EmpleadoNotFoundException, ContratoNotValidException, NominaNotValidException, PeriodoNominaNotFoundException, EmpleadoNotValidException {
         List<BoletaDePagoModel> listaBoletasDePago = nominaService.generarNomina(nominaDto);
         return new ResponseEntity<>(listaBoletasDePago,OK);
     }
     
 
     @PostMapping("/guardar")
-    public ResponseEntity<List<BoletaDePagoModel>> save(@RequestBody NominaDto nominaDto) throws PeriodoNominaNotFoundException, ContratoNotFoundException, EmpleadoNotFoundException, ContratoNotValidException, NominaNotValidException {
+    public ResponseEntity<List<BoletaDePagoModel>> save(@RequestBody NominaDto nominaDto) throws PeriodoNominaNotFoundException, ContratoNotFoundException, EmpleadoNotFoundException, ContratoNotValidException, NominaNotValidException, EmpleadoNotValidException {
         List<BoletaDePagoModel> listaBoletasDePago = nominaService.guardarNomina(nominaDto);
         return new ResponseEntity<>(listaBoletasDePago,OK);
     }

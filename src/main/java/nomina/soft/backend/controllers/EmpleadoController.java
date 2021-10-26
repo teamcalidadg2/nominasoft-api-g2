@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import nomina.soft.backend.exception.domain.EmpleadoExistsException;
 import nomina.soft.backend.exception.domain.EmpleadoNotFoundException;
+import nomina.soft.backend.exception.domain.EmpleadoNotValidException;
 import nomina.soft.backend.models.HttpResponse;
 
 import nomina.soft.backend.dto.EmpleadoDto;
@@ -56,7 +57,7 @@ public class EmpleadoController {
     }
 
     @PostMapping("/guardar")
-    public ResponseEntity<EmpleadoModel> create(@RequestBody EmpleadoDto empleadoDto) throws EmpleadoNotFoundException, EmpleadoExistsException {
+    public ResponseEntity<EmpleadoModel> create(@RequestBody EmpleadoDto empleadoDto) throws EmpleadoNotFoundException, EmpleadoExistsException, EmpleadoNotValidException {
         EmpleadoModel empleado = empleadoService.guardarEmpleado(empleadoDto);
         return new ResponseEntity<>(empleado, OK);
     }
