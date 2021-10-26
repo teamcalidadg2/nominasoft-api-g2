@@ -59,7 +59,6 @@ public class NominaServiceImpl implements NominaService{
 		this.boletaDePagoService = boletaDePagoService;
 	}
 
-
 	@Override
 	public ArrayList<NominaModel> getAll() {
 		return (ArrayList<NominaModel>)nominaRepository.findAll();
@@ -95,10 +94,11 @@ public class NominaServiceImpl implements NominaService{
 			List<NominaModel> nominasDePeriodo = periodoNomina.getNominas();
 			if(!nuevaNomina.esPeriodoCerrado(nominasDePeriodo)&&
 			nuevaNomina.descripcionValida(nominaDto.getDescripcion())){
+				nominaDto.corregirFechaZonaHoraria(nominaDto.getFecha());
 				nuevaNomina.setPeriodoNomina(periodoNomina);
 				nuevaNomina.setFecha(nominaDto.getFecha());
 				nuevaNomina.setDescripcion(nominaDto.getDescripcion());
-				this.nominaRepository.save(nuevaNomina);
+				// this.nominaRepository.save(nuevaNomina);
 				listaBoletas = GuardarBoletasDePago(nuevaNomina);
 				nuevaNomina.setEstaCerrada(false);
 				nuevaNomina.setBoletasDePago(listaBoletas);
@@ -135,6 +135,7 @@ public class NominaServiceImpl implements NominaService{
 			List<NominaModel> nominasDePeriodo = periodoNomina.getNominas();
 			if(!nuevaNomina.esPeriodoCerrado(nominasDePeriodo) &&
 				nuevaNomina.descripcionValida(nominaDto.getDescripcion())){
+				nominaDto.corregirFechaZonaHoraria(nominaDto.getFecha());
 				nuevaNomina.setPeriodoNomina(periodoNomina);
 				nuevaNomina.setFecha(nominaDto.getFecha());
 				nuevaNomina.setDescripcion(nominaDto.getDescripcion());
@@ -158,8 +159,6 @@ public class NominaServiceImpl implements NominaService{
 	  	}
 		return boletasDePago;
 	}
-
-	
 
 
 	@Override

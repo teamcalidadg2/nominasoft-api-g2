@@ -88,6 +88,7 @@ public class PeriodoNominaServiceImpl implements PeriodoNominaService{
 		validateNewFechaFin(null,periodoNominaDto.getFechaFin());
 		if(periodoNomina.fechasValidas(periodoNominaDto.getFechaInicio(), periodoNominaDto.getFechaFin()) &&
 			validateOverlapingFechas(periodoNominaDto.getFechaInicio(), periodoNominaDto.getFechaFin())){
+			periodoNominaDto.corregirFechasZonaHoraria(periodoNominaDto.getFechaInicio(), periodoNominaDto.getFechaFin());
 			periodoNomina.setIncidenciasLaborales(new ArrayList<IncidenciaLaboralModel>());
 			periodoNomina.setDescripcion(periodoNominaDto.getDescripcion());
 			periodoNomina.setFechaInicio(periodoNominaDto.getFechaInicio());
