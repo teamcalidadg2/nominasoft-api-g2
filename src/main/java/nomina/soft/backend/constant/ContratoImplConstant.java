@@ -19,7 +19,7 @@ public class ContratoImplConstant {
     public static final String PAGO_POR_HORA_MENOR_10 = "El pago por hora debe ser un número mayor o igual a 10.";
     public static final String PAGO_POR_HORA_MAYOR_60 = "El pago por hora debe ser un número menor o igual a 60.";
     public static final String CONTRATO_NOT_FOUND = "El contrato indicado no existe.";
-	public static final String CONTRATO_CERRADO = "El contrato se encuentra cerrado.";
+	public static final String CONTRATO_CERRADO = "El contrato indicado no se encuentra vigente";
     public static final String CONTRATO_CANCELADO = "Se encontró un contrato cancelado del empleado: ";
     public static final String PUESTO_NOT_VALID = "No se ingresó puesto.";
     public static final String ID_AFP_NOT_VALID = "No se ingresó ID AFP.";

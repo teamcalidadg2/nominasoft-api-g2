@@ -75,7 +75,7 @@ public class NominaController {
     }
 
     @PostMapping("/cerrar/{idNomina}")
-    public ResponseEntity<NominaModel> cerrarNomina(@PathVariable("idNomina") String idNomina) throws ContratoNotValidException, AfpNotFoundException, EmpleadoNotFoundException, ContratoExistsException, ContratoNotFoundException, NominaNotFoundException, NumberFormatException, NominaNotValidException {
+    public ResponseEntity<NominaModel> cerrarNomina(@PathVariable(value = "idNomina", required = false) String idNomina) throws ContratoNotValidException, AfpNotFoundException, EmpleadoNotFoundException, ContratoExistsException, ContratoNotFoundException, NominaNotFoundException, NumberFormatException, NominaNotValidException {
         NominaModel nomina = nominaService.cerrarNomina(idNomina);
         return new ResponseEntity<>(nomina, OK);
     }

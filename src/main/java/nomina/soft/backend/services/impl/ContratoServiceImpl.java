@@ -291,8 +291,10 @@ public class ContratoServiceImpl implements ContratoService {
 		ContratoModel contratoAEditar = new ContratoModel();
 		if(contratoAEditar.identificadorValido(idContrato)) contratoAEditar = this.contratoRepository.findByIdContrato(Long.parseLong(idContrato));
 		if(contratoAEditar!=null){
-			contratoAEditar.setEstaCancelado(true);
-			this.contratoRepository.save(contratoAEditar);
+			if(contratoAEditar.vigenciaValida(contratoAEditar)){
+				contratoAEditar.setEstaCancelado(true);
+				this.contratoRepository.save(contratoAEditar);
+			}else throw new ContratoNotValidException(CONTRATO_CERRADO);
 		}else{
 			throw new ContratoNotFoundException(CONTRATO_NOT_FOUND);
 		}
