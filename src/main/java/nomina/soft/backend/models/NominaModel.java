@@ -79,4 +79,45 @@ public class NominaModel {
 	}
 
 
+
+    public boolean identificadorValido(String idNomina) throws NominaNotValidException {
+        if(idNomina.length()==0) throw new NominaNotValidException(ID_NOMINA_NOT_VALID);
+		try {
+			int idNominaTMP = Integer.parseInt(idNomina);
+		} catch (NumberFormatException nfe){
+			throw new NominaNotValidException(ID_NOMINA_NOT_NUMBER);
+		}
+		return true;
+    }
+
+
+
+	public boolean periodoDeNominaValido(String idPeriodoNomina) throws NominaNotValidException {
+		if(idPeriodoNomina.length()==0) throw new NominaNotValidException(ID_PERIODO_NOMINA_NOT_VALID);
+		try {
+			int idPeriodoNominaTMP = Integer.parseInt(idPeriodoNomina);
+		} catch (NumberFormatException nfe){
+			throw new NominaNotValidException(ID_PERIODO_NOMINA_NOT_NUMBER);
+		}
+		return true;
+	}
+
+
+
+	public boolean esPeriodoCerrado(List<NominaModel> nominasDePeriodo) {
+		boolean estaCerrado = false;
+		for(NominaModel nominaTemp : nominasDePeriodo){
+			if(nominaTemp.estaCerrada) estaCerrado = true;
+		}
+		return estaCerrado;
+	}
+
+
+
+	public boolean descripcionValida(String descripcion) throws NominaNotValidException {
+		if(descripcion.length()==0) throw new NominaNotValidException(DESCRIPCION_NOT_VALID);
+		return true;
+	}
+
+
 }

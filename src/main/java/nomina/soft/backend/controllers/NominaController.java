@@ -55,7 +55,7 @@ public class NominaController {
     }
 
     @GetMapping("/buscar/id/{id}")
-    public ResponseEntity<NominaModel> getNomina(@PathVariable("id") Long id) throws NominaNotFoundException {
+    public ResponseEntity<NominaModel> getNomina(@PathVariable("id") String id) throws NominaNotFoundException, NumberFormatException, NominaNotValidException {
         NominaModel nomina = nominaService.buscarPorId(id);
         return new ResponseEntity<>(nomina,OK);
 
@@ -75,13 +75,13 @@ public class NominaController {
     }
 
     @PostMapping("/cerrar/{idNomina}")
-    public ResponseEntity<NominaModel> cerrarNomina(@PathVariable("idNomina") Long idNomina) throws ContratoNotValidException, AfpNotFoundException, EmpleadoNotFoundException, ContratoExistsException, ContratoNotFoundException, NominaNotFoundException {
+    public ResponseEntity<NominaModel> cerrarNomina(@PathVariable("idNomina") String idNomina) throws ContratoNotValidException, AfpNotFoundException, EmpleadoNotFoundException, ContratoExistsException, ContratoNotFoundException, NominaNotFoundException, NumberFormatException, NominaNotValidException {
         NominaModel nomina = nominaService.cerrarNomina(idNomina);
         return new ResponseEntity<>(nomina, OK);
     }
 
     @DeleteMapping("/eliminar/{idNomina}")
-    public ResponseEntity<HttpResponse> deleteNomina(@PathVariable("idNomina") Long idNomina) throws NominaNotFoundException {
+    public ResponseEntity<HttpResponse> deleteNomina(@PathVariable("idNomina") String idNomina) throws NominaNotFoundException, NumberFormatException, NominaNotValidException {
 		nominaService.eliminarNomina(idNomina);
         return response(OK, NOMINA_DELETED_SUCCESSFULLY);
     }

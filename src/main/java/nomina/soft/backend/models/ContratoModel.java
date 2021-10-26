@@ -75,7 +75,7 @@ public class ContratoModel {
 
     public boolean fechasValidas(Date fechaInicio, Date fechaFin) throws ContratoNotValidException {
 		Date tiempoActual = java.sql.Timestamp.valueOf(LocalDateTime.now());
-		if(fechaInicio.before(tiempoActual)) throw new ContratoNotValidException(FECHA_INICIO_NOT_VALID);
+		// if(fechaInicio.before(tiempoActual)) throw new ContratoNotValidException(FECHA_INICIO_NOT_VALID);
 		if(fechaFin.after(fechaInicio)) {			//REGLA03
 			double mesesDeDiferencia = (fechaFin.getTime() - fechaInicio.getTime()) / (1000D*60*60*24*30.4167);
 			if(mesesDeDiferencia<3) throw new ContratoNotValidException(FECHA_FIN_3_MESES_NOT_VALID);

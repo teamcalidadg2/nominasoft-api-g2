@@ -15,6 +15,6 @@ public class NominaDto {
     @Getter @Setter private String descripcion;
     @Getter @Setter private Date fecha;
     @Getter @Setter private Boolean estaCerrada;
-    @Getter @Setter private Long idPeriodoNomina;
+    @Getter @Setter private String idPeriodoNomina;
 	@Getter @Setter private List<BoletaDePagoModel> boletasDePago;
 }

@@ -10,5 +10,6 @@ public interface PeriodoNominaRepository extends JpaRepository<PeriodoNominaMode
 	public PeriodoNominaModel findByIdPeriodoNomina(Long idPeriodoNomina);
 	public PeriodoNominaModel findByFechaInicio(Date fechaInicio);
 	public PeriodoNominaModel findByFechaFin(Date fechaFin);
+
 	
 }
