@@ -16,7 +16,6 @@ public class NominaDto {
     @Getter @Setter private Date fecha;
     @Getter @Setter private Boolean estaCerrada;
     @Getter @Setter private String idPeriodoNomina;
-	@Getter @Setter private List<BoletaDePagoModel> boletasDePago;
 
     public void corregirFechaZonaHoraria(Date fecha) {
         fecha.setMinutes(fecha.getMinutes() + fecha.getTimezoneOffset());

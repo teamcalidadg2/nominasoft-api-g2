@@ -1,4 +1,5 @@
 package nomina.soft.backend.services;
+import java.util.Date;
 import java.util.List;
 
 import nomina.soft.backend.dto.NominaDto;
@@ -22,5 +23,7 @@ public interface NominaService {
     public NominaModel buscarPorId(String idNomina) throws NominaNotFoundException, NumberFormatException, NominaNotValidException;
     public NominaModel cerrarNomina(String idNomina) throws NominaNotFoundException, NumberFormatException, NominaNotValidException;
     public void eliminarNomina(String idNomina) throws NominaNotFoundException, NumberFormatException, NominaNotValidException;
+    public List<BoletaDePagoModel> generarNomina(Date fecha, String descripcion, String idPeriodoNomina) throws NumberFormatException, NominaNotValidException, PeriodoNominaNotFoundException, ContratoNotFoundException, EmpleadoNotFoundException, ContratoNotValidException, EmpleadoNotValidException;
+    public List<BoletaDePagoModel> guardarNomina(Date fecha, String descripcion, String idPeriodoNomina) throws NumberFormatException, NominaNotValidException, PeriodoNominaNotFoundException, ContratoNotFoundException, EmpleadoNotFoundException, ContratoNotValidException, EmpleadoNotValidException;
 
 }

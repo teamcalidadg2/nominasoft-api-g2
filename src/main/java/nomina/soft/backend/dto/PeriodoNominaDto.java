@@ -15,8 +15,6 @@ public class PeriodoNominaDto {
     @Getter @Setter private String descripcion;
     @Getter @Setter private Date fechaInicio;
     @Getter @Setter private Date fechaFin;
-	@Getter @Setter private List<IncidenciaLaboralModel> incidenciasLaborales;
-	@Getter @Setter private List<NominaModel> nominas;
     
     public void corregirFechasZonaHoraria(Date fechaInicio, Date fechaFin) {
         fechaInicio.setMinutes(fechaInicio.getMinutes() + fechaInicio.getTimezoneOffset());

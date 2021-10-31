@@ -66,7 +66,7 @@ public class NominaServiceImpl implements NominaService{
 	
 	@Override
 	public List<NominaModel> getAllByDescripcion(String descripcion) throws NominaNotFoundException {
-		List<NominaModel> lista = this.nominaRepository.findAllByDescripcion(descripcion);
+		List<NominaModel> lista = this.nominaRepository.findByDescripcionContains(descripcion);
 		if(lista==null) {
 			throw new NominaNotFoundException(NO_NOMINAS_FOUND_BY_DESCRIPCION + descripcion);
 		}
@@ -107,6 +107,37 @@ public class NominaServiceImpl implements NominaService{
 		}
 		return nuevaNomina.getBoletasDePago();
 	}
+
+	@Override
+	public List<BoletaDePagoModel> guardarNomina(Date fecha, String descripcion, String idPeriodoNomina) throws NumberFormatException, NominaNotValidException, PeriodoNominaNotFoundException, ContratoNotFoundException, EmpleadoNotFoundException, ContratoNotValidException, EmpleadoNotValidException {
+		NominaModel nuevaNomina = new NominaModel();
+		PeriodoNominaModel periodoNomina = new PeriodoNominaModel();
+		NominaDto nominaDto = new NominaDto();
+		nominaDto.setFecha(fecha);
+		nominaDto.setDescripcion(descripcion);
+		nominaDto.setIdPeriodoNomina(idPeriodoNomina);
+		if(nuevaNomina.periodoDeNominaValido(nominaDto.getIdPeriodoNomina())) periodoNomina = this.periodoNominaRepository.findByIdPeriodoNomina(Long.parseLong(nominaDto.getIdPeriodoNomina()));
+		List<BoletaDePagoModel> listaBoletas = null;
+		if(periodoNomina==null) {
+			throw new PeriodoNominaNotFoundException(PERIODO_NOT_FOUND_BY_ID);
+		}
+		else {
+			List<NominaModel> nominasDePeriodo = periodoNomina.getNominas();
+			if(!nuevaNomina.esPeriodoCerrado(nominasDePeriodo)&&
+			nuevaNomina.descripcionValida(nominaDto.getDescripcion())){
+				nominaDto.corregirFechaZonaHoraria(nominaDto.getFecha());
+				nuevaNomina.setPeriodoNomina(periodoNomina);
+				nuevaNomina.setFecha(nominaDto.getFecha());
+				nuevaNomina.setDescripcion(nominaDto.getDescripcion());
+				// this.nominaRepository.save(nuevaNomina);
+				listaBoletas = GuardarBoletasDePago(nuevaNomina);
+				nuevaNomina.setEstaCerrada(false);
+				nuevaNomina.setBoletasDePago(listaBoletas);
+				this.nominaRepository.save(nuevaNomina);
+			}else throw new PeriodoNominaNotFoundException(PERIODO_CERRADO);
+		}
+		return nuevaNomina.getBoletasDePago();
+	}
 	
 	private List<BoletaDePagoModel> GuardarBoletasDePago(NominaModel nuevaNomina) throws ContratoNotFoundException, EmpleadoNotFoundException, ContratoNotValidException, NominaNotValidException, EmpleadoNotValidException {
 		List<EmpleadoModel> listaEmpleados = this.empleadoRepository.findAll();
@@ -120,6 +151,8 @@ public class NominaServiceImpl implements NominaService{
 	  	}
 		return boletasDePago;
 	}
+
+	
 
 
 	@Override
@@ -146,6 +179,36 @@ public class NominaServiceImpl implements NominaService{
 		}
 		return nuevaNomina.getBoletasDePago();
 	}
+
+	@Override
+	public List<BoletaDePagoModel> generarNomina(Date fecha, String descripcion, String idPeriodoNomina) throws NumberFormatException, NominaNotValidException, PeriodoNominaNotFoundException, ContratoNotFoundException, EmpleadoNotFoundException, ContratoNotValidException, EmpleadoNotValidException {
+		NominaModel nuevaNomina = new NominaModel();
+		PeriodoNominaModel periodoNomina = new PeriodoNominaModel();
+		NominaDto nominaDto = new NominaDto();
+		nominaDto.setFecha(fecha);
+		nominaDto.setDescripcion(descripcion);
+		nominaDto.setIdPeriodoNomina(idPeriodoNomina);
+		if(nuevaNomina.periodoDeNominaValido(nominaDto.getIdPeriodoNomina())) periodoNomina = this.periodoNominaRepository.findByIdPeriodoNomina(Long.parseLong(nominaDto.getIdPeriodoNomina()));
+		List<BoletaDePagoModel> listaBoletas = null;
+		if(periodoNomina==null) {
+			throw new PeriodoNominaNotFoundException(PERIODO_NOT_FOUND_BY_ID);
+		}
+		else {
+			List<NominaModel> nominasDePeriodo = periodoNomina.getNominas();
+			if(!nuevaNomina.esPeriodoCerrado(nominasDePeriodo) &&
+				nuevaNomina.descripcionValida(nominaDto.getDescripcion())){
+				nominaDto.corregirFechaZonaHoraria(nominaDto.getFecha());
+				nuevaNomina.setPeriodoNomina(periodoNomina);
+				nuevaNomina.setFecha(nominaDto.getFecha());
+				nuevaNomina.setDescripcion(nominaDto.getDescripcion());
+				listaBoletas = GenerarBoletasDePago(nuevaNomina);
+				nuevaNomina.setEstaCerrada(false);
+				nuevaNomina.setBoletasDePago(listaBoletas);
+			}else throw new PeriodoNominaNotFoundException(PERIODO_CERRADO);
+		}
+		return nuevaNomina.getBoletasDePago();
+	}
+
 
 	private List<BoletaDePagoModel> GenerarBoletasDePago(NominaModel nuevaNomina) throws ContratoNotFoundException, EmpleadoNotFoundException, ContratoNotValidException, NominaNotValidException, EmpleadoNotValidException {
 		List<EmpleadoModel> listaEmpleados = this.empleadoRepository.findAll();
@@ -185,6 +248,9 @@ public class NominaServiceImpl implements NominaService{
 			throw new NominaNotFoundException(NO_NOMINA_FOUND_BY_ID);
 		}		
 	}
+
+
+
 
 
 

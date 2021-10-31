@@ -8,4 +8,5 @@ import nomina.soft.backend.models.NominaModel;
 public interface NominaRepository extends JpaRepository<NominaModel,Long>{
     public NominaModel findByIdNomina(Long idNomina);
     public List<NominaModel> findAllByDescripcion(String descripcion);
+    public List<NominaModel> findByDescripcionContains(String descripcion);
 }
