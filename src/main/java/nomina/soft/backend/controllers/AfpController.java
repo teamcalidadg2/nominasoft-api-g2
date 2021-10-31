@@ -42,9 +42,15 @@ public class AfpController {
         return new ResponseEntity<>(lista, OK);
     }
     
-	@GetMapping("/buscar/{nombre}")
-    public ResponseEntity<AfpModel> getUser(@PathVariable("nombre") String nombre) throws AfpNotFoundException {
+	@GetMapping("/buscar/nombre/{nombre}")
+    public ResponseEntity<AfpModel> getAfpByNombre(@PathVariable("nombre") String nombre) throws AfpNotFoundException {
 		AfpModel afp = afpService.buscarAfpPorNombre(nombre);
+        return new ResponseEntity<>(afp, OK);
+    }
+
+    @GetMapping("/buscar/id/{id}")
+    public ResponseEntity<AfpModel> getAfpByID(@PathVariable("id") String id) throws AfpNotFoundException {
+		AfpModel afp = afpService.buscarAfpPorId(id);
         return new ResponseEntity<>(afp, OK);
     }
 

@@ -18,5 +18,7 @@ public interface AfpService {
 	public AfpModel updateAfp(String actualNombre, String nombre, int actualDescuento, int descuento) throws AfpNotFoundException, AfpExistsException;
 	
 	public void deleteAfp(String nombre);
+
+    public AfpModel buscarAfpPorId(String id) throws AfpNotFoundException;
 	
 }

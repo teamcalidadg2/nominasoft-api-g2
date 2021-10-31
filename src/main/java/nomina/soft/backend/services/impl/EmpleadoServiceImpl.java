@@ -18,6 +18,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import nomina.soft.backend.dto.EmpleadoDto;
+import nomina.soft.backend.exception.domain.ContratoNotValidException;
 import nomina.soft.backend.exception.domain.EmpleadoExistsException;
 import nomina.soft.backend.exception.domain.EmpleadoNotFoundException;
 import nomina.soft.backend.exception.domain.EmpleadoNotValidException;
@@ -75,12 +76,16 @@ public class EmpleadoServiceImpl implements EmpleadoService{
 
 
 	@Override
-	public EmpleadoModel buscarEmpleadoPorDni(String dni) throws EmpleadoNotFoundException {
-		EmpleadoModel empleado = this.empleadoRepository.findByDni(dni);
-		if(empleado == null) {
-			throw new EmpleadoNotFoundException(NO_EMPLEADO_FOUND_BY_DNI + dni);
+	public EmpleadoModel buscarEmpleadoPorDni(String dni) throws EmpleadoNotFoundException, NumberFormatException, ContratoNotValidException, EmpleadoNotValidException {
+        ContratoModel contratoTemp = new ContratoModel();
+        EmpleadoModel empleadoEncontrado = new EmpleadoModel();
+        if (empleadoEncontrado.validarDni(dni) && contratoTemp.empleadoValido(dni))
+			empleadoEncontrado = this.empleadoRepository.findByDni(dni);
+
+		if(empleadoEncontrado == null) {
+			throw new EmpleadoNotFoundException(NO_EMPLEADO_FOUND_BY_DNI);
 		}
-		return empleado;
+		return empleadoEncontrado;
 	}
 	
 	@Override

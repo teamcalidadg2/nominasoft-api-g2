@@ -1,5 +1,6 @@
 package nomina.soft.backend.services;
 
+import java.util.Date;
 import java.util.List;
 
 import nomina.soft.backend.dto.ContratoDto;
@@ -22,6 +23,9 @@ public interface ContratoService {
     public ContratoModel updateContrato(String idContrato, String puesto, String horasPorSemana, String idAfp, Boolean tieneAsignacionFamiliar, String pagoPorHora) throws ContratoNotValidException, AfpNotFoundException, ContratoNotFoundException;
 
     public ContratoModel cancelarContrato(String idContrato) throws ContratoNotFoundException, NumberFormatException, ContratoNotValidException;
+
+    public ContratoModel guardarContrato(Date fechaInicio, Date fechaFin, String idEmpleado, String puesto,
+            String horasPorSemana, String idAfp, Boolean tieneAsignacionFamiliar, String pagoPorHora) throws NumberFormatException, ContratoNotValidException, AfpNotFoundException, EmpleadoNotFoundException, ContratoExistsException;
 	
 	
 	

@@ -47,6 +47,16 @@ public class AfpServiceImpl implements AfpService{
 	}
 
 	@Override
+	public AfpModel buscarAfpPorId(String id) throws AfpNotFoundException {
+		AfpModel afpEncontrado = afpRepository.findByIdAfp(Long.parseLong(id));
+		if(afpEncontrado==null) {
+			throw new AfpNotFoundException(NO_AFP_FOUND_BY_NOMBRE + id);
+		}
+		return afpEncontrado;
+	}
+	
+
+	@Override
 	public AfpModel guardarAFP(AfpDto afpDto) throws AfpNotFoundException, AfpExistsException {
 		AfpModel afp = new AfpModel();
 		validateNewNombre(EMPTY,afpDto.getNombre());
@@ -112,7 +122,8 @@ public class AfpServiceImpl implements AfpService{
             return null;
         }
     }
-	
+
+
 	
 	
 	

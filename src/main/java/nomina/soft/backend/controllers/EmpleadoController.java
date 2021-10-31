@@ -7,19 +7,22 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+
+import nomina.soft.backend.dto.EmpleadoDto;
+import nomina.soft.backend.exception.domain.ContratoNotValidException;
 import nomina.soft.backend.exception.domain.EmpleadoExistsException;
 import nomina.soft.backend.exception.domain.EmpleadoNotFoundException;
 import nomina.soft.backend.exception.domain.EmpleadoNotValidException;
-import nomina.soft.backend.models.HttpResponse;
-
-import nomina.soft.backend.dto.EmpleadoDto;
 import nomina.soft.backend.models.EmpleadoModel;
+import nomina.soft.backend.models.HttpResponse;
 import nomina.soft.backend.services.EmpleadoService;
+@CrossOrigin("http://localhost:4200")
 @Controller
 @RequestMapping("/empleado")
 public class EmpleadoController {
@@ -39,7 +42,7 @@ public class EmpleadoController {
     }
     
 	@GetMapping("/buscar/dni/{dni}")
-    public ResponseEntity<EmpleadoModel> getEmpleadoByDni(@PathVariable("dni") String dni) throws EmpleadoNotFoundException {
+    public ResponseEntity<EmpleadoModel> getEmpleadoByDni(@PathVariable("dni") String dni) throws EmpleadoNotFoundException, NumberFormatException, ContratoNotValidException, EmpleadoNotValidException {
 		EmpleadoModel empleado = empleadoService.buscarEmpleadoPorDni(dni);
         return new ResponseEntity<>(empleado, OK);
     }
