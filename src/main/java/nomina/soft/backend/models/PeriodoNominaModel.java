@@ -1,4 +1,6 @@
 package nomina.soft.backend.models;
+import static nomina.soft.backend.constant.PeriodoNominaImplConstant.FECHAS_NOT_VALID;
+
 import java.time.LocalDate;
 import java.time.Period;
 import java.time.ZoneId;
@@ -16,16 +18,15 @@ import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
-import nomina.soft.backend.dto.PeriodoNominaDto;
-import nomina.soft.backend.exception.domain.PeriodoNominaExistsException;
 import nomina.soft.backend.exception.domain.PeriodoNominaNotValidException;
-import static nomina.soft.backend.constant.PeriodoNominaImplConstant.*;
+@JsonIgnoreProperties({"hibernateLazyInitializer"})
 @Entity
 @Table(name = "periodo_nomina")
 @AllArgsConstructor

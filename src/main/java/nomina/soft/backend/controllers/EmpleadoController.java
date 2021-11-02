@@ -46,6 +46,12 @@ public class EmpleadoController {
 		EmpleadoModel empleado = empleadoService.buscarEmpleadoPorDni(dni);
         return new ResponseEntity<>(empleado, OK);
     }
+
+    @GetMapping("/buscar/id/{idEmpleado}")
+    public ResponseEntity<EmpleadoModel> getEmpleadoById(@PathVariable("idEmpleado") String idEmpleado) throws EmpleadoNotFoundException, NumberFormatException, ContratoNotValidException, EmpleadoNotValidException {
+		EmpleadoModel empleado = empleadoService.buscarEmpleadoPorId(idEmpleado);
+        return new ResponseEntity<>(empleado, OK);
+    }
 	
 	@GetMapping("/buscar/telefono/{telefono}")
     public ResponseEntity<EmpleadoModel> getEmpleadoByTelefono(@PathVariable("telefono") String telefono) throws EmpleadoNotFoundException {

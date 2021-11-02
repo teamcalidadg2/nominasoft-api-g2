@@ -57,6 +57,13 @@ public class ContratoController {
         return new ResponseEntity<>(contrato, OK);
     }
 
+    @GetMapping("/buscar/{idContrato}")
+    public ResponseEntity<ContratoModel> getContratoById(@PathVariable("idContrato") String idContrato)
+            throws ContratoNotFoundException, EmpleadoNotFoundException, EmpleadoNotValidException, NumberFormatException, ContratoNotValidException {
+        ContratoModel contrato = contratoService.buscarContratoPorId(idContrato);
+        return new ResponseEntity<>(contrato, OK);
+    }
+
     @PostMapping("/guardar")
     public ResponseEntity<ContratoModel> create(@RequestBody ContratoDto contratoDto)
             throws ContratoNotValidException, AfpNotFoundException, EmpleadoNotFoundException, ContratoExistsException {
@@ -65,8 +72,8 @@ public class ContratoController {
     }
 
     @PostMapping("/guardar/form")
-    public ResponseEntity<ContratoModel> save(@RequestParam("fechaInicio") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) Date fechaInicio,
-            @RequestParam("fechaFin")@DateTimeFormat(iso = DateTimeFormat.ISO.DATE) Date fechaFin, @RequestParam("puesto") String puesto,
+    public ResponseEntity<ContratoModel> save(@RequestParam(value = "fechaInicio", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) Date fechaInicio,
+            @RequestParam(value = "fechaFin", required = false)@DateTimeFormat(iso = DateTimeFormat.ISO.DATE) Date fechaFin, @RequestParam("puesto") String puesto,
             @RequestParam("horasPorSemana") String horasPorSemana, @RequestParam("idAfp") String idAfp,
             @RequestParam("idEmpleado") String idEmpleado,
             @RequestParam(value = "tieneAsignacionFamiliar", required = false) Boolean tieneAsignacionFamiliar,

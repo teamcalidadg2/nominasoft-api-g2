@@ -1,4 +1,13 @@
 package nomina.soft.backend.models;
+import static nomina.soft.backend.constant.ContratoImplConstant.CONTRATO_CANCELADO;
+import static nomina.soft.backend.constant.ContratoImplConstant.CONTRATO_FECHA_FIN_NOT_VALID;
+import static nomina.soft.backend.constant.NominaImplConstant.DESCRIPCION_NOT_VALID;
+import static nomina.soft.backend.constant.NominaImplConstant.ID_NOMINA_NOT_NUMBER;
+import static nomina.soft.backend.constant.NominaImplConstant.ID_NOMINA_NOT_VALID;
+import static nomina.soft.backend.constant.NominaImplConstant.ID_PERIODO_NOMINA_NOT_NUMBER;
+import static nomina.soft.backend.constant.NominaImplConstant.ID_PERIODO_NOMINA_NOT_VALID;
+import static nomina.soft.backend.constant.NominaImplConstant.PERIODO_FECHA_FIN_NOT_VALID;
+
 import java.util.Date;
 import java.util.List;
 
@@ -14,7 +23,7 @@ import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -22,10 +31,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import nomina.soft.backend.exception.domain.ContratoNotValidException;
 import nomina.soft.backend.exception.domain.NominaNotValidException;
-import static nomina.soft.backend.constant.ContratoImplConstant.*;
-import static nomina.soft.backend.constant.PeriodoNominaImplConstant.*;
-import static nomina.soft.backend.constant.NominaImplConstant.*;
-
+@JsonIgnoreProperties({"hibernateLazyInitializer"})
 @Entity
 @Table(name = "nomina")
 @AllArgsConstructor
@@ -43,11 +49,9 @@ public class NominaModel {
     @ManyToOne(cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.REFRESH, CascadeType.PERSIST},
 			fetch = FetchType.LAZY)
     @JoinColumn(name = "id_periodo_nomina")
-    @JsonIgnore
     @Getter @Setter private PeriodoNominaModel periodoNomina;
 
     @OneToMany(cascade = {CascadeType.ALL},fetch = FetchType.LAZY, mappedBy="nomina")
-    @JsonIgnore
 	@Getter @Setter private List<BoletaDePagoModel> boletasDePago;    
 
 
@@ -115,7 +119,7 @@ public class NominaModel {
 
 
 	public boolean descripcionValida(String descripcion) throws NominaNotValidException {
-		if(descripcion.length()==0) throw new NominaNotValidException(DESCRIPCION_NOT_VALID);
+		if(descripcion.length()==0 || descripcion == null) throw new NominaNotValidException(DESCRIPCION_NOT_VALID);
 		return true;
 	}
 

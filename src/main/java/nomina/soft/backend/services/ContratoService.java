@@ -26,6 +26,8 @@ public interface ContratoService {
 
     public ContratoModel guardarContrato(Date fechaInicio, Date fechaFin, String idEmpleado, String puesto,
             String horasPorSemana, String idAfp, Boolean tieneAsignacionFamiliar, String pagoPorHora) throws NumberFormatException, ContratoNotValidException, AfpNotFoundException, EmpleadoNotFoundException, ContratoExistsException;
+
+    public ContratoModel buscarContratoPorId(String idContrato) throws NumberFormatException, ContratoNotValidException, ContratoNotFoundException;
 	
 	
 	

@@ -38,6 +38,7 @@ import nomina.soft.backend.services.NominaService;
 public class NominaController {
 
     public static final String NOMINA_DELETED_SUCCESSFULLY = "Nomina eliminada exitosamente";
+    public static final String NOMINA_CERRADA_SUCCESSFULLY = "Nomina cerrada exitosamente";
     private NominaService nominaService;
 
     @Autowired
@@ -103,12 +104,11 @@ public class NominaController {
         return new ResponseEntity<>(listaBoletasDePago, OK);
     }
 
-    @PostMapping("/cerrar/{idNomina}")
-    public ResponseEntity<NominaModel> cerrarNomina(@PathVariable(value = "idNomina", required = false) String idNomina)
-            throws ContratoNotValidException, AfpNotFoundException, EmpleadoNotFoundException, ContratoExistsException,
-            ContratoNotFoundException, NominaNotFoundException, NumberFormatException, NominaNotValidException {
-        NominaModel nomina = nominaService.cerrarNomina(idNomina);
-        return new ResponseEntity<>(nomina, OK);
+    @DeleteMapping("/cerrar/{idNomina}")
+    public ResponseEntity<HttpResponse> cerrarNomina(@PathVariable(value = "idNomina", required = false) String idNomina)
+            throws NominaNotFoundException, NumberFormatException, NominaNotValidException {
+        nominaService.cerrarNomina(idNomina);
+        return response(OK, NOMINA_CERRADA_SUCCESSFULLY);
     }
 
     @DeleteMapping("/eliminar/{idNomina}")

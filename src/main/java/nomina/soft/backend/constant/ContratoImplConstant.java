@@ -15,9 +15,11 @@ public class ContratoImplConstant {
     public static final String HORAS_CONTRATADAS_NOT_MULTIPLO_4 = "El número de horas contratadas debe ser múltiplo de 4";
     public static final String HORAS_CONTRATADAS_MENOR_8 = "El número de horas contratadas debe ser mayor o igual a 8.";
     public static final String HORAS_CONTRATADAS_MAYOR_40 = "El número de horas contratadas debe ser menor o igual a 40.";
+    public static final String HORAS_CONTRATADAS_VACIO = "No se ingresó el número de horas por semana.";
     public static final String PAGO_POR_HORA_NOT_INTEGER = "El pago por hora deben ser un número entero.";
     public static final String PAGO_POR_HORA_MENOR_10 = "El pago por hora debe ser un número mayor o igual a 10.";
     public static final String PAGO_POR_HORA_MAYOR_60 = "El pago por hora debe ser un número menor o igual a 60.";
+    public static final String PAGO_POR_HORA_VACIO = "No se ingresó pago por hora.";
     public static final String CONTRATO_NOT_FOUND = "El contrato indicado no existe.";
 	public static final String CONTRATO_CERRADO = "El contrato indicado no se encuentra vigente";
     public static final String CONTRATO_CANCELADO = "Se encontró un contrato cancelado del empleado: ";
@@ -27,6 +29,8 @@ public class ContratoImplConstant {
     public static final String ID_EMPLEADO_NOT_VALID = "No se ingresó ID Empleado.";
     public static final String ID_EMPLEADO_NOT_NUMBER = "El ID Empleado solo debe contener caracteres numéricos.";
     public static final String ID_CONTRATO_VACIO = "No se ingresó ID Contrato.";
+    public static final String FECHA_INICIO_VACIA = "No se ingresó fecha de inicio.";
+    public static final String FECHA_FIN_VACIA = "No se ingresó fecha de fin.";
     public static final String ID_CONTRATO_NOT_INTEGER = "El ID Contrato solo debe contener caracteres numéricos.";
     public static final String ASIGNACION_FAMILIAR_NOT_VALID = "No se ingresó asignación familiar.";
     public static final String CONTRATO_NOT_VIGENTE = "El contrato indicado no se encuentra vigente.";

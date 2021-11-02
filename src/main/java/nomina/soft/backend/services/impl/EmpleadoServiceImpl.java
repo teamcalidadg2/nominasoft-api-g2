@@ -1,11 +1,6 @@
 package nomina.soft.backend.services.impl;
 
-import static nomina.soft.backend.constant.EmpleadoImplConstant.CORREO_ALREADY_EXISTS;
-import static nomina.soft.backend.constant.EmpleadoImplConstant.DNI_ALREADY_EXISTS;
-import static nomina.soft.backend.constant.EmpleadoImplConstant.NO_EMPLEADO_FOUND_BY_CORREO;
-import static nomina.soft.backend.constant.EmpleadoImplConstant.NO_EMPLEADO_FOUND_BY_DNI;
-import static nomina.soft.backend.constant.EmpleadoImplConstant.NO_EMPLEADO_FOUND_BY_TELEFONO;
-import static nomina.soft.backend.constant.EmpleadoImplConstant.TELEFONO_ALREADY_EXISTS;
+import static nomina.soft.backend.constant.EmpleadoImplConstant.*;
 import static org.apache.commons.lang3.StringUtils.EMPTY;
 
 import java.util.ArrayList;
@@ -87,6 +82,19 @@ public class EmpleadoServiceImpl implements EmpleadoService{
 		}
 		return empleadoEncontrado;
 	}
+
+    @Override
+    public EmpleadoModel buscarEmpleadoPorId(String idEmpleado) throws EmpleadoNotFoundException, NumberFormatException, ContratoNotValidException {
+        ContratoModel contratoTemp = new ContratoModel();
+        EmpleadoModel empleadoEncontrado = new EmpleadoModel();
+        if (contratoTemp.empleadoValido(idEmpleado))
+			empleadoEncontrado = this.empleadoRepository.findByIdEmpleado(Long.parseLong(idEmpleado));
+
+		if(empleadoEncontrado == null) {
+			throw new EmpleadoNotFoundException(NO_EMPLEADO_FOUND);
+		}
+		return empleadoEncontrado;
+    }
 	
 	@Override
 	public EmpleadoModel buscarEmpleadoPorTelefono(String telefono) throws EmpleadoNotFoundException {
@@ -163,6 +171,7 @@ public class EmpleadoServiceImpl implements EmpleadoService{
             return null;
         }
     }
+
 
 
 	

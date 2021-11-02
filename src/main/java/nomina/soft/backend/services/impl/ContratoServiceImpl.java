@@ -265,7 +265,19 @@ public class ContratoServiceImpl implements ContratoService {
 		return contratoVigente;
 	}
 
-	private ContratoModel obtenerContratoVigente(EmpleadoModel empleado) {
+	@Override
+	public ContratoModel buscarContratoPorId(String idContrato) throws NumberFormatException, ContratoNotValidException, ContratoNotFoundException {
+		ContratoModel contrato = new ContratoModel();
+		if (contrato.validarIdentificador(idContrato)) {
+			contrato = this.contratoRepository.findByIdContrato(Long.parseLong(idContrato));
+		}
+		if (contrato == null) {
+			throw new ContratoNotFoundException(CONTRATO_NOT_FOUND);
+		}
+		return contrato;
+	}
+
+	public ContratoModel obtenerContratoVigente(EmpleadoModel empleado) {
 		List<ContratoModel> contratosDeEmpleado = this.contratoRepository.findAllByEmpleado(empleado);
 		ContratoModel contratoVigente = null, contratoTemporal = new ContratoModel();
 		for (ContratoModel contrato : contratosDeEmpleado) {
@@ -330,7 +342,6 @@ public class ContratoServiceImpl implements ContratoService {
 		AfpModel afpEncontrado = new AfpModel();
 		EmpleadoModel empleadoEncontrado = new EmpleadoModel();
 		ContratoDto contratoDto = new ContratoDto();
-		contratoDto.setFechaInicio(fechaInicio);
 		if (nuevoContrato.afpValido(idAfp))
 			afpEncontrado = afpRepository.findByIdAfp(Long.parseLong(idAfp));
 		if (afpEncontrado == null)
@@ -339,37 +350,42 @@ public class ContratoServiceImpl implements ContratoService {
 			empleadoEncontrado = this.empleadoRepository.findByIdEmpleado(Long.parseLong(idEmpleado));
 		if (empleadoEncontrado == null)
 			throw new EmpleadoNotFoundException(NO_EMPLEADO_FOUND);
-		contratoDto.setFechaInicio(fechaInicio);
-		contratoDto.setFechaFin(fechaFin);
-		contratoDto.setIdEmpleado(idEmpleado);
-		contratoDto.setPuesto(puesto);
-		contratoDto.setHorasPorSemana(horasPorSemana);
-		contratoDto.setIdAfp(idAfp);
-		contratoDto.setTieneAsignacionFamiliar(tieneAsignacionFamiliar);
-		contratoDto.setPagoPorHora(pagoPorHora);
-		if (obtenerContratoVigente(empleadoEncontrado) == null) {
-			if (validarContrato(contratoDto)) {
-				nuevoContrato = new ContratoModel();
-				nuevoContrato.setIncidenciasLaborales(new ArrayList<IncidenciaLaboralModel>());
-				nuevoContrato.setFechaInicio(contratoDto.getFechaInicio());
-				nuevoContrato.setFechaFin(contratoDto.getFechaFin());
-				nuevoContrato.setEmpleado(empleadoEncontrado);
-				this.contratoRepository.save(nuevoContrato);
-				nuevoContrato.setAfp(afpEncontrado);
-				nuevoContrato.setTieneAsignacionFamiliar(contratoDto.getTieneAsignacionFamiliar());
-				nuevoContrato.setHorasPorSemana(contratoDto.getHorasPorSemana());
-				nuevoContrato.setPagoPorHora(contratoDto.getPagoPorHora());
-				nuevoContrato.setPuesto(contratoDto.getPuesto());
-				evaluarIncidenciasLaborales(nuevoContrato);
-				nuevoContrato.setEstaCancelado(false);
-				empleadoEncontrado.addContrato(nuevoContrato);
-				this.empleadoRepository.save(empleadoEncontrado);
-				this.contratoRepository.save(nuevoContrato);
+		if(nuevoContrato.validarFechas(fechaInicio,fechaFin)){
+			contratoDto.setFechaInicio(fechaInicio);
+			contratoDto.setFechaFin(fechaFin);
+			contratoDto.setIdEmpleado(idEmpleado);
+			contratoDto.setPuesto(puesto);
+			contratoDto.setHorasPorSemana(horasPorSemana);
+			contratoDto.setIdAfp(idAfp);
+			contratoDto.setTieneAsignacionFamiliar(tieneAsignacionFamiliar);
+			contratoDto.setPagoPorHora(pagoPorHora);
+			if (obtenerContratoVigente(empleadoEncontrado) == null) {
+				if (validarContrato(contratoDto)) {
+					nuevoContrato = new ContratoModel();
+					nuevoContrato.setIncidenciasLaborales(new ArrayList<IncidenciaLaboralModel>());
+					nuevoContrato.setFechaInicio(contratoDto.getFechaInicio());
+					nuevoContrato.setFechaFin(contratoDto.getFechaFin());
+					nuevoContrato.setEmpleado(empleadoEncontrado);
+					this.contratoRepository.save(nuevoContrato);
+					nuevoContrato.setAfp(afpEncontrado);
+					nuevoContrato.setTieneAsignacionFamiliar(contratoDto.getTieneAsignacionFamiliar());
+					nuevoContrato.setHorasPorSemana(contratoDto.getHorasPorSemana());
+					nuevoContrato.setPagoPorHora(contratoDto.getPagoPorHora());
+					nuevoContrato.setPuesto(contratoDto.getPuesto());
+					evaluarIncidenciasLaborales(nuevoContrato);
+					nuevoContrato.setEstaCancelado(false);
+					empleadoEncontrado.addContrato(nuevoContrato);
+					this.empleadoRepository.save(empleadoEncontrado);
+					this.contratoRepository.save(nuevoContrato);
+				}
+			} else {
+				throw new ContratoExistsException(CONTRATO_ALREADY_EXISTS);
 			}
-		} else {
-			throw new ContratoExistsException(CONTRATO_ALREADY_EXISTS);
 		}
+		
 		return nuevoContrato;
 	}
+
+
 
 }

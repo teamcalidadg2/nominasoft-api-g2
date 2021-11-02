@@ -20,5 +20,6 @@ public interface EmpleadoService {
     public EmpleadoModel buscarEmpleadoPorDni(String dni) throws EmpleadoNotFoundException, NumberFormatException, ContratoNotValidException, EmpleadoNotValidException;
     public EmpleadoModel buscarEmpleadoPorTelefono(String telefono) throws EmpleadoNotFoundException;
     public EmpleadoModel buscarEmpleadoPorCorreo(String correo) throws EmpleadoNotFoundException;
+    public EmpleadoModel buscarEmpleadoPorId(String idEmpleado) throws EmpleadoNotFoundException, NumberFormatException, ContratoNotValidException;
     
 }

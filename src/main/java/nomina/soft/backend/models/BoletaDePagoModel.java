@@ -17,13 +17,14 @@ import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
-
+@JsonIgnoreProperties({"hibernateLazyInitializer"})
 @Entity
 @Table(name = "boleta_de_pago")
 @AllArgsConstructor
@@ -58,7 +59,6 @@ public class BoletaDePagoModel {
     @ManyToOne(cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.REFRESH, CascadeType.PERSIST},
 			fetch = FetchType.LAZY)
     @JoinColumn(name = "id_contrato")
-    @JsonIgnore
     @Getter @Setter private ContratoModel contrato;
     
 
