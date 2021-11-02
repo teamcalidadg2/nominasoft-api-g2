@@ -246,10 +246,19 @@ public class NominaServiceImpl implements NominaService {
 			nominaAEditar = this.nominaRepository.findByIdNomina(Long.parseLong(idNomina));
 		if (nominaAEditar != null) {
 			if (!nominaAEditar.getEstaCerrada()) {
-				nominaAEditar.setEstaCerrada(true);
-				this.nominaRepository.save(nominaAEditar);
+				PeriodoNominaModel periodoDeNomina = nominaAEditar.getPeriodoNomina();
+				boolean darPaseValido = true;
+				for(NominaModel nominaModel: periodoDeNomina.getNominas()){
+					if(nominaModel.getEstaCerrada()) darPaseValido=false;
+				}
+				if(darPaseValido){
+					nominaAEditar.setEstaCerrada(true);
+					this.nominaRepository.save(nominaAEditar);
+				}else{
+					throw new NominaNotValidException(PERIODO_IS_ALREADY_CLOSED);
+				}
 			} else {
-				throw new NominaNotValidException(PERIODO_IS_ALREADY_CLOSED);
+				throw new NominaNotValidException(NOMINA_IS_ALREADY_CLOSED);
 			}
 		} else {
 			throw new NominaNotFoundException(NO_NOMINA_FOUND_BY_ID);
