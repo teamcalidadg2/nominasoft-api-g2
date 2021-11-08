@@ -39,6 +39,7 @@ public class EmpleadoModel {
     @Getter @Setter private String telefono;
     @Getter @Setter private String correo;
     @Getter @Setter private String direccion;
+    @Getter @Setter private Boolean estaActivo;
 
     @OneToMany(cascade = {CascadeType.ALL},fetch = FetchType.LAZY, mappedBy="empleado")
     @JsonIgnore

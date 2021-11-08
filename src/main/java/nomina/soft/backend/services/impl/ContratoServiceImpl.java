@@ -29,6 +29,7 @@ import nomina.soft.backend.models.AfpModel;
 import nomina.soft.backend.models.ContratoModel;
 import nomina.soft.backend.models.EmpleadoModel;
 import nomina.soft.backend.models.IncidenciaLaboralModel;
+import nomina.soft.backend.models.NominaModel;
 import nomina.soft.backend.models.PeriodoNominaModel;
 import nomina.soft.backend.repositories.AfpRepository;
 import nomina.soft.backend.repositories.ContratoRepository;
@@ -100,6 +101,7 @@ public class ContratoServiceImpl implements ContratoService {
 				evaluarIncidenciasLaborales(nuevoContrato);
 				nuevoContrato.setEstaCancelado(false);
 				empleadoEncontrado.addContrato(nuevoContrato);
+				empleadoEncontrado.setEstaActivo(true);
 				this.empleadoRepository.save(empleadoEncontrado);
 				this.contratoRepository.save(nuevoContrato);
 			}
@@ -110,104 +112,32 @@ public class ContratoServiceImpl implements ContratoService {
 	}
 
 	private void evaluarIncidenciasLaborales(ContratoModel nuevoContrato) throws ContratoNotValidException {
-		EmpleadoModel empleado = this.empleadoRepository.findByDni(nuevoContrato.getEmpleado().getDni());
-		List<ContratoModel> listaContratos = this.contratoRepository.findAllByEmpleado(empleado);
-		IncidenciaLaboralModel nuevaIncidenciaLaboral = new IncidenciaLaboralModel();
 		PeriodoNominaModel periodoNominaVigente = obtenerPeriodoNominaVigente();
-		if (listaContratos.size() > 1) {
-			ContratoModel contratoMasReciente = listaContratos.get(listaContratos.size() - 1);
-			IncidenciaLaboralModel incidenciaLaboralMasReciente = obtenerIncidenciaLaboralMasReciente(
-					contratoMasReciente);
-			if (incidenciaLaboralMasReciente != null) {
-				PeriodoNominaModel periodoNominaEncontrado = incidenciaLaboralMasReciente.getPeriodoNomina();
-				if (periodoNominaVigente != null && (periodoNominaEncontrado == periodoNominaVigente)) {
-					insertarHorasDeFaltaPasadas(nuevaIncidenciaLaboral, incidenciaLaboralMasReciente,
-							periodoNominaVigente, contratoMasReciente);
-					nuevaIncidenciaLaboral.setTotalHorasExtras(incidenciaLaboralMasReciente.getTotalHorasExtras());
-					nuevoContrato.addIncidenciaLaboral(nuevaIncidenciaLaboral);
-					nuevaIncidenciaLaboral.setContrato(nuevoContrato);
-					nuevaIncidenciaLaboral.setPeriodoNomina(periodoNominaVigente);
-					this.incidenciaLaboralRepository.save(nuevaIncidenciaLaboral);
-					reemplazarIncidenciaLaboralDePeriodo(periodoNominaVigente, incidenciaLaboralMasReciente,
-							nuevaIncidenciaLaboral);
-				}
-			} else {
-				evaluarPosiblesHorasDeFalta(nuevaIncidenciaLaboral, periodoNominaVigente, nuevoContrato);
-			}
-		} else {
-			evaluarPosiblesHorasDeFalta(nuevaIncidenciaLaboral, periodoNominaVigente, nuevoContrato);
-		}
-	}
-
-	private void evaluarPosiblesHorasDeFalta(IncidenciaLaboralModel nuevaIncidenciaLaboral,
-			PeriodoNominaModel periodoNominaVigente, ContratoModel nuevoContrato) {
 		if (periodoNominaVigente != null) {
-			insertarPosiblesHorasDeFalta(nuevaIncidenciaLaboral, periodoNominaVigente, nuevoContrato);
-			nuevaIncidenciaLaboral.setTotalHorasExtras(0);
+			IncidenciaLaboralModel incidenciaLaboralNueva = new IncidenciaLaboralModel();
+			int horasDeFalta = evaluarHorasDeFalta(nuevoContrato, periodoNominaVigente);
+			incidenciaLaboralNueva.setTotalHorasDeFalta(horasDeFalta);
+			incidenciaLaboralNueva.setContrato(nuevoContrato);
+			incidenciaLaboralNueva.setPeriodoNomina(periodoNominaVigente);
+			incidenciaLaboralNueva.setTotalHorasExtras(0);
+			this.incidenciaLaboralRepository.save(incidenciaLaboralNueva);
+			periodoNominaVigente.addIncidenciaLaboral(incidenciaLaboralNueva);
+			this.periodoNominaRepository.save(periodoNominaVigente);
 		}
 	}
 
-	private void insertarPosiblesHorasDeFalta(IncidenciaLaboralModel nuevaIncidenciaLaboral,
-			PeriodoNominaModel periodoNominaVigente, ContratoModel nuevoContrato) {
-		if (nuevoContrato.getFechaInicio().after(periodoNominaVigente.getFechaInicio())
-				&& nuevoContrato.getFechaInicio().before(periodoNominaVigente.getFechaFin())) {
-			int diasPasadosDeNomina = Period
-					.between(
-							LocalDate.ofInstant(periodoNominaVigente.getFechaInicio().toInstant(),
-									ZoneId.systemDefault()),
-							LocalDate.ofInstant(nuevoContrato.getFechaInicio().toInstant(), ZoneId.systemDefault()))
-					.getDays();
-			int horasContratadasPorSemana = Integer.parseInt(nuevoContrato.getHorasPorSemana());
-			int horasDeFalta = (diasPasadosDeNomina / 7) * horasContratadasPorSemana;
-			nuevaIncidenciaLaboral.setTotalHorasDeFalta(horasDeFalta);
-			nuevaIncidenciaLaboral.setContrato(nuevoContrato);
-			nuevaIncidenciaLaboral.setPeriodoNomina(periodoNominaVigente);
-			this.incidenciaLaboralRepository.save(nuevaIncidenciaLaboral);
-		}
-	}
-
-	private void insertarHorasDeFaltaPasadas(IncidenciaLaboralModel nuevaIncidenciaLaboral,
-			IncidenciaLaboralModel incidenciaLaboralMasReciente, PeriodoNominaModel periodoNomina,
-			ContratoModel contratoMasReciente) {
-		int totalHorasDeFaltaPasadas = incidenciaLaboralMasReciente.getTotalHorasDeFalta();
-		int totalHorasDeFaltaPasadasPorContratoCaduco = obtenerTotalHorasDeFaltaPasadasPorContratoCaduco(periodoNomina,
-				contratoMasReciente);
-		int totalHorasDeFaltaPorIncidenciaLaboral = totalHorasDeFaltaPasadas
-				- totalHorasDeFaltaPasadasPorContratoCaduco;
-		if (totalHorasDeFaltaPorIncidenciaLaboral >= 0) {
-			nuevaIncidenciaLaboral.setTotalHorasDeFalta(totalHorasDeFaltaPorIncidenciaLaboral);
-		}
-	}
-
-	private int obtenerTotalHorasDeFaltaPasadasPorContratoCaduco(PeriodoNominaModel periodoNomina,
-			ContratoModel contratoMasReciente) {
-		Date fechaInicio = periodoNomina.getFechaInicio();
-		Date fechaFin = periodoNomina.getFechaFin();
-		int duracionPeriodoNomina = Period.between(LocalDate.ofInstant(fechaInicio.toInstant(), ZoneId.systemDefault()),
-				LocalDate.ofInstant(fechaFin.toInstant(), ZoneId.systemDefault())).getDays();
-		int duracionLaburoDurantePeriodo = Period
-				.between(LocalDate.ofInstant(fechaInicio.toInstant(), ZoneId.systemDefault()),
-						LocalDate.ofInstant(contratoMasReciente.getFechaFin().toInstant(), ZoneId.systemDefault()))
+	private int evaluarHorasDeFalta(ContratoModel nuevoContrato, PeriodoNominaModel periodoNominaVigente) {
+		int totalDiasNoLaburoEmpleado = Period
+				.between(
+						LocalDate.ofInstant(periodoNominaVigente.getFechaInicio().toInstant(),
+								ZoneId.of("America/Lima")),
+						LocalDate.ofInstant(nuevoContrato.getFechaInicio().toInstant(), ZoneId.of("America/Lima")))
 				.getDays();
-		int cantidadDiasFaltantes = duracionPeriodoNomina - duracionLaburoDurantePeriodo;
-		int totalHorasDeFalta = (cantidadDiasFaltantes / 7) * Integer.parseInt(contratoMasReciente.getHorasPorSemana());
-		return totalHorasDeFalta;
-	}
+		int semanasNoLaburo = totalDiasNoLaburoEmpleado / 7;
+		int totalDiasNoLaburoEmpleadoReales = totalDiasNoLaburoEmpleado - (2 * semanasNoLaburo);
 
-	private void reemplazarIncidenciaLaboralDePeriodo(PeriodoNominaModel periodoNominaVigente,
-			IncidenciaLaboralModel incidenciaLaboralMasReciente, IncidenciaLaboralModel nuevaIncidenciaLaboral) {
-		List<IncidenciaLaboralModel> listaIncidencias = periodoNominaVigente.getIncidenciasLaborales();
-		for (IncidenciaLaboralModel incidenciaLaboral : listaIncidencias) {
-			if (incidenciaLaboral == incidenciaLaboralMasReciente) {
-				incidenciaLaboral.setContrato(nuevaIncidenciaLaboral.getContrato());
-				incidenciaLaboral.setIdIncidenciaLaboral(nuevaIncidenciaLaboral.getIdIncidenciaLaboral());
-				incidenciaLaboral.setTotalHorasDeFalta(nuevaIncidenciaLaboral.getTotalHorasDeFalta());
-				incidenciaLaboral.setTotalHorasExtras(nuevaIncidenciaLaboral.getTotalHorasExtras());
-				this.incidenciaLaboralRepository.save(incidenciaLaboral);
-			}
-		}
-		periodoNominaVigente.setIncidenciasLaborales(listaIncidencias);
-		this.periodoNominaRepository.save(periodoNominaVigente);
+		int cantidadHorasPorDia = Integer.parseInt(nuevoContrato.getHorasPorSemana()) / 5;
+		return cantidadHorasPorDia * totalDiasNoLaburoEmpleadoReales;
 	}
 
 	public PeriodoNominaModel obtenerPeriodoNominaVigente() {
@@ -215,22 +145,12 @@ public class ContratoServiceImpl implements ContratoService {
 		PeriodoNominaModel periodoNominaVigente = null;
 		Date tiempoActual = java.sql.Timestamp.valueOf(LocalDateTime.now());
 		for (PeriodoNominaModel periodoNomina : periodosNomina) {
-			if (periodoNomina.getFechaInicio().before(tiempoActual)
-					&& periodoNomina.getFechaFin().after(tiempoActual)) {
+			if (periodoNomina.getFechaInicio().before(tiempoActual) && (periodoNomina.getFechaFin().after(tiempoActual)
+					|| periodoNomina.getFechaFin().equals(tiempoActual))) {
 				periodoNominaVigente = periodoNomina;
 			}
 		}
 		return periodoNominaVigente;
-	}
-
-	private IncidenciaLaboralModel obtenerIncidenciaLaboralMasReciente(ContratoModel contratoMasReciente) {
-		List<IncidenciaLaboralModel> listaIncidencias = this.incidenciaLaboralRepository
-				.findAllByContrato(contratoMasReciente);
-		IncidenciaLaboralModel incidenciaLaboralMasReciente = null;
-		if (!listaIncidencias.isEmpty()) {
-			incidenciaLaboralMasReciente = listaIncidencias.get(listaIncidencias.size() - 1);
-		}
-		return incidenciaLaboralMasReciente;
 	}
 
 	private boolean validarContrato(ContratoDto contratoDto) throws ContratoNotValidException {
@@ -266,7 +186,8 @@ public class ContratoServiceImpl implements ContratoService {
 	}
 
 	@Override
-	public ContratoModel buscarContratoPorId(String idContrato) throws NumberFormatException, ContratoNotValidException, ContratoNotFoundException {
+	public ContratoModel buscarContratoPorId(String idContrato)
+			throws NumberFormatException, ContratoNotValidException, ContratoNotFoundException {
 		ContratoModel contrato = new ContratoModel();
 		if (contrato.validarIdentificador(idContrato)) {
 			contrato = this.contratoRepository.findByIdContrato(Long.parseLong(idContrato));
@@ -326,7 +247,11 @@ public class ContratoServiceImpl implements ContratoService {
 		if (contratoAEditar != null) {
 			if (contratoAEditar.vigenciaValida(contratoAEditar)) {
 				contratoAEditar.setEstaCancelado(true);
+				asignarPosiblesHorasDeFalta(contratoAEditar);
 				this.contratoRepository.save(contratoAEditar);
+				EmpleadoModel empleado = contratoAEditar.getEmpleado();
+				empleado.setEstaActivo(true);
+				this.empleadoRepository.save(empleado);
 			} else
 				throw new ContratoNotValidException(CONTRATO_CERRADO);
 		} else {
@@ -335,9 +260,55 @@ public class ContratoServiceImpl implements ContratoService {
 		return contratoAEditar;
 	}
 
+	private void asignarPosiblesHorasDeFalta(ContratoModel contratoAEditar) {
+		PeriodoNominaModel periodoNominaVigente = obtenerPeriodoNominaVigente();
+		if (periodoNominaVigente != null) {
+			List<IncidenciaLaboralModel> incidenciasLaborales = periodoNominaVigente.getIncidenciasLaborales();
+			IncidenciaLaboralModel incidenciaLaboralDePeriodo = null;
+			for (IncidenciaLaboralModel incidenciaLaboral : incidenciasLaborales) {
+				if (incidenciaLaboral.getPeriodoNomina() == periodoNominaVigente)
+					incidenciaLaboralDePeriodo = incidenciaLaboral;
+			}
+			if (incidenciaLaboralDePeriodo != null) {
+				int horasDeFalta = evaluarHorasDeFaltaPorCancelacion(contratoAEditar, periodoNominaVigente);
+				incidenciaLaboralDePeriodo.setTotalHorasDeFalta(horasDeFalta);
+				incidenciaLaboralDePeriodo.setContrato(contratoAEditar);
+				incidenciaLaboralDePeriodo.setPeriodoNomina(periodoNominaVigente);
+				incidenciaLaboralDePeriodo.setTotalHorasExtras(0);
+				this.incidenciaLaboralRepository.save(incidenciaLaboralDePeriodo);
+			}
+		}
+	}
+
+	private int evaluarHorasDeFaltaPorCancelacion(ContratoModel contratoAEditar,
+			PeriodoNominaModel periodoNominaVigente) {
+		Date tiempoActual = java.sql.Timestamp.valueOf(LocalDateTime.now());
+		int totalDiasPeriodoNomina = Period
+				.between(
+						LocalDate.ofInstant(periodoNominaVigente.getFechaInicio().toInstant(),
+								ZoneId.of("America/Lima")),
+						LocalDate.ofInstant(periodoNominaVigente.getFechaFin().toInstant(), ZoneId.of("America/Lima")))
+				.getDays();
+		int semanasPeriodoNomina = totalDiasPeriodoNomina / 7;
+		int totalDiasLaboralesPeriodoNomina = totalDiasPeriodoNomina - (2 * semanasPeriodoNomina);
+
+		int totalDiasLaburoEmpleado = Period
+				.between(LocalDate.ofInstant(periodoNominaVigente.getFechaInicio().toInstant(), ZoneId.of("America/Lima")),
+						LocalDate.ofInstant(tiempoActual.toInstant(), ZoneId.of("America/Lima")))
+				.getDays();
+		int semanasLaburo = totalDiasLaburoEmpleado / 7;
+		int totalDiasLaburoEmpleadoReales = totalDiasLaburoEmpleado - (2 * semanasLaburo);
+
+		int cantidadDiasFaltantes = totalDiasLaboralesPeriodoNomina - totalDiasLaburoEmpleadoReales;
+		int cantidadHorasPorDia = Integer.parseInt(contratoAEditar.getHorasPorSemana()) / 5;
+		return cantidadHorasPorDia * cantidadDiasFaltantes;
+	}
+
 	@Override
 	public ContratoModel guardarContrato(Date fechaInicio, Date fechaFin, String idEmpleado, String puesto,
-			String horasPorSemana, String idAfp, Boolean tieneAsignacionFamiliar, String pagoPorHora) throws NumberFormatException, ContratoNotValidException, AfpNotFoundException, EmpleadoNotFoundException, ContratoExistsException {
+			String horasPorSemana, String idAfp, Boolean tieneAsignacionFamiliar, String pagoPorHora)
+			throws NumberFormatException, ContratoNotValidException, AfpNotFoundException, EmpleadoNotFoundException,
+			ContratoExistsException {
 		ContratoModel nuevoContrato = new ContratoModel();
 		AfpModel afpEncontrado = new AfpModel();
 		EmpleadoModel empleadoEncontrado = new EmpleadoModel();
@@ -350,7 +321,7 @@ public class ContratoServiceImpl implements ContratoService {
 			empleadoEncontrado = this.empleadoRepository.findByIdEmpleado(Long.parseLong(idEmpleado));
 		if (empleadoEncontrado == null)
 			throw new EmpleadoNotFoundException(NO_EMPLEADO_FOUND);
-		if(nuevoContrato.validarFechas(fechaInicio,fechaFin)){
+		if (nuevoContrato.validarFechas(fechaInicio, fechaFin)) {
 			contratoDto.setFechaInicio(fechaInicio);
 			contratoDto.setFechaFin(fechaFin);
 			contratoDto.setIdEmpleado(idEmpleado);
@@ -375,6 +346,7 @@ public class ContratoServiceImpl implements ContratoService {
 					evaluarIncidenciasLaborales(nuevoContrato);
 					nuevoContrato.setEstaCancelado(false);
 					empleadoEncontrado.addContrato(nuevoContrato);
+					empleadoEncontrado.setEstaActivo(true);
 					this.empleadoRepository.save(empleadoEncontrado);
 					this.contratoRepository.save(nuevoContrato);
 				}
@@ -382,10 +354,8 @@ public class ContratoServiceImpl implements ContratoService {
 				throw new ContratoExistsException(CONTRATO_ALREADY_EXISTS);
 			}
 		}
-		
+
 		return nuevoContrato;
 	}
-
-
 
 }

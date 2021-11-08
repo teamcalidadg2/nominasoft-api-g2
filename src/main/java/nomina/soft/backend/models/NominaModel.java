@@ -56,29 +56,12 @@ public class NominaModel {
 
 
 
-    public boolean validarContratoConNomina(ContratoModel contratoVigente,          //REGLA 06
-                                            NominaModel nuevaNomina) throws ContratoNotValidException, NominaNotValidException{
+    public boolean validarNomina(NominaModel nuevaNomina) throws ContratoNotValidException, NominaNotValidException{
 		boolean contratoValido = true;
-        String nombreEmpleado = contratoVigente.getEmpleado().getNombres() + " " + 
-                                contratoVigente.getEmpleado().getApellidos();
-		if(contratoVigente != null){
-			if(contratoVigente.getFechaFin().after(nuevaNomina.getPeriodoNomina().getFechaInicio())){
-				if(contratoVigente.getEstaCancelado()){
-					contratoValido = false;
-					throw new ContratoNotValidException(CONTRATO_CANCELADO + nombreEmpleado);
-                                                        
-				}
-			}
-			else{
-				contratoValido = false;
-				throw new ContratoNotValidException(CONTRATO_FECHA_FIN_NOT_VALID + nombreEmpleado);
-			}
-		}else contratoValido = false;
-        
-		if(!(nuevaNomina.getPeriodoNomina().getFechaFin().before(nuevaNomina.getFecha()))){
-			contratoValido = false;
-			throw new NominaNotValidException(PERIODO_FECHA_FIN_NOT_VALID);
-		}
+		// if(!(nuevaNomina.getPeriodoNomina().getFechaFin().before(nuevaNomina.getFecha()))){
+		// 	contratoValido = false;
+		// 	throw new NominaNotValidException(PERIODO_FECHA_FIN_NOT_VALID);
+		// }
 		return contratoValido;
 	}
 

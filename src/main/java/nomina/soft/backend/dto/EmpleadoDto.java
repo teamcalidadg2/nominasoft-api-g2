@@ -17,5 +17,6 @@ public class EmpleadoDto {
     @Getter @Setter private String telefono;
     @Getter @Setter private String correo;
     @Getter @Setter private String direccion;
+    @Getter @Setter private Boolean estaActivo;
 
 }
