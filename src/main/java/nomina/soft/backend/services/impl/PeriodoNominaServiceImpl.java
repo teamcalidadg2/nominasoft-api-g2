@@ -62,19 +62,19 @@ public class PeriodoNominaServiceImpl implements PeriodoNominaService {
 		List<PeriodoNominaModel> listaFinal = new ArrayList<PeriodoNominaModel>();
 		if (lista == null) {
 			throw new PeriodoNominaNotFoundException(NO_PERIODOS_FOUND);
-		} else {
-			for (PeriodoNominaModel periodoNomina : lista) {
-				List<NominaModel> listaNominas = periodoNomina.getNominas();
-				boolean periodoDisponible = true;
-				for (NominaModel nomina : listaNominas) {
-					if (nomina.getEstaCerrada())
-						periodoDisponible = false;
-				}
-				if (periodoDisponible)
-					listaFinal.add(periodoNomina);
-			}
-		}
-		return listaFinal;
+		}// else {
+		// 	for (PeriodoNominaModel periodoNomina : lista) {
+		// 		List<NominaModel> listaNominas = periodoNomina.getNominas();
+		// 		boolean periodoDisponible = true;
+		// 		for (NominaModel nomina : listaNominas) {
+		// 			if (nomina.getEstaCerrada())
+		// 				periodoDisponible = false;
+		// 		}
+		// 		if (periodoDisponible)
+		// 			listaFinal.add(periodoNomina);
+		// 	}
+		// }
+		return lista;
 	}
 
 	@Override

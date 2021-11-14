@@ -135,8 +135,7 @@ public class NominaServiceImpl implements NominaService {
 			throw new PeriodoNominaNotFoundException(PERIODO_NOT_FOUND_BY_ID);
 		} else {
 			List<NominaModel> nominasDePeriodo = periodoNomina.getNominas();
-			if (!nuevaNomina.esPeriodoCerrado(nominasDePeriodo)
-					&& nuevaNomina.descripcionValida(nominaDto.getDescripcion())) {
+			if (nuevaNomina.descripcionValida(nominaDto.getDescripcion())) {
 				nominaDto.corregirFechaZonaHoraria(nominaDto.getFecha());
 				nuevaNomina.setPeriodoNomina(periodoNomina);
 				nuevaNomina.setFecha(nominaDto.getFecha());
@@ -146,8 +145,8 @@ public class NominaServiceImpl implements NominaService {
 				nuevaNomina.setEstaCerrada(false);
 				nuevaNomina.setBoletasDePago(listaBoletas);
 				this.nominaRepository.save(nuevaNomina);
-			} else
-				throw new PeriodoNominaNotFoundException(PERIODO_CERRADO);
+			} //else
+			// 	throw new PeriodoNominaNotFoundException(PERIODO_CERRADO);
 		}
 		return nuevaNomina.getBoletasDePago();
 	}
@@ -225,8 +224,7 @@ public class NominaServiceImpl implements NominaService {
 			throw new PeriodoNominaNotFoundException(PERIODO_NOT_FOUND_BY_ID);
 		} else {
 			List<NominaModel> nominasDePeriodo = periodoNomina.getNominas();
-			if (!nuevaNomina.esPeriodoCerrado(nominasDePeriodo)
-					&& nuevaNomina.descripcionValida(nominaDto.getDescripcion())) {
+			if (nuevaNomina.descripcionValida(nominaDto.getDescripcion())) {
 				nominaDto.corregirFechaZonaHoraria(nominaDto.getFecha());
 				nuevaNomina.setPeriodoNomina(periodoNomina);
 				nuevaNomina.setFecha(nominaDto.getFecha());
@@ -234,8 +232,8 @@ public class NominaServiceImpl implements NominaService {
 				listaBoletas = GenerarBoletasDePago(nuevaNomina);
 				nuevaNomina.setEstaCerrada(false);
 				nuevaNomina.setBoletasDePago(listaBoletas);
-			} else
-				throw new PeriodoNominaNotFoundException(PERIODO_CERRADO);
+		 	} //else
+		// 		throw new PeriodoNominaNotFoundException(PERIODO_CERRADO);
 		}
 		return nuevaNomina.getBoletasDePago();
 	}
@@ -273,21 +271,11 @@ public class NominaServiceImpl implements NominaService {
 		if (nominaAEditar.identificadorValido(idNomina))
 			nominaAEditar = this.nominaRepository.findByIdNomina(Long.parseLong(idNomina));
 		if (nominaAEditar != null) {
-			if (!nominaAEditar.getEstaCerrada()) {
-				PeriodoNominaModel periodoDeNomina = nominaAEditar.getPeriodoNomina();
-				boolean darPaseValido = true;
-				for (NominaModel nominaModel : periodoDeNomina.getNominas()) {
-					if (nominaModel.getEstaCerrada())
-						darPaseValido = false;
-				}
-				if (darPaseValido) {
-					nominaAEditar.setEstaCerrada(true);
-					this.nominaRepository.save(nominaAEditar);
-				} else {
-					throw new NominaNotValidException(PERIODO_IS_ALREADY_CLOSED);
-				}
-			} else {
+			if (Boolean.TRUE.equals(nominaAEditar.getEstaCerrada())) {
 				throw new NominaNotValidException(NOMINA_IS_ALREADY_CLOSED);
+			} else {
+				nominaAEditar.setEstaCerrada(true);
+				this.nominaRepository.save(nominaAEditar);
 			}
 		} else {
 			throw new NominaNotFoundException(NO_NOMINA_FOUND_BY_ID);
@@ -302,7 +290,7 @@ public class NominaServiceImpl implements NominaService {
 		if (nominaAEliminar.identificadorValido(idNomina))
 			nominaAEliminar = this.nominaRepository.findByIdNomina(Long.parseLong(idNomina));
 		if (nominaAEliminar != null) {
-			if (!nominaAEliminar.getEstaCerrada())
+			if (Boolean.FALSE.equals(nominaAEliminar.getEstaCerrada()))
 				this.nominaRepository.delete(nominaAEliminar);
 			else
 				throw new NominaNotValidException(PERIODO_IS_ALREADY_CLOSED);
