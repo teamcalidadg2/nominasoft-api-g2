@@ -10,7 +10,7 @@ import java.util.Date;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
-import nomina.soft.backend.Entidades.BoletaDePago;
+import nomina.soft.backend.models.BoletaDePago;
 
 
 @SpringBootTest

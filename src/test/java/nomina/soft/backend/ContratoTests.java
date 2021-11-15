@@ -1,10 +1,10 @@
 package nomina.soft.backend;
 
 
-import static nomina.soft.backend.Constantes.ContratoImplConstant.FECHA_FIN_3_MESES_NO_VALIDA;
-import static nomina.soft.backend.Constantes.ContratoImplConstant.FECHA_INICIO_NOT_VALID;
-import static nomina.soft.backend.Constantes.ContratoImplConstant.PAGO_POR_HORA_MAYOR_60;
-import static nomina.soft.backend.Constantes.ContratoImplConstant.PAGO_POR_HORA_NO_ENTERO;
+import static nomina.soft.backend.constantes.ContratoImplConstant.FECHA_FIN_3_MESES_NO_VALIDA;
+import static nomina.soft.backend.constantes.ContratoImplConstant.FECHA_INICIO_NOT_VALID;
+import static nomina.soft.backend.constantes.ContratoImplConstant.PAGO_POR_HORA_MAYOR_60;
+import static nomina.soft.backend.constantes.ContratoImplConstant.PAGO_POR_HORA_NO_ENTERO;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -17,8 +17,8 @@ import java.util.Date;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
-import nomina.soft.backend.Entidades.Contrato;
-import nomina.soft.backend.Excepciones.Clases.ContratoNotValidException;
+import nomina.soft.backend.excepciones.clases.ContratoNotValidException;
+import nomina.soft.backend.models.Contrato;
 
 @SpringBootTest
 public class ContratoTests {
@@ -114,7 +114,6 @@ public class ContratoTests {
 		contrato.setFechaFin(fechaFin);
 
 		//contrato.fechasValidas(fechaInicio,fechaFin)
-		String resultado = new String();
 		assertTrue(contrato.fechasValidas(fechaInicio,fechaFin));
 
 	}

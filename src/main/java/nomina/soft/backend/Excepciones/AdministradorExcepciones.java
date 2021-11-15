@@ -1,4 +1,4 @@
-package nomina.soft.backend.Excepciones;
+package nomina.soft.backend.excepciones;
 
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
 import static org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR;
@@ -21,21 +21,21 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
-import nomina.soft.backend.Entidades.HttpResponse;
-import nomina.soft.backend.Excepciones.Clases.AfpExistsException;
-import nomina.soft.backend.Excepciones.Clases.AfpNotFoundException;
-import nomina.soft.backend.Excepciones.Clases.ContratoExistsException;
-import nomina.soft.backend.Excepciones.Clases.ContratoNotFoundException;
-import nomina.soft.backend.Excepciones.Clases.ContratoNotValidException;
-import nomina.soft.backend.Excepciones.Clases.EmpleadoExistsException;
-import nomina.soft.backend.Excepciones.Clases.EmpleadoNotFoundException;
-import nomina.soft.backend.Excepciones.Clases.EmpleadoNotValidException;
-import nomina.soft.backend.Excepciones.Clases.NominaExistsException;
-import nomina.soft.backend.Excepciones.Clases.NominaNotFoundException;
-import nomina.soft.backend.Excepciones.Clases.NominaNotValidException;
-import nomina.soft.backend.Excepciones.Clases.PeriodoNominaExistsException;
-import nomina.soft.backend.Excepciones.Clases.PeriodoNominaNotFoundException;
-import nomina.soft.backend.Excepciones.Clases.PeriodoNominaNotValidException;
+import nomina.soft.backend.excepciones.clases.AfpExistsException;
+import nomina.soft.backend.excepciones.clases.AfpNotFoundException;
+import nomina.soft.backend.excepciones.clases.ContratoExistsException;
+import nomina.soft.backend.excepciones.clases.ContratoNotFoundException;
+import nomina.soft.backend.excepciones.clases.ContratoNotValidException;
+import nomina.soft.backend.excepciones.clases.EmpleadoExistsException;
+import nomina.soft.backend.excepciones.clases.EmpleadoNotFoundException;
+import nomina.soft.backend.excepciones.clases.EmpleadoNotValidException;
+import nomina.soft.backend.excepciones.clases.NominaExistsException;
+import nomina.soft.backend.excepciones.clases.NominaNotFoundException;
+import nomina.soft.backend.excepciones.clases.NominaNotValidException;
+import nomina.soft.backend.excepciones.clases.PeriodoNominaExistsException;
+import nomina.soft.backend.excepciones.clases.PeriodoNominaNotFoundException;
+import nomina.soft.backend.excepciones.clases.PeriodoNominaNotValidException;
+import nomina.soft.backend.models.HttpResponse;
 
 
 @RestControllerAdvice

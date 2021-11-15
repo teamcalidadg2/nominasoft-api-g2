@@ -1,4 +1,4 @@
-package nomina.soft.backend.Excepciones.Clases;
+package nomina.soft.backend.excepciones.clases;
 
 public class NominaNotFoundException extends Exception {
     public NominaNotFoundException (String message) {

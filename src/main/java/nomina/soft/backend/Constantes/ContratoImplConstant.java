@@ -1,4 +1,4 @@
-package nomina.soft.backend.Constantes;
+package nomina.soft.backend.constantes;
 
 public class ContratoImplConstant {
 

@@ -1,4 +1,4 @@
-package nomina.soft.backend.Excepciones.Clases;
+package nomina.soft.backend.excepciones.clases;
 
 public class AfpNotFoundException extends Exception{
 

@@ -10,8 +10,8 @@ import java.util.Date;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
-import nomina.soft.backend.Entidades.PeriodoNomina;
-import nomina.soft.backend.Excepciones.Clases.PeriodoNominaNotValidException;
+import nomina.soft.backend.excepciones.clases.PeriodoNominaNotValidException;
+import nomina.soft.backend.models.PeriodoNomina;
 
 
 @SpringBootTest
