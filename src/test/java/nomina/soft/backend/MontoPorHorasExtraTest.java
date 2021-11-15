@@ -5,7 +5,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
-import nomina.soft.backend.models.BoletaDePagoModel;
+import nomina.soft.backend.Entidades.BoletaDePago;
 
 @SpringBootTest
 public class MontoPorHorasExtraTest {
@@ -13,7 +13,7 @@ public class MontoPorHorasExtraTest {
     @Test
     void CalcularMontoHorasExtraTest1 () {
 
-        BoletaDePagoModel boletaDePagoModel = new BoletaDePagoModel();
+        BoletaDePago boletaDePagoModel = new BoletaDePago();
         int totalHorasExtrasIncidenciaLaboral = 3;
         int pagoPorHoraContrato = 40;
 

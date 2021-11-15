@@ -1,35 +1,23 @@
 package nomina.soft.backend;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import java.util.Date;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
-import java.util.Calendar;
+import java.util.Date;
 
-import org.joda.time.DateTime;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
-import nomina.soft.backend.exception.domain.ContratoNotValidException;
-import nomina.soft.backend.models.BoletaDePagoModel;
-import nomina.soft.backend.models.ContratoModel;
-import nomina.soft.backend.services.impl.ContratoServiceImpl;
-import org.springframework.boot.test.context.SpringBootTest;
+import nomina.soft.backend.Entidades.BoletaDePago;
 
 
 @SpringBootTest
 public class BoletaDePagoTests {
     @Test
     void calcularSueldoBasicoTest(){
-        BoletaDePagoModel boleta = new BoletaDePagoModel();
+        BoletaDePago boleta = new BoletaDePago();
         int totalDeHoras, pagoPorHoraContrato;
         totalDeHoras=16;
         pagoPorHoraContrato=20;
@@ -40,7 +28,7 @@ public class BoletaDePagoTests {
 
     @Test
     void CalcularMontoPorAsignacionFamiliarTest1(){
-        BoletaDePagoModel boleta = new BoletaDePagoModel();
+        BoletaDePago boleta = new BoletaDePago();
         boolean tieneAsignacionFamiliar=true;
         int sueldoBasico=2000;
         float result=boleta.calcularMontoPorAsignacionFamiliar(tieneAsignacionFamiliar,sueldoBasico);
@@ -49,7 +37,7 @@ public class BoletaDePagoTests {
 
     @Test
     void CalcularMontoPorAsignacionFamiliarTest2(){
-        BoletaDePagoModel boleta = new BoletaDePagoModel();
+        BoletaDePago boleta = new BoletaDePago();
         boolean tieneAsignacionFamiliar=false;
         int sueldoBasico=2500;
         float result=boleta.calcularMontoPorAsignacionFamiliar(tieneAsignacionFamiliar,sueldoBasico);
@@ -58,7 +46,7 @@ public class BoletaDePagoTests {
 
     @Test
     void calcularRegimenPensionarioTest(){
-        BoletaDePagoModel boleta = new BoletaDePagoModel();
+        BoletaDePago boleta = new BoletaDePago();
         int sueldoBasico=1500;
         int porcentajeAFP=20;
         float result =boleta.calcularRegimenPensionario(sueldoBasico,porcentajeAFP);
@@ -67,7 +55,7 @@ public class BoletaDePagoTests {
 
     @Test
     void calcularMontonPorHoraDeFalta(){
-        BoletaDePagoModel boleta = new BoletaDePagoModel();
+        BoletaDePago boleta = new BoletaDePago();
         int totalHorasDeFaltaIncidenciaLaboral= 10;
         int pagoPorHoraContrato = 20;
         float result = boleta.calcularMontoPorHorasDeFalta(totalHorasDeFaltaIncidenciaLaboral, pagoPorHoraContrato);
@@ -76,7 +64,7 @@ public class BoletaDePagoTests {
 
     @Test
     void calcularNetoAPagartest(){
-        BoletaDePagoModel boleta = new BoletaDePagoModel();
+        BoletaDePago boleta = new BoletaDePago();
         float totalIngresos=5000;
         float totalRetenciones=400;
         float result = boleta.calcularNetoAPagar(totalIngresos, totalRetenciones);
@@ -85,7 +73,7 @@ public class BoletaDePagoTests {
 
     @Test
     void CalcularHorasSemanaTest1() throws ParseException {
-        BoletaDePagoModel boletaDePagoModel = new BoletaDePagoModel();
+        BoletaDePago boletaDePagoModel = new BoletaDePago();
 
         DateFormat formatter = new SimpleDateFormat("dd/MM/yyyy");
 		Date fechaInicio = formatter.parse("3/10/2021");
@@ -105,7 +93,7 @@ public class BoletaDePagoTests {
 		float reintegros = 0;
 		float movilidad = 100;
 		float otrosIngresos = 50;
-        BoletaDePagoModel boletaDePago = new BoletaDePagoModel();
+        BoletaDePago boletaDePago = new BoletaDePago();
         float resultado = boletaDePago.sumaTotalIngresos(sueldoBasico, montoPorAsignacionFamiliar, montoPorHorasExtras, reintegros, movilidad, otrosIngresos);
 
         float expectativa = 2150;
@@ -119,7 +107,7 @@ public class BoletaDePagoTests {
         float adelantosTMP = 150;
         float otrosDescuentosTMP = 10;
         
-        BoletaDePagoModel boletaDePago = new BoletaDePagoModel();
+        BoletaDePago boletaDePago = new BoletaDePago();
         float resultado = boletaDePago.sumaTotalDeRetenciones(regimenPensionarioTMP, montoPorHorasDeFaltaTMP, adelantosTMP,  otrosDescuentosTMP);
 
         float expectativa = 268;

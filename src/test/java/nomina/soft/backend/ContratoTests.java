@@ -1,6 +1,10 @@
 package nomina.soft.backend;
 
 
+import static nomina.soft.backend.Constantes.ContratoImplConstant.FECHA_FIN_3_MESES_NO_VALIDA;
+import static nomina.soft.backend.Constantes.ContratoImplConstant.FECHA_INICIO_NOT_VALID;
+import static nomina.soft.backend.Constantes.ContratoImplConstant.PAGO_POR_HORA_MAYOR_60;
+import static nomina.soft.backend.Constantes.ContratoImplConstant.PAGO_POR_HORA_NO_ENTERO;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -13,9 +17,8 @@ import java.util.Date;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
-import nomina.soft.backend.constant.ContratoImplConstant;
-import nomina.soft.backend.exception.domain.ContratoNotValidException;
-import nomina.soft.backend.models.ContratoModel;
+import nomina.soft.backend.Entidades.Contrato;
+import nomina.soft.backend.Excepciones.Clases.ContratoNotValidException;
 
 @SpringBootTest
 public class ContratoTests {
@@ -23,7 +26,7 @@ public class ContratoTests {
 	//Regla 1
 	@Test 
 	void validarVigenciaTest1() throws ParseException {
-		ContratoModel contrato = new ContratoModel();
+		Contrato contrato = new Contrato();
 		DateFormat formatter = new SimpleDateFormat("dd/MM/yyyy");
 		Date fechaInicio = formatter.parse("3/10/2021");
 		Date fechaFin = formatter.parse("3/01/2022");
@@ -37,7 +40,7 @@ public class ContratoTests {
 	@Test
 	void validarVigenciaTest2() throws ParseException {
 		
-		ContratoModel contrato = new ContratoModel();
+		Contrato contrato = new Contrato();
 		DateFormat formatter = new SimpleDateFormat("dd/MM/yyyy");
 		Date fechaInicio = formatter.parse("3/10/2021");
 		Date fechaFin = formatter.parse("3/01/2022");
@@ -51,7 +54,7 @@ public class ContratoTests {
 	@Test
 	void validarVigenciaTest3() throws ParseException {
 		
-		ContratoModel contrato = new ContratoModel();
+		Contrato contrato = new Contrato();
 		DateFormat formatter = new SimpleDateFormat("dd/MM/yyyy");
 		Date fechaInicio = formatter.parse("3/9/2021");
 		//CASO DE PRUEBA DONDE FECHA FIN ES ANTERIOR A LA ACTUAL
@@ -64,8 +67,7 @@ public class ContratoTests {
 
 	@Test
 	void fechasValidasTest1() throws ParseException, ContratoNotValidException {
-		ContratoImplConstant exceptionMsg = new ContratoImplConstant();
-		ContratoModel contrato = new ContratoModel();
+		Contrato contrato = new Contrato();
 		DateFormat formatter = new SimpleDateFormat("dd/MM/yyyy");
 		Date fechaInicio = formatter.parse("3/9/2021");
 		Date fechaFin = formatter.parse("3/12/2021");
@@ -78,15 +80,14 @@ public class ContratoTests {
 			assertTrue(contrato.fechasValidas(fechaInicio,fechaFin));
 		} catch (Exception e) {
 			resultado = e.getMessage();
-			assertEquals(exceptionMsg.FECHA_INICIO_NOT_VALID,resultado);
+			assertEquals(FECHA_INICIO_NOT_VALID,resultado);
 		}
 		
 	}
 
 	@Test
 	void fechasValidasTest2() throws ParseException, ContratoNotValidException {
-		ContratoImplConstant exceptionMsg = new ContratoImplConstant();
-		ContratoModel contrato = new ContratoModel();
+		Contrato contrato = new Contrato();
 		DateFormat formatter = new SimpleDateFormat("dd/MM/yyyy");
 		Date fechaInicio = formatter.parse("4/12/2021");
 		Date fechaFin = formatter.parse("5/12/2021");
@@ -99,14 +100,13 @@ public class ContratoTests {
 			assertTrue(contrato.fechasValidas(fechaInicio,fechaFin));
 		} catch (Exception e) {
 			resultado = e.getMessage();
-			assertEquals(exceptionMsg.FECHA_FIN_3_MESES_NOT_VALID,resultado);
+			assertEquals(FECHA_FIN_3_MESES_NO_VALIDA,resultado);
 		}
 	}
 
 	@Test
 	void fechasValidasTest3() throws ParseException, ContratoNotValidException {
-		ContratoImplConstant exceptionMsg = new ContratoImplConstant();
-		ContratoModel contrato = new ContratoModel();
+		Contrato contrato = new Contrato();
 		DateFormat formatter = new SimpleDateFormat("dd/MM/yyyy");
 		Date fechaInicio = formatter.parse("15/10/2021");
 		Date fechaFin = formatter.parse("15/05/2022");
@@ -122,44 +122,42 @@ public class ContratoTests {
 	@Test
 	void pagoPorHoraValidoTest1() throws ContratoNotValidException {
 		String pagoPorHoraEntrada = new String();
-		ContratoModel contrato = new ContratoModel();
+		Contrato contrato = new Contrato();
 		pagoPorHoraEntrada="15";
 		assertEquals(true,contrato.pagoPorHoraValido(pagoPorHoraEntrada));
 	}
 
 	@Test
 	void pagoPorHoraValidoTest2() throws ContratoNotValidException {
-		ContratoImplConstant exceptionMsg = new ContratoImplConstant();
 		String pagoPorHoraEntrada = new String();
-		ContratoModel contrato = new ContratoModel();
+		Contrato contrato = new Contrato();
 		pagoPorHoraEntrada="90";
 		String resultado = new String();
 		try{
 			assertEquals(true,contrato.pagoPorHoraValido(pagoPorHoraEntrada));
 		}catch (Exception e) {
 			resultado = e.getMessage();
-			assertEquals(exceptionMsg.PAGO_POR_HORA_MAYOR_60,resultado);
+			assertEquals(PAGO_POR_HORA_MAYOR_60,resultado);
 		}
 	}
 
 	@Test
 	void pagoPorHoraValidoTest3() throws ContratoNotValidException {
-		ContratoImplConstant exceptionMsg = new ContratoImplConstant();
 		String pagoPorHoraEntrada = new String();
-		ContratoModel contrato = new ContratoModel();
+		Contrato contrato = new Contrato();
 		pagoPorHoraEntrada="50asd";
 		String resultado = new String();
 		try{
 			assertEquals(true,contrato.pagoPorHoraValido(pagoPorHoraEntrada));
 		}catch (Exception e) {
 			resultado = e.getMessage();
-			assertEquals(exceptionMsg.PAGO_POR_HORA_NOT_INTEGER,resultado);
+			assertEquals(PAGO_POR_HORA_NO_ENTERO,resultado);
 		}
 	}
 
 	@Test
 	void horasContratadasValidasTest1(){
-		ContratoModel contratoTemporal = new ContratoModel();
+		Contrato contratoTemporal = new Contrato();
 		String horasContratadas = "10.3";
 		try {
             assertEquals(false, contratoTemporal.horasContratadasValidas(horasContratadas));
@@ -172,7 +170,7 @@ public class ContratoTests {
 
 	@Test
 	void horasContratadasValidasTest2(){
-		ContratoModel contratoTemporal = new ContratoModel();
+		Contrato contratoTemporal = new Contrato();
 		String horasContratadas = "50";
 		try {
             assertEquals(false, contratoTemporal.horasContratadasValidas(horasContratadas));
@@ -185,7 +183,7 @@ public class ContratoTests {
 
 	@Test
 	void horasContratadasValidasTest3(){
-		ContratoModel contratoTemporal = new ContratoModel();
+		Contrato contratoTemporal = new Contrato();
 		String horasContratadas = "14";
 		try {
             assertEquals(false, contratoTemporal.horasContratadasValidas(horasContratadas));
@@ -198,7 +196,7 @@ public class ContratoTests {
 
 	@Test
 	void horasContratadasValidasTest4() throws ContratoNotValidException{
-		ContratoModel contratoTemporal = new ContratoModel();
+		Contrato contratoTemporal = new Contrato();
 		String horasContratadas = "24";
         assertEquals(true, contratoTemporal.horasContratadasValidas(horasContratadas));
 	}
