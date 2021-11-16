@@ -1,10 +1,10 @@
 package nomina.soft.backend.servicios.implementacion;
 
-import static nomina.soft.backend.constantes.AfpImplConstant.AFP_CON_DESCUENTO_YA_EXISTENTE;
-import static nomina.soft.backend.constantes.AfpImplConstant.AFP_CON_NOMBRE_YA_EXISTENTE;
-import static nomina.soft.backend.constantes.AfpImplConstant.AFP_NO_ENCONTRADO_POR_DESCUENTO;
-import static nomina.soft.backend.constantes.AfpImplConstant.AFP_NO_ENCONTRADO_POR_ID;
-import static nomina.soft.backend.constantes.AfpImplConstant.AFP_NO_ENCONTRADO_POR_NOMBRE;
+import static nomina.soft.backend.statics.AfpImplConstant.AFP_CON_DESCUENTO_YA_EXISTENTE;
+import static nomina.soft.backend.statics.AfpImplConstant.AFP_CON_NOMBRE_YA_EXISTENTE;
+import static nomina.soft.backend.statics.AfpImplConstant.AFP_NO_ENCONTRADO_POR_DESCUENTO;
+import static nomina.soft.backend.statics.AfpImplConstant.AFP_NO_ENCONTRADO_POR_ID;
+import static nomina.soft.backend.statics.AfpImplConstant.AFP_NO_ENCONTRADO_POR_NOMBRE;
 import static org.apache.commons.lang3.StringUtils.EMPTY;
 
 import java.util.List;
@@ -17,9 +17,9 @@ import org.springframework.stereotype.Service;
 
 import nomina.soft.backend.dao.AfpDao;
 import nomina.soft.backend.dto.AfpDto;
+import nomina.soft.backend.entidades.Afp;
 import nomina.soft.backend.excepciones.clases.AfpExistsException;
 import nomina.soft.backend.excepciones.clases.AfpNotFoundException;
-import nomina.soft.backend.models.Afp;
 import nomina.soft.backend.servicios.declaracion.ServicioAfp;
 
 @Service

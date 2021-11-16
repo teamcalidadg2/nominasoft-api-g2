@@ -3,9 +3,9 @@ package nomina.soft.backend.servicios.declaracion;
 import java.util.List;
 
 import nomina.soft.backend.dto.AfpDto;
+import nomina.soft.backend.entidades.Afp;
 import nomina.soft.backend.excepciones.clases.AfpExistsException;
 import nomina.soft.backend.excepciones.clases.AfpNotFoundException;
-import nomina.soft.backend.models.Afp;
 
 public interface ServicioAfp {
 

@@ -1,5 +1,6 @@
 package nomina.soft.backend.servicios.implementacion;
 
+import java.text.ParseException;
 import java.util.Collections;
 import java.util.List;
 
@@ -9,12 +10,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import nomina.soft.backend.dao.IncidenciaLaboralDao;
+import nomina.soft.backend.entidades.Contrato;
+import nomina.soft.backend.entidades.IncidenciaLaboral;
+import nomina.soft.backend.entidades.PeriodoNomina;
 import nomina.soft.backend.excepciones.clases.ContratoNotFoundException;
 import nomina.soft.backend.excepciones.clases.EmpleadoNotFoundException;
 import nomina.soft.backend.excepciones.clases.EmpleadoNotValidException;
-import nomina.soft.backend.models.Contrato;
-import nomina.soft.backend.models.IncidenciaLaboral;
-import nomina.soft.backend.models.PeriodoNomina;
 import nomina.soft.backend.servicios.declaracion.ServicioIncidenciaLaboral;
 
 @Service
@@ -34,7 +35,7 @@ public class ImplServicioIncidenciaLaboral implements ServicioIncidenciaLaboral 
 
 	@Override
 	public List<IncidenciaLaboral> buscarIncidenciasPorDni(String dniEmpleado)
-			throws EmpleadoNotFoundException, ContratoNotFoundException, EmpleadoNotValidException {
+			throws EmpleadoNotFoundException, ContratoNotFoundException, EmpleadoNotValidException, ParseException {
 		Contrato contratoVigente = this.servicioContrato.buscarContratoVigentePorDni(dniEmpleado);
 		if (contratoVigente != null)
 			return contratoVigente.getIncidenciasLaborales();
@@ -43,7 +44,7 @@ public class ImplServicioIncidenciaLaboral implements ServicioIncidenciaLaboral 
 
 	@Override
 	public IncidenciaLaboral reportarHoraFaltante(String dniEmpleado)
-			throws EmpleadoNotFoundException, ContratoNotFoundException, EmpleadoNotValidException {
+			throws EmpleadoNotFoundException, ContratoNotFoundException, EmpleadoNotValidException, ParseException {
 		Contrato contratoVigente = this.servicioContrato.buscarContratoVigentePorDni(dniEmpleado);
 		if (contratoVigente != null) {
 			IncidenciaLaboral incidenciaLaboralVigente = obtenerIncidenciaLaboralVigente(contratoVigente);
@@ -71,7 +72,7 @@ public class ImplServicioIncidenciaLaboral implements ServicioIncidenciaLaboral 
 
 	@Override
 	public IncidenciaLaboral reportarHoraExtra(String dniEmpleado)
-			throws EmpleadoNotFoundException, ContratoNotFoundException, EmpleadoNotValidException {
+			throws EmpleadoNotFoundException, ContratoNotFoundException, EmpleadoNotValidException, ParseException {
 		Contrato contratoVigente = this.servicioContrato.buscarContratoVigentePorDni(dniEmpleado);
 		if (contratoVigente != null) {
 			IncidenciaLaboral incidenciaLaboralVigente = obtenerIncidenciaLaboralVigente(contratoVigente);

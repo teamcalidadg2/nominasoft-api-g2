@@ -1,9 +1,11 @@
 package nomina.soft.backend.servicios.implementacion;
 
-import static nomina.soft.backend.constantes.PeriodoNominaImplConstant.PERIODOS_NO_ENCONTRADOS;
-import static nomina.soft.backend.constantes.PeriodoNominaImplConstant.PERIODO_NOMINA_NO_ENCONTRADO_POR_ID;
-import static nomina.soft.backend.constantes.PeriodoNominaImplConstant.RANGO_DE_FECHAS_NO_VALIDO;
+import static nomina.soft.backend.servicios.Utility.TIME_ZONE;
+import static nomina.soft.backend.statics.PeriodoNominaImplConstant.PERIODOS_NO_ENCONTRADOS;
+import static nomina.soft.backend.statics.PeriodoNominaImplConstant.PERIODO_NOMINA_NO_ENCONTRADO_POR_ID;
+import static nomina.soft.backend.statics.PeriodoNominaImplConstant.RANGO_DE_FECHAS_NO_VALIDO;
 
+import java.text.ParseException;
 import java.time.LocalDate;
 import java.time.Period;
 import java.time.ZoneId;
@@ -18,18 +20,18 @@ import org.joda.time.Interval;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import nomina.soft.backend.dao.ContratoDao;
 import nomina.soft.backend.dao.EmpleadoDao;
 import nomina.soft.backend.dao.IncidenciaLaboralDao;
 import nomina.soft.backend.dao.PeriodoNominaDao;
-import nomina.soft.backend.dao.ContratoDao;
 import nomina.soft.backend.dto.PeriodoNominaDto;
+import nomina.soft.backend.entidades.Contrato;
+import nomina.soft.backend.entidades.Empleado;
+import nomina.soft.backend.entidades.IncidenciaLaboral;
+import nomina.soft.backend.entidades.PeriodoNomina;
 import nomina.soft.backend.excepciones.clases.PeriodoNominaExistsException;
 import nomina.soft.backend.excepciones.clases.PeriodoNominaNotFoundException;
 import nomina.soft.backend.excepciones.clases.PeriodoNominaNotValidException;
-import nomina.soft.backend.models.Contrato;
-import nomina.soft.backend.models.Empleado;
-import nomina.soft.backend.models.IncidenciaLaboral;
-import nomina.soft.backend.models.PeriodoNomina;
 import nomina.soft.backend.servicios.declaracion.ServicioPeriodoNomina;
 
 @Service
@@ -40,7 +42,6 @@ public class ImplServicioPeriodoNomina implements ServicioPeriodoNomina {
 	private EmpleadoDao repositorioEmpleado;
 	private ContratoDao repositorioContrato;
 	private IncidenciaLaboralDao repositorioIncidenciaLaboral;
-	public static final String TIMEZONE = "America/Lima";
 
 	@Autowired
 	public ImplServicioPeriodoNomina(PeriodoNominaDao repositorioPeriodoNomina, EmpleadoDao repositorioEmpleado,
@@ -62,11 +63,15 @@ public class ImplServicioPeriodoNomina implements ServicioPeriodoNomina {
 
 	@Override
 	public PeriodoNomina guardarNuevoPeriodoNomina(PeriodoNominaDto periodoNominaDto)
-			throws PeriodoNominaNotFoundException, PeriodoNominaExistsException, PeriodoNominaNotValidException {
+			throws PeriodoNominaNotFoundException, PeriodoNominaExistsException, PeriodoNominaNotValidException,
+			ParseException {
 		PeriodoNomina nuevoPeriodoNomina = new PeriodoNomina();
-		if (validateOverlapingFechas(periodoNominaDto.getFechaInicio(), periodoNominaDto.getFechaFin())) {
-			nuevoPeriodoNomina.setFechaInicio(arreglarZonaHorariaFechaInicio(periodoNominaDto.getFechaInicio()));
-			nuevoPeriodoNomina.setFechaFin(arreglarZonaHorariaFechaFin(periodoNominaDto.getFechaFin()));
+		boolean existeOverlapingConOtroPeriodo = validarOverlaping(periodoNominaDto.getFechaInicio(),
+				periodoNominaDto.getFechaFin());
+		if (!existeOverlapingConOtroPeriodo) {
+			nuevoPeriodoNomina
+					.setFechaInicio(periodoNominaDto.getFechaInicio());
+			nuevoPeriodoNomina.setFechaFin(periodoNominaDto.getFechaFin());
 			if (nuevoPeriodoNomina.fechasValidas(nuevoPeriodoNomina.getFechaInicio(),
 					nuevoPeriodoNomina.getFechaFin())) {
 				nuevoPeriodoNomina.setIncidenciasLaborales(new ArrayList<>());
@@ -77,22 +82,12 @@ public class ImplServicioPeriodoNomina implements ServicioPeriodoNomina {
 				this.repositorioPeriodoNomina.save(nuevoPeriodoNomina);
 				return nuevoPeriodoNomina;
 			}
-		}
+		} else
+			throw new PeriodoNominaExistsException(RANGO_DE_FECHAS_NO_VALIDO);
 		return null;
 	}
 
-	public Date arreglarZonaHorariaFechaInicio(Date fechaInicio) {
-		fechaInicio.setMinutes(fechaInicio.getMinutes() + fechaInicio.getTimezoneOffset());
-		return fechaInicio;
-	}
-
-	public Date arreglarZonaHorariaFechaFin(Date fechaFin) {
-		fechaFin.setMinutes(fechaFin.getMinutes() + fechaFin.getTimezoneOffset());
-		return fechaFin;
-	}
-
-	private boolean validateOverlapingFechas(Date fechaInicio, Date fechaFin) throws PeriodoNominaExistsException {
-		boolean rangoFechasValido = true;
+	private boolean validarOverlaping(Date fechaInicio, Date fechaFin) {
 		List<PeriodoNomina> listaPeriodosNomina = this.repositorioPeriodoNomina.findAll();
 		for (PeriodoNomina periodoNomina : listaPeriodosNomina) {
 			if (periodoNomina.getFechaInicio().after(fechaInicio)
@@ -106,14 +101,10 @@ public class ImplServicioPeriodoNomina implements ServicioPeriodoNomina {
 				Interval rangoNuevo = new Interval(fechaInicioNuevo, fechaFinNuevo);
 
 				if (rangoExistente.overlaps(rangoNuevo))
-					rangoFechasValido = false;
+					return true;
 			}
 		}
-
-		if (!rangoFechasValido) {
-			throw new PeriodoNominaExistsException(RANGO_DE_FECHAS_NO_VALIDO);
-		}
-		return rangoFechasValido;
+		return false;
 	}
 
 	private void generarCamposIncidenciaLaboral(PeriodoNomina periodoNomina) {
@@ -157,14 +148,14 @@ public class ImplServicioPeriodoNomina implements ServicioPeriodoNomina {
 	private void asignarHorasFaltantes(Contrato contratoMasReciente, IncidenciaLaboral nuevaIncidenciaLaboral) {
 		PeriodoNomina periodoNomina = nuevaIncidenciaLaboral.getPeriodoNomina();
 		int totalDiasPeriodoNomina = Period
-				.between(LocalDate.ofInstant(periodoNomina.getFechaInicio().toInstant(), ZoneId.of(TIMEZONE)),
-						LocalDate.ofInstant(periodoNomina.getFechaFin().toInstant(), ZoneId.of(TIMEZONE)))
+				.between(LocalDate.ofInstant(periodoNomina.getFechaInicio().toInstant(), ZoneId.of(TIME_ZONE)),
+						LocalDate.ofInstant(periodoNomina.getFechaFin().toInstant(), ZoneId.of(TIME_ZONE)))
 				.getDays();
 		int semanasPeriodoNomina = totalDiasPeriodoNomina / 7;
 		int totalDiasLaboralesPeriodoNomina = totalDiasPeriodoNomina - (2 * semanasPeriodoNomina);
 		int totalDiasLaburoEmpleado = Period
-				.between(LocalDate.ofInstant(periodoNomina.getFechaInicio().toInstant(), ZoneId.of(TIMEZONE)),
-						LocalDate.ofInstant(contratoMasReciente.getFechaFin().toInstant(), ZoneId.of(TIMEZONE)))
+				.between(LocalDate.ofInstant(periodoNomina.getFechaInicio().toInstant(), ZoneId.of(TIME_ZONE)),
+						LocalDate.ofInstant(contratoMasReciente.getFechaFin().toInstant(), ZoneId.of(TIME_ZONE)))
 				.getDays();
 		int semanasLaburo = totalDiasLaburoEmpleado / 7;
 		int totalDiasLaburoEmpleadoReales = totalDiasLaburoEmpleado - (2 * semanasLaburo);

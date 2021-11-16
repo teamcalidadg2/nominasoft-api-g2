@@ -1,6 +1,9 @@
-package nomina.soft.backend.constantes;
+package nomina.soft.backend.statics;
 
-public class EmpleadoImplConstant {
+public final class EmpleadoImplConstant {
+
+    private EmpleadoImplConstant() {
+    }
 
 	public static final String DNI_YA_EXISTE = "El DNI indicado ya se encuentra registrado con otro empleado.";
     public static final String EMPLEADO_NO_ENCONTRADO_POR_DNI = "No existe ningún empleado con el DNI indicado.";

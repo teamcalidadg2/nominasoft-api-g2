@@ -1,11 +1,11 @@
-package nomina.soft.backend.models;
+package nomina.soft.backend.entidades;
 
-import static nomina.soft.backend.constantes.NominaImplConstant.DESCRIPCION_NO_VALIDA;
-import static nomina.soft.backend.constantes.NominaImplConstant.ID_NOMINA_NO_NUERICO;
-import static nomina.soft.backend.constantes.NominaImplConstant.ID_NOMINA_NO_VALIDO;
-import static nomina.soft.backend.constantes.NominaImplConstant.ID_PERIODO_NOMINA_NO_NUMERICO;
-import static nomina.soft.backend.constantes.NominaImplConstant.ID_PERIODO_NOMINA_NO_VALIDO;
-import static nomina.soft.backend.constantes.NominaImplConstant.PERIODO_FECHA_FIN_NO_VALIDO;
+import static nomina.soft.backend.statics.NominaImplConstant.DESCRIPCION_NO_VALIDA;
+import static nomina.soft.backend.statics.NominaImplConstant.ID_NOMINA_NO_NUERICO;
+import static nomina.soft.backend.statics.NominaImplConstant.ID_NOMINA_NO_VALIDO;
+import static nomina.soft.backend.statics.NominaImplConstant.ID_PERIODO_NOMINA_NO_NUMERICO;
+import static nomina.soft.backend.statics.NominaImplConstant.ID_PERIODO_NOMINA_NO_VALIDO;
+import static nomina.soft.backend.statics.NominaImplConstant.PERIODO_FECHA_FIN_NO_VALIDO;
 
 import java.util.Date;
 import java.util.List;

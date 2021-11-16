@@ -1,5 +1,5 @@
-package nomina.soft.backend.models;
-import static nomina.soft.backend.constantes.PeriodoNominaImplConstant.FECHAS_NO_VALIDAS;
+package nomina.soft.backend.entidades;
+import static nomina.soft.backend.statics.PeriodoNominaImplConstant.FECHAS_NO_VALIDAS;
 
 import java.time.LocalDate;
 import java.time.Period;

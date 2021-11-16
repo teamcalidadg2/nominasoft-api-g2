@@ -1,30 +1,29 @@
-package nomina.soft.backend.models;
+package nomina.soft.backend.entidades;
 
-import static nomina.soft.backend.constantes.ContratoImplConstant.ASIGNACION_FAMILIAR_NO_VALIDO;
-import static nomina.soft.backend.constantes.ContratoImplConstant.FECHAS_NO_VALIDAS;
-import static nomina.soft.backend.constantes.ContratoImplConstant.FECHA_FIN_12_MESES_NO_VALIDA;
-import static nomina.soft.backend.constantes.ContratoImplConstant.FECHA_FIN_3_MESES_NO_VALIDA;
-import static nomina.soft.backend.constantes.ContratoImplConstant.FECHA_FIN_VACIA;
-import static nomina.soft.backend.constantes.ContratoImplConstant.FECHA_INICIO_NOT_VALID;
-import static nomina.soft.backend.constantes.ContratoImplConstant.FECHA_INICIO_VACIA;
-import static nomina.soft.backend.constantes.ContratoImplConstant.HORAS_CONTRATADAS_MAYOR_40;
-import static nomina.soft.backend.constantes.ContratoImplConstant.HORAS_CONTRATADAS_MENOR_8;
-import static nomina.soft.backend.constantes.ContratoImplConstant.HORAS_CONTRATADAS_NO_ENTERO;
-import static nomina.soft.backend.constantes.ContratoImplConstant.HORAS_CONTRATADAS_NO_MULTIPLO_DE_4;
-import static nomina.soft.backend.constantes.ContratoImplConstant.HORAS_CONTRATADAS_VACIO;
-import static nomina.soft.backend.constantes.ContratoImplConstant.ID_AFP_NO_NUMERICO;
-import static nomina.soft.backend.constantes.ContratoImplConstant.ID_AFP_NO_VALIDO;
-import static nomina.soft.backend.constantes.ContratoImplConstant.ID_CONTRATO_NO_ENTERO;
-import static nomina.soft.backend.constantes.ContratoImplConstant.ID_CONTRATO_VACIO;
-import static nomina.soft.backend.constantes.ContratoImplConstant.ID_EMPLEADO_NO_NUMERICO;
-import static nomina.soft.backend.constantes.ContratoImplConstant.ID_EMPLEADO_NO_VALIDO;
-import static nomina.soft.backend.constantes.ContratoImplConstant.PAGO_POR_HORA_MAYOR_60;
-import static nomina.soft.backend.constantes.ContratoImplConstant.PAGO_POR_HORA_MENOR_10;
-import static nomina.soft.backend.constantes.ContratoImplConstant.PAGO_POR_HORA_NO_ENTERO;
-import static nomina.soft.backend.constantes.ContratoImplConstant.PAGO_POR_HORA_VACIO;
-import static nomina.soft.backend.constantes.ContratoImplConstant.PUESTO_NO_VALIDO;
+import static nomina.soft.backend.statics.ContratoImplConstant.ASIGNACION_FAMILIAR_NO_VALIDO;
+import static nomina.soft.backend.statics.ContratoImplConstant.FECHAS_NO_VALIDAS;
+import static nomina.soft.backend.statics.ContratoImplConstant.FECHA_FIN_12_MESES_NO_VALIDA;
+import static nomina.soft.backend.statics.ContratoImplConstant.FECHA_FIN_3_MESES_NO_VALIDA;
+import static nomina.soft.backend.statics.ContratoImplConstant.FECHA_FIN_VACIA;
+import static nomina.soft.backend.statics.ContratoImplConstant.FECHA_INICIO_NOT_VALID;
+import static nomina.soft.backend.statics.ContratoImplConstant.FECHA_INICIO_VACIA;
+import static nomina.soft.backend.statics.ContratoImplConstant.HORAS_CONTRATADAS_MAYOR_40;
+import static nomina.soft.backend.statics.ContratoImplConstant.HORAS_CONTRATADAS_MENOR_8;
+import static nomina.soft.backend.statics.ContratoImplConstant.HORAS_CONTRATADAS_NO_ENTERO;
+import static nomina.soft.backend.statics.ContratoImplConstant.HORAS_CONTRATADAS_NO_MULTIPLO_DE_4;
+import static nomina.soft.backend.statics.ContratoImplConstant.HORAS_CONTRATADAS_VACIO;
+import static nomina.soft.backend.statics.ContratoImplConstant.ID_AFP_NO_NUMERICO;
+import static nomina.soft.backend.statics.ContratoImplConstant.ID_AFP_NO_VALIDO;
+import static nomina.soft.backend.statics.ContratoImplConstant.ID_CONTRATO_NO_ENTERO;
+import static nomina.soft.backend.statics.ContratoImplConstant.ID_CONTRATO_VACIO;
+import static nomina.soft.backend.statics.ContratoImplConstant.ID_EMPLEADO_NO_NUMERICO;
+import static nomina.soft.backend.statics.ContratoImplConstant.ID_EMPLEADO_NO_VALIDO;
+import static nomina.soft.backend.statics.ContratoImplConstant.PAGO_POR_HORA_MAYOR_60;
+import static nomina.soft.backend.statics.ContratoImplConstant.PAGO_POR_HORA_MENOR_10;
+import static nomina.soft.backend.statics.ContratoImplConstant.PAGO_POR_HORA_NO_ENTERO;
+import static nomina.soft.backend.statics.ContratoImplConstant.PAGO_POR_HORA_VACIO;
+import static nomina.soft.backend.statics.ContratoImplConstant.PUESTO_NO_VALIDO;
 
-import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.List;
 
@@ -87,9 +86,8 @@ public class Contrato {
 		incidenciasLaborales.add(nuevaIncidenciaLaboral);
 	}
 
-	public boolean fechasValidas(Date fechaInicio, Date fechaFin) throws ContratoNotValidException {
-		Date tiempoActual = java.sql.Timestamp.valueOf(LocalDateTime.now());
-		if(fechaInicio.before(tiempoActual)) throw new
+	public boolean fechasValidas(Date fechaInicio, Date fechaFin, Date fechaActual) throws ContratoNotValidException {
+		if(fechaInicio.before(fechaActual)) throw new
 			ContratoNotValidException(FECHA_INICIO_NOT_VALID);
 		if (fechaFin.after(fechaInicio)) { // REGLA03
 			double mesesDeDiferencia = (fechaFin.getTime() - fechaInicio.getTime()) / (1000D * 60 * 60 * 24 * 30.4167);
@@ -149,9 +147,8 @@ public class Contrato {
 		return true;
 	}
 
-	public boolean vigenciaValida(Contrato contratoModel) { // REGLA01
-		Date tiempoActual = java.sql.Timestamp.valueOf(LocalDateTime.now());
-		return contratoModel.getFechaFin().after(tiempoActual) && !contratoModel.getEstaCancelado();
+	public boolean vigenciaValida(Contrato contratoModel, Date fechaActual) { // REGLA01
+		return contratoModel.getFechaFin().after(fechaActual) && !contratoModel.getEstaCancelado();
 	}
 
 	public boolean puestoValido(String puestoCad) throws ContratoNotValidException {

@@ -3,7 +3,7 @@ import java.util.Date;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
-import nomina.soft.backend.models.PeriodoNomina;
+import nomina.soft.backend.entidades.PeriodoNomina;
 
 @Repository
 public interface PeriodoNominaDao extends JpaRepository<PeriodoNomina,Long>{

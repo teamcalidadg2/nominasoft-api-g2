@@ -1,6 +1,9 @@
-package nomina.soft.backend.constantes;
+package nomina.soft.backend.statics;
 
-public class ContratoImplConstant {
+public final class ContratoImplConstant {
+
+    private ContratoImplConstant() {
+    }
 
     public static final String CONTRATO_VIGENTE_YA_EXISTE = "El empleado indicado ya cuenta con un contrato vigente.";
     public static final String CONTRATO_VIGENTE_NO_ENCONTRADO = "No se encontró ningún contrato vigente asociado con el empleado indicado.";

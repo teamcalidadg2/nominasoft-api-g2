@@ -1,15 +1,16 @@
 package nomina.soft.backend.servicios.implementacion;
 
-import static nomina.soft.backend.constantes.AfpImplConstant.AFP_NO_ENCONTRADO_POR_ID;
-import static nomina.soft.backend.constantes.ContratoImplConstant.CONTRATO_NO_ENCONTRADO_POR_ID;
-import static nomina.soft.backend.constantes.ContratoImplConstant.CONTRATO_NO_VIGENTE;
-import static nomina.soft.backend.constantes.ContratoImplConstant.CONTRATO_VIGENTE_NO_ENCONTRADO;
-import static nomina.soft.backend.constantes.ContratoImplConstant.CONTRATO_VIGENTE_YA_EXISTE;
-import static nomina.soft.backend.constantes.EmpleadoImplConstant.EMPLEADO_NO_ENCONTRADO_POR_DNI;
-import static nomina.soft.backend.constantes.EmpleadoImplConstant.EMPLEADO_NO_ENCONTRADO_POR_ID;
+import static nomina.soft.backend.servicios.Utility.TIME_ZONE;
+import static nomina.soft.backend.statics.AfpImplConstant.AFP_NO_ENCONTRADO_POR_ID;
+import static nomina.soft.backend.statics.ContratoImplConstant.CONTRATO_NO_ENCONTRADO_POR_ID;
+import static nomina.soft.backend.statics.ContratoImplConstant.CONTRATO_NO_VIGENTE;
+import static nomina.soft.backend.statics.ContratoImplConstant.CONTRATO_VIGENTE_NO_ENCONTRADO;
+import static nomina.soft.backend.statics.ContratoImplConstant.CONTRATO_VIGENTE_YA_EXISTE;
+import static nomina.soft.backend.statics.EmpleadoImplConstant.EMPLEADO_NO_ENCONTRADO_POR_DNI;
+import static nomina.soft.backend.statics.EmpleadoImplConstant.EMPLEADO_NO_ENCONTRADO_POR_ID;
 
+import java.text.ParseException;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.time.Period;
 import java.time.ZoneId;
 import java.util.ArrayList;
@@ -27,17 +28,18 @@ import nomina.soft.backend.dao.EmpleadoDao;
 import nomina.soft.backend.dao.IncidenciaLaboralDao;
 import nomina.soft.backend.dao.PeriodoNominaDao;
 import nomina.soft.backend.dto.ContratoDto;
+import nomina.soft.backend.entidades.Afp;
+import nomina.soft.backend.entidades.Contrato;
+import nomina.soft.backend.entidades.Empleado;
+import nomina.soft.backend.entidades.IncidenciaLaboral;
+import nomina.soft.backend.entidades.PeriodoNomina;
 import nomina.soft.backend.excepciones.clases.AfpNotFoundException;
 import nomina.soft.backend.excepciones.clases.ContratoExistsException;
 import nomina.soft.backend.excepciones.clases.ContratoNotFoundException;
 import nomina.soft.backend.excepciones.clases.ContratoNotValidException;
 import nomina.soft.backend.excepciones.clases.EmpleadoNotFoundException;
 import nomina.soft.backend.excepciones.clases.EmpleadoNotValidException;
-import nomina.soft.backend.models.Afp;
-import nomina.soft.backend.models.Contrato;
-import nomina.soft.backend.models.Empleado;
-import nomina.soft.backend.models.IncidenciaLaboral;
-import nomina.soft.backend.models.PeriodoNomina;
+import nomina.soft.backend.servicios.Utility;
 import nomina.soft.backend.servicios.declaracion.ServicioContrato;
 
 @Service
@@ -49,18 +51,21 @@ public class ImplServicioContrato implements ServicioContrato {
 	private AfpDao repositorioAfp;
 	private IncidenciaLaboralDao repositorioIncidenciaLaboral;
 	private PeriodoNominaDao repositoPeriodoNomina;
-	public static final String TIMEZONE = "America/Lima";
+	private Utility utilidades;
+	Date tiempoActual;
 
 	@Autowired
 	public ImplServicioContrato(ContratoDao respositorioContrato, EmpleadoDao repositorioEmpleado,
 			AfpDao repositorioAfp, IncidenciaLaboralDao repositorioIncidenciaLaboral,
-			PeriodoNominaDao repositoPeriodoNomina) {
+			PeriodoNominaDao repositoPeriodoNomina, Utility utilidades) throws ParseException {
 		super();
 		this.respositorioContrato = respositorioContrato;
 		this.repositorioEmpleado = repositorioEmpleado;
 		this.repositorioAfp = repositorioAfp;
 		this.repositorioIncidenciaLaboral = repositorioIncidenciaLaboral;
 		this.repositoPeriodoNomina = repositoPeriodoNomina;
+		this.utilidades = utilidades;
+		this.tiempoActual = this.utilidades.obtenerFechaActual();
 	}
 
 	@Override
@@ -74,14 +79,14 @@ public class ImplServicioContrato implements ServicioContrato {
 	@Override
 	public Contrato guardarNuevoContrato(ContratoDto dtoContrato)
 			throws ContratoNotValidException, AfpNotFoundException, EmpleadoNotFoundException, ContratoExistsException,
-			NumberFormatException, ContratoNotFoundException {
+			NumberFormatException, ContratoNotFoundException, ParseException {
 		Contrato nuevoContrato = new Contrato();
 		Afp afpEncontrado = this.obtenerAfpValido(dtoContrato.getIdAfp());
 		Empleado empleadoEncontrado = this.obtenerEmpleadoValido(dtoContrato.getIdEmpleado());
 		boolean empleadoTieneContratoVigente = verificarSiEmpleadoTieneContratoVigente(empleadoEncontrado);
 		if (afpEncontrado != null && empleadoEncontrado != null && !empleadoTieneContratoVigente) {
-			dtoContrato.setFechaInicio(arreglarZonaHorariaFechaInicio(dtoContrato.getFechaInicio()));
-			dtoContrato.setFechaFin(arreglarZonaHorariaFechaFin(dtoContrato.getFechaFin()));
+			dtoContrato.setFechaInicio(this.utilidades.arreglarZonaHorariaFecha(dtoContrato.getFechaInicio()));
+			dtoContrato.setFechaFin(this.utilidades.arreglarZonaHorariaFecha(dtoContrato.getFechaFin()));
 			boolean esContratoValido = validarDtoContrato(dtoContrato);
 			if (esContratoValido) {
 				nuevoContrato.setIncidenciasLaborales(new ArrayList<>());
@@ -107,28 +112,18 @@ public class ImplServicioContrato implements ServicioContrato {
 		return null;
 	}
 
-	public Date arreglarZonaHorariaFechaInicio(Date fechaInicio) {
-		fechaInicio.setMinutes(fechaInicio.getMinutes() + fechaInicio.getTimezoneOffset());
-		return fechaInicio;
-	}
-
-	public Date arreglarZonaHorariaFechaFin(Date fechaFin) {
-		fechaFin.setMinutes(fechaFin.getMinutes() + fechaFin.getTimezoneOffset());
-		return fechaFin;
-	}
-
 	@Override
 	public Contrato guardarNuevoContrato(Date fechaInicio, Date fechaFin, String idEmpleado, String puesto,
 			String horasPorSemana, String idAfp, Boolean tieneAsignacionFamiliar, String pagoPorHora)
 			throws NumberFormatException, ContratoNotValidException, AfpNotFoundException, EmpleadoNotFoundException,
-			ContratoExistsException, ContratoNotFoundException {
+			ContratoExistsException, ContratoNotFoundException, ParseException {
 		Contrato nuevoContrato = new Contrato();
 		Afp afpEncontrado = this.obtenerAfpValido(idAfp);
 		Empleado empleadoEncontrado = this.obtenerEmpleadoValido(idEmpleado);
 		boolean empleadoTieneContratoVigente = verificarSiEmpleadoTieneContratoVigente(empleadoEncontrado);
 		if (afpEncontrado != null && empleadoEncontrado != null && !empleadoTieneContratoVigente) {
-			nuevoContrato.setFechaInicio(arreglarZonaHorariaFechaInicio(fechaInicio));
-			nuevoContrato.setFechaFin(arreglarZonaHorariaFechaFin(fechaFin));
+			nuevoContrato.setFechaInicio(this.utilidades.arreglarZonaHorariaFecha(fechaInicio));
+			nuevoContrato.setFechaFin(this.utilidades.arreglarZonaHorariaFecha(fechaFin));
 			nuevoContrato.setTieneAsignacionFamiliar(tieneAsignacionFamiliar);
 			nuevoContrato.setHorasPorSemana(horasPorSemana);
 			nuevoContrato.setPagoPorHora(pagoPorHora);
@@ -172,8 +167,8 @@ public class ImplServicioContrato implements ServicioContrato {
 	private int obtenerHorasDeFaltaPorContratacionDentroDePeriodoNominaIniciado(Contrato nuevoContrato,
 			PeriodoNomina periodoNominaActual) {
 		int totalDiasNoLaburoEmpleado = Period
-				.between(LocalDate.ofInstant(periodoNominaActual.getFechaInicio().toInstant(), ZoneId.of(TIMEZONE)),
-						LocalDate.ofInstant(nuevoContrato.getFechaInicio().toInstant(), ZoneId.of(TIMEZONE)))
+				.between(LocalDate.ofInstant(periodoNominaActual.getFechaInicio().toInstant(), ZoneId.of(TIME_ZONE)),
+						LocalDate.ofInstant(nuevoContrato.getFechaInicio().toInstant(), ZoneId.of(TIME_ZONE)))
 				.getDays();
 		int semanasNoLaburo = totalDiasNoLaburoEmpleado / 7;
 		int totalDiasNoLaburoEmpleadoReales = totalDiasNoLaburoEmpleado - (2 * semanasNoLaburo);
@@ -184,10 +179,9 @@ public class ImplServicioContrato implements ServicioContrato {
 
 	public PeriodoNomina obtenerPeriodoNominaActual() {
 		List<PeriodoNomina> periodosNomina = this.repositoPeriodoNomina.findAll();
-		Date tiempoActual = java.sql.Timestamp.valueOf(LocalDateTime.now());
 		for (PeriodoNomina periodoNomina : periodosNomina) {
-			if (periodoNomina.getFechaInicio().before(tiempoActual) && (periodoNomina.getFechaFin().after(tiempoActual)
-					|| periodoNomina.getFechaFin().equals(tiempoActual))) {
+			if (periodoNomina.getFechaInicio().before(this.tiempoActual) && (periodoNomina.getFechaFin().after(this.tiempoActual)
+					|| periodoNomina.getFechaFin().equals(this.tiempoActual))) {
 				return periodoNomina;
 			}
 		}
@@ -196,15 +190,15 @@ public class ImplServicioContrato implements ServicioContrato {
 
 	private boolean validarDtoContrato(ContratoDto dtoContrato) throws ContratoNotValidException {
 		Contrato contratoTemporal = new Contrato();
-		return contratoTemporal.fechasValidas(dtoContrato.getFechaInicio(), dtoContrato.getFechaFin())
+		return contratoTemporal.fechasValidas(dtoContrato.getFechaInicio(), dtoContrato.getFechaFin(), this.tiempoActual)
 				&& contratoTemporal.horasContratadasValidas(dtoContrato.getHorasPorSemana())
 				&& contratoTemporal.pagoPorHoraValido(dtoContrato.getPagoPorHora())
 				&& contratoTemporal.puestoValido(dtoContrato.getPuesto())
 				&& contratoTemporal.asignacionFamiliarValido(dtoContrato.getTieneAsignacionFamiliar());
 	}
 
-	private boolean validarContrato(Contrato contrato) throws ContratoNotValidException {
-		return contrato.fechasValidas(contrato.getFechaInicio(), contrato.getFechaFin())
+	private boolean validarContrato(Contrato contrato) throws ContratoNotValidException{
+		return contrato.fechasValidas(contrato.getFechaInicio(), contrato.getFechaFin(), this.tiempoActual)
 				&& contrato.horasContratadasValidas(contrato.getHorasPorSemana())
 				&& contrato.pagoPorHoraValido(contrato.getPagoPorHora()) && contrato.puestoValido(contrato.getPuesto())
 				&& contrato.asignacionFamiliarValido(contrato.getTieneAsignacionFamiliar());
@@ -212,7 +206,7 @@ public class ImplServicioContrato implements ServicioContrato {
 
 	@Override
 	public Contrato buscarContratoVigentePorDni(String dniEmpleado)
-			throws ContratoNotFoundException, EmpleadoNotFoundException, EmpleadoNotValidException {
+			throws ContratoNotFoundException, EmpleadoNotFoundException, EmpleadoNotValidException, ParseException {
 		Empleado empleadoEncontrado = new Empleado();
 		boolean esDniValido = empleadoEncontrado.validarDni(dniEmpleado);
 		if (esDniValido) {
@@ -252,7 +246,7 @@ public class ImplServicioContrato implements ServicioContrato {
 	public Contrato obtenerContratoVigente(Empleado empleado) {
 		List<Contrato> contratosDeEmpleado = this.respositorioContrato.findAllByEmpleado(empleado);
 		for (Contrato contrato : contratosDeEmpleado) {
-			if (contrato.vigenciaValida(contrato))
+			if (contrato.vigenciaValida(contrato, this.tiempoActual))
 				return contrato;
 		}
 		return null;
@@ -261,11 +255,11 @@ public class ImplServicioContrato implements ServicioContrato {
 	@Override
 	public Contrato actualizarContrato(String idContrato, String puesto, String horasPorSemana, String idAfp,
 			Boolean tieneAsignacionFamiliar, String pagoPorHora)
-			throws ContratoNotValidException, AfpNotFoundException, ContratoNotFoundException {
+			throws ContratoNotValidException, AfpNotFoundException, ContratoNotFoundException, ParseException {
 		Contrato contratoEncontrado = this.obtenerContratoValido(idContrato);
 		Afp afpEncontrado = this.obtenerAfpValido(idAfp);
 		if (contratoEncontrado != null && afpEncontrado != null) {
-			boolean esContratoVigente = contratoEncontrado.vigenciaValida(contratoEncontrado);
+			boolean esContratoVigente = contratoEncontrado.vigenciaValida(contratoEncontrado, this.tiempoActual);
 			if (esContratoVigente) {
 				if (contratoEncontrado.puestoValido(puesto)
 						&& contratoEncontrado.horasContratadasValidas(horasPorSemana)
@@ -330,7 +324,7 @@ public class ImplServicioContrato implements ServicioContrato {
 			throws ContratoNotFoundException, NumberFormatException, ContratoNotValidException {
 		Contrato contratoPorCancelar = this.obtenerContratoValido(idContrato);
 		if (contratoPorCancelar != null) {
-			if (contratoPorCancelar.vigenciaValida(contratoPorCancelar)) {
+			if (contratoPorCancelar.vigenciaValida(contratoPorCancelar,this.tiempoActual)) {
 				contratoPorCancelar.setEstaCancelado(true);
 				asignarHorasDeFaltaPorCancelacionDeContrato(contratoPorCancelar);
 				this.respositorioContrato.save(contratoPorCancelar);
@@ -364,17 +358,16 @@ public class ImplServicioContrato implements ServicioContrato {
 
 	private int obtenerHorasDeFaltaPorCancelacionDeContrato(Contrato contratoAEditar,
 			PeriodoNomina periodoNominaVigente) {
-		Date tiempoActual = java.sql.Timestamp.valueOf(LocalDateTime.now());
 		int totalDiasPeriodoNomina = Period
-				.between(LocalDate.ofInstant(periodoNominaVigente.getFechaInicio().toInstant(), ZoneId.of(TIMEZONE)),
-						LocalDate.ofInstant(periodoNominaVigente.getFechaFin().toInstant(), ZoneId.of(TIMEZONE)))
+				.between(LocalDate.ofInstant(periodoNominaVigente.getFechaInicio().toInstant(), ZoneId.of(TIME_ZONE)),
+						LocalDate.ofInstant(periodoNominaVigente.getFechaFin().toInstant(), ZoneId.of(TIME_ZONE)))
 				.getDays();
 		int semanasPeriodoNomina = totalDiasPeriodoNomina / 7;
 		int totalDiasLaboralesPeriodoNomina = totalDiasPeriodoNomina - (2 * semanasPeriodoNomina);
 
 		int totalDiasLaburoEmpleado = Period
-				.between(LocalDate.ofInstant(periodoNominaVigente.getFechaInicio().toInstant(), ZoneId.of(TIMEZONE)),
-						LocalDate.ofInstant(tiempoActual.toInstant(), ZoneId.of(TIMEZONE)))
+				.between(LocalDate.ofInstant(periodoNominaVigente.getFechaInicio().toInstant(), ZoneId.of(TIME_ZONE)),
+						LocalDate.ofInstant(this.tiempoActual.toInstant(), ZoneId.of(TIME_ZONE)))
 				.getDays();
 		int semanasLaburo = totalDiasLaburoEmpleado / 7;
 		int totalDiasLaburoEmpleadoReales = totalDiasLaburoEmpleado - (2 * semanasLaburo);

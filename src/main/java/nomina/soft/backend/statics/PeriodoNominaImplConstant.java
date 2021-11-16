@@ -1,8 +1,10 @@
-package nomina.soft.backend.constantes;
+package nomina.soft.backend.statics;
 
-public class PeriodoNominaImplConstant {
+public final class PeriodoNominaImplConstant {
 
-	
+    private PeriodoNominaImplConstant() {
+    }
+
     public static final String PERIODO_NOMINA_NO_ENCONTRADO_POR_ID = "No se encontró ningún periodo de nómina con el ID indicado.";
     public static final String PERIODOS_NO_ENCONTRADOS = "No se encontraron periodos de nómina registrados.";
     public static final String RANGO_DE_FECHAS_NO_VALIDO = "Ya existe un periodo de nómina dentro de rango de fechas indicadas.";

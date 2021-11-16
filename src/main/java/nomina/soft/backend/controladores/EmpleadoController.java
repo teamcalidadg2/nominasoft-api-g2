@@ -14,11 +14,11 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import nomina.soft.backend.dto.EmpleadoDto;
+import nomina.soft.backend.entidades.Empleado;
 import nomina.soft.backend.excepciones.clases.ContratoNotValidException;
 import nomina.soft.backend.excepciones.clases.EmpleadoExistsException;
 import nomina.soft.backend.excepciones.clases.EmpleadoNotFoundException;
 import nomina.soft.backend.excepciones.clases.EmpleadoNotValidException;
-import nomina.soft.backend.models.Empleado;
 import nomina.soft.backend.servicios.declaracion.ServicioEmpleado;
 @CrossOrigin("http://localhost:4200")
 @Controller
@@ -46,7 +46,7 @@ public class EmpleadoController {
     }
 
     @GetMapping("/buscar/id/{idEmpleado}")
-    public ResponseEntity<Empleado> getEmpleadoById(@PathVariable("idEmpleado") String idEmpleado) throws EmpleadoNotFoundException, NumberFormatException, ContratoNotValidException, EmpleadoNotValidException {
+    public ResponseEntity<Empleado> getEmpleadoById(@PathVariable("idEmpleado") String idEmpleado) throws EmpleadoNotFoundException, NumberFormatException, ContratoNotValidException{
 		Empleado empleado = empleadoService.buscarEmpleadoPorId(idEmpleado);
         return new ResponseEntity<>(empleado, OK);
     }

@@ -1,6 +1,6 @@
 package nomina.soft.backend.controladores;
 
-import static nomina.soft.backend.constantes.AfpImplConstant.AFP_ELIMINADA;
+import static nomina.soft.backend.statics.AfpImplConstant.AFP_ELIMINADA;
 import static org.springframework.http.HttpStatus.OK;
 
 import java.util.List;
@@ -18,10 +18,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import nomina.soft.backend.dto.AfpDto;
+import nomina.soft.backend.entidades.Afp;
+import nomina.soft.backend.entidades.HttpResponse;
 import nomina.soft.backend.excepciones.clases.AfpExistsException;
 import nomina.soft.backend.excepciones.clases.AfpNotFoundException;
-import nomina.soft.backend.models.Afp;
-import nomina.soft.backend.models.HttpResponse;
 import nomina.soft.backend.servicios.declaracion.ServicioAfp;
 
 @Controller

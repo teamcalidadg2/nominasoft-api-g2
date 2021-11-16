@@ -1,9 +1,10 @@
 package nomina.soft.backend.controladores;
 
-import static nomina.soft.backend.constantes.NominaImplConstant.NOMINA_CERRADA;
-import static nomina.soft.backend.constantes.NominaImplConstant.NOMINA_ELIMINADA;
+import static nomina.soft.backend.statics.NominaImplConstant.NOMINA_CERRADA;
+import static nomina.soft.backend.statics.NominaImplConstant.NOMINA_ELIMINADA;
 import static org.springframework.http.HttpStatus.OK;
 
+import java.text.ParseException;
 import java.util.Date;
 import java.util.List;
 
@@ -21,6 +22,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import nomina.soft.backend.dto.NominaDto;
+import nomina.soft.backend.entidades.BoletaDePago;
+import nomina.soft.backend.entidades.HttpResponse;
+import nomina.soft.backend.entidades.Nomina;
 import nomina.soft.backend.excepciones.clases.ContratoNotFoundException;
 import nomina.soft.backend.excepciones.clases.ContratoNotValidException;
 import nomina.soft.backend.excepciones.clases.EmpleadoNotFoundException;
@@ -28,9 +32,6 @@ import nomina.soft.backend.excepciones.clases.EmpleadoNotValidException;
 import nomina.soft.backend.excepciones.clases.NominaNotFoundException;
 import nomina.soft.backend.excepciones.clases.NominaNotValidException;
 import nomina.soft.backend.excepciones.clases.PeriodoNominaNotFoundException;
-import nomina.soft.backend.models.BoletaDePago;
-import nomina.soft.backend.models.HttpResponse;
-import nomina.soft.backend.models.Nomina;
 import nomina.soft.backend.servicios.declaracion.ServicioNomina;
 @Controller
 @RequestMapping("/nomina")
@@ -69,7 +70,7 @@ public class NominaController {
     @PostMapping("/generar")
     public ResponseEntity<List<BoletaDePago>> generate(@RequestBody NominaDto nominaDto)
             throws ContratoNotFoundException, EmpleadoNotFoundException, ContratoNotValidException,
-            NominaNotValidException, PeriodoNominaNotFoundException, EmpleadoNotValidException {
+            NominaNotValidException, PeriodoNominaNotFoundException, EmpleadoNotValidException, ParseException {
         List<BoletaDePago> listaBoletasDePago = nominaService.generarNuevaNomina(nominaDto);
         return new ResponseEntity<>(listaBoletasDePago, OK);
     }
@@ -79,7 +80,7 @@ public class NominaController {
             @RequestParam("fecha") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) Date fecha,
             @RequestParam("descripcion") String descripcion, @RequestParam("idPeriodoNomina") String idPeriodoNomina)
             throws NumberFormatException, NominaNotValidException, PeriodoNominaNotFoundException,
-            ContratoNotFoundException, EmpleadoNotFoundException, ContratoNotValidException, EmpleadoNotValidException {
+            ContratoNotFoundException, EmpleadoNotFoundException, ContratoNotValidException, EmpleadoNotValidException, ParseException {
         List<BoletaDePago> listaBoletasDePago = nominaService.generarNuevaNomina(fecha, descripcion, idPeriodoNomina);
         return new ResponseEntity<>(listaBoletasDePago, OK);
     }
@@ -87,7 +88,7 @@ public class NominaController {
     @PostMapping("/guardar")
     public ResponseEntity<List<BoletaDePago>> save(@RequestBody NominaDto nominaDto)
             throws PeriodoNominaNotFoundException, ContratoNotFoundException, EmpleadoNotFoundException,
-            ContratoNotValidException, NominaNotValidException, EmpleadoNotValidException {
+            ContratoNotValidException, NominaNotValidException, EmpleadoNotValidException, ParseException {
         List<BoletaDePago> listaBoletasDePago = nominaService.guardarNuevaNomina(nominaDto);
         return new ResponseEntity<>(listaBoletasDePago, OK);
     }
@@ -97,7 +98,7 @@ public class NominaController {
             @RequestParam("fecha") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) Date fecha,
             @RequestParam("descripcion") String descripcion, @RequestParam("idPeriodoNomina") String idPeriodoNomina)
             throws PeriodoNominaNotFoundException, ContratoNotFoundException, EmpleadoNotFoundException,
-            ContratoNotValidException, NominaNotValidException, EmpleadoNotValidException {
+            ContratoNotValidException, NominaNotValidException, EmpleadoNotValidException, NumberFormatException, ParseException {
         List<BoletaDePago> listaBoletasDePago = nominaService.guardarNuevaNomina(fecha, descripcion, idPeriodoNomina);
         return new ResponseEntity<>(listaBoletasDePago, OK);
     }

@@ -21,6 +21,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
+import nomina.soft.backend.entidades.HttpResponse;
 import nomina.soft.backend.excepciones.clases.AfpExistsException;
 import nomina.soft.backend.excepciones.clases.AfpNotFoundException;
 import nomina.soft.backend.excepciones.clases.ContratoExistsException;
@@ -35,7 +36,6 @@ import nomina.soft.backend.excepciones.clases.NominaNotValidException;
 import nomina.soft.backend.excepciones.clases.PeriodoNominaExistsException;
 import nomina.soft.backend.excepciones.clases.PeriodoNominaNotFoundException;
 import nomina.soft.backend.excepciones.clases.PeriodoNominaNotValidException;
-import nomina.soft.backend.models.HttpResponse;
 
 
 @RestControllerAdvice

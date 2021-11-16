@@ -1,4 +1,4 @@
-package nomina.soft.backend.models;
+package nomina.soft.backend.entidades;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;

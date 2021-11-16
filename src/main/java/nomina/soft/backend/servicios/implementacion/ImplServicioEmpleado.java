@@ -1,12 +1,12 @@
 package nomina.soft.backend.servicios.implementacion;
 
-import static nomina.soft.backend.constantes.EmpleadoImplConstant.CORREO_YA_EXISTE;
-import static nomina.soft.backend.constantes.EmpleadoImplConstant.DNI_YA_EXISTE;
-import static nomina.soft.backend.constantes.EmpleadoImplConstant.EMPLEADO_NO_ENCONTRADO_POR_CORREO;
-import static nomina.soft.backend.constantes.EmpleadoImplConstant.EMPLEADO_NO_ENCONTRADO_POR_DNI;
-import static nomina.soft.backend.constantes.EmpleadoImplConstant.EMPLEADO_NO_ENCONTRADO_POR_ID;
-import static nomina.soft.backend.constantes.EmpleadoImplConstant.EMPLEADO_NO_ENCONTRADO_POR_TELEFONO;
-import static nomina.soft.backend.constantes.EmpleadoImplConstant.TELEFONO_YA_EXISTE;
+import static nomina.soft.backend.statics.EmpleadoImplConstant.CORREO_YA_EXISTE;
+import static nomina.soft.backend.statics.EmpleadoImplConstant.DNI_YA_EXISTE;
+import static nomina.soft.backend.statics.EmpleadoImplConstant.EMPLEADO_NO_ENCONTRADO_POR_CORREO;
+import static nomina.soft.backend.statics.EmpleadoImplConstant.EMPLEADO_NO_ENCONTRADO_POR_DNI;
+import static nomina.soft.backend.statics.EmpleadoImplConstant.EMPLEADO_NO_ENCONTRADO_POR_ID;
+import static nomina.soft.backend.statics.EmpleadoImplConstant.EMPLEADO_NO_ENCONTRADO_POR_TELEFONO;
+import static nomina.soft.backend.statics.EmpleadoImplConstant.TELEFONO_YA_EXISTE;
 import static org.apache.commons.lang3.StringUtils.EMPTY;
 
 import java.util.ArrayList;
@@ -20,12 +20,12 @@ import org.springframework.stereotype.Service;
 
 import nomina.soft.backend.dao.EmpleadoDao;
 import nomina.soft.backend.dto.EmpleadoDto;
+import nomina.soft.backend.entidades.Contrato;
+import nomina.soft.backend.entidades.Empleado;
 import nomina.soft.backend.excepciones.clases.ContratoNotValidException;
 import nomina.soft.backend.excepciones.clases.EmpleadoExistsException;
 import nomina.soft.backend.excepciones.clases.EmpleadoNotFoundException;
 import nomina.soft.backend.excepciones.clases.EmpleadoNotValidException;
-import nomina.soft.backend.models.Contrato;
-import nomina.soft.backend.models.Empleado;
 import nomina.soft.backend.servicios.declaracion.ServicioEmpleado;
 
 @Service

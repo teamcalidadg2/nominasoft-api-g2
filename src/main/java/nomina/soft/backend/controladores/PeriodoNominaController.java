@@ -1,8 +1,9 @@
 package nomina.soft.backend.controladores;
 
-import static nomina.soft.backend.constantes.PeriodoNominaImplConstant.PERIODO_NOMINA_ELIMINADO;
+import static nomina.soft.backend.statics.PeriodoNominaImplConstant.PERIODO_NOMINA_ELIMINADO;
 import static org.springframework.http.HttpStatus.OK;
 
+import java.text.ParseException;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,11 +18,11 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import nomina.soft.backend.dto.PeriodoNominaDto;
+import nomina.soft.backend.entidades.HttpResponse;
+import nomina.soft.backend.entidades.PeriodoNomina;
 import nomina.soft.backend.excepciones.clases.PeriodoNominaExistsException;
 import nomina.soft.backend.excepciones.clases.PeriodoNominaNotFoundException;
 import nomina.soft.backend.excepciones.clases.PeriodoNominaNotValidException;
-import nomina.soft.backend.models.HttpResponse;
-import nomina.soft.backend.models.PeriodoNomina;
 import nomina.soft.backend.servicios.declaracion.ServicioPeriodoNomina;
 @Controller
 @RequestMapping("/periodoNomina")
@@ -50,7 +51,7 @@ public class PeriodoNominaController {
 
     @PostMapping("/guardar")
     public ResponseEntity<PeriodoNomina> createPeriodoNomina(@RequestBody PeriodoNominaDto periodoNominaDto)
-            throws PeriodoNominaNotFoundException, PeriodoNominaExistsException, PeriodoNominaNotValidException {
+            throws PeriodoNominaNotFoundException, PeriodoNominaExistsException, PeriodoNominaNotValidException, ParseException {
         PeriodoNomina periodoNomina = periodoNominaService.guardarNuevoPeriodoNomina(periodoNominaDto);
         return new ResponseEntity<>(periodoNomina, OK);
     }

@@ -1,8 +1,8 @@
-package nomina.soft.backend.models;
-import static nomina.soft.backend.constantes.EmpleadoImplConstant.DNI_CARACTERES_NO_NUMERICOS;
-import static nomina.soft.backend.constantes.EmpleadoImplConstant.DNI_MAS_DE_8_DIGITOS;
-import static nomina.soft.backend.constantes.EmpleadoImplConstant.DNI_MENOS_DE_8_DIGITOS;
-import static nomina.soft.backend.constantes.EmpleadoImplConstant.DNI_VACIO;
+package nomina.soft.backend.entidades;
+import static nomina.soft.backend.statics.EmpleadoImplConstant.DNI_CARACTERES_NO_NUMERICOS;
+import static nomina.soft.backend.statics.EmpleadoImplConstant.DNI_MAS_DE_8_DIGITOS;
+import static nomina.soft.backend.statics.EmpleadoImplConstant.DNI_MENOS_DE_8_DIGITOS;
+import static nomina.soft.backend.statics.EmpleadoImplConstant.DNI_VACIO;
 
 import java.util.Date;
 import java.util.List;

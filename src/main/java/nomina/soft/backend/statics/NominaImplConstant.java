@@ -1,6 +1,9 @@
-package nomina.soft.backend.constantes;
+package nomina.soft.backend.statics;
 
-public class NominaImplConstant {
+public final class NominaImplConstant {
+
+    private NominaImplConstant() {
+    }
 
     public static final String NOMINAS_NO_ENCONTRADAS_POR_DESCRIPCION = "No se encontraron nóminas con la descripción indicada.";
     public static final String NOMINA_NO_ENCONTRADA_POR_ID = "No se encontró ninguna nómina con el ID indicado.";

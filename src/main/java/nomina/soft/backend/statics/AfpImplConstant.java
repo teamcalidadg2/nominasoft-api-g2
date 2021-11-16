@@ -1,6 +1,9 @@
-package nomina.soft.backend.constantes;
+package nomina.soft.backend.statics;
 
-public class AfpImplConstant {
+public final class AfpImplConstant {
+
+    private AfpImplConstant() {
+    }
 
     public static final String AFP_NO_ENCONTRADO_POR_NOMBRE = "No existe ninguna categoría AFP con el nombre indicado.";
     public static final String AFP_CON_NOMBRE_YA_EXISTENTE = "Ya existe una categoría AFP con el nombre indicado.";

@@ -1,11 +1,12 @@
 package nomina.soft.backend.servicios.implementacion;
 
-import static nomina.soft.backend.constantes.NominaImplConstant.CONTRATOS_NO_ENCONTRADOS_PARA_PERIODO;
-import static nomina.soft.backend.constantes.NominaImplConstant.NOMINAS_NO_ENCONTRADAS_POR_DESCRIPCION;
-import static nomina.soft.backend.constantes.NominaImplConstant.NOMINA_NO_ENCONTRADA_POR_ID;
-import static nomina.soft.backend.constantes.NominaImplConstant.NOMINA_YA_CERRADA;
-import static nomina.soft.backend.constantes.PeriodoNominaImplConstant.PERIODO_NOMINA_NO_ENCONTRADO_POR_ID;
+import static nomina.soft.backend.statics.NominaImplConstant.CONTRATOS_NO_ENCONTRADOS_PARA_PERIODO;
+import static nomina.soft.backend.statics.NominaImplConstant.NOMINAS_NO_ENCONTRADAS_POR_DESCRIPCION;
+import static nomina.soft.backend.statics.NominaImplConstant.NOMINA_NO_ENCONTRADA_POR_ID;
+import static nomina.soft.backend.statics.NominaImplConstant.NOMINA_YA_CERRADA;
+import static nomina.soft.backend.statics.PeriodoNominaImplConstant.PERIODO_NOMINA_NO_ENCONTRADO_POR_ID;
 
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
@@ -20,6 +21,11 @@ import nomina.soft.backend.dao.ContratoDao;
 import nomina.soft.backend.dao.NominaDao;
 import nomina.soft.backend.dao.PeriodoNominaDao;
 import nomina.soft.backend.dto.NominaDto;
+import nomina.soft.backend.entidades.BoletaDePago;
+import nomina.soft.backend.entidades.Contrato;
+import nomina.soft.backend.entidades.IncidenciaLaboral;
+import nomina.soft.backend.entidades.Nomina;
+import nomina.soft.backend.entidades.PeriodoNomina;
 import nomina.soft.backend.excepciones.clases.ContratoNotFoundException;
 import nomina.soft.backend.excepciones.clases.ContratoNotValidException;
 import nomina.soft.backend.excepciones.clases.EmpleadoNotFoundException;
@@ -27,12 +33,9 @@ import nomina.soft.backend.excepciones.clases.EmpleadoNotValidException;
 import nomina.soft.backend.excepciones.clases.NominaNotFoundException;
 import nomina.soft.backend.excepciones.clases.NominaNotValidException;
 import nomina.soft.backend.excepciones.clases.PeriodoNominaNotFoundException;
-import nomina.soft.backend.models.BoletaDePago;
-import nomina.soft.backend.models.Contrato;
-import nomina.soft.backend.models.IncidenciaLaboral;
-import nomina.soft.backend.models.Nomina;
-import nomina.soft.backend.models.PeriodoNomina;
+import nomina.soft.backend.servicios.Utility;
 import nomina.soft.backend.servicios.declaracion.ServicioNomina;
+
 
 @Service
 @Transactional
@@ -42,15 +45,17 @@ public class ImplServicioNomina implements ServicioNomina {
 	private PeriodoNominaDao repositorioPeriodoNomina;
 	private ImplServicioBoletaDePago servicioBoletaDePago;
 	private ContratoDao repositorioContrato;
+	private Utility utilidades;
 
 	@Autowired
 	public ImplServicioNomina(NominaDao repositorioNomina, PeriodoNominaDao repositorioPeriodoNomina,
-			ImplServicioBoletaDePago servicioBoletaDePago, ContratoDao repositorioContrato) {
+			ImplServicioBoletaDePago servicioBoletaDePago, ContratoDao repositorioContrato,Utility utilidades) {
 		super();
 		this.repositorioNomina = repositorioNomina;
 		this.repositorioPeriodoNomina = repositorioPeriodoNomina;
 		this.servicioBoletaDePago = servicioBoletaDePago;
 		this.repositorioContrato = repositorioContrato;
+		this.utilidades = utilidades;
 	}
 
 	@Override
@@ -83,11 +88,11 @@ public class ImplServicioNomina implements ServicioNomina {
 	@Override
 	public List<BoletaDePago> guardarNuevaNomina(NominaDto nominaDto)
 			throws PeriodoNominaNotFoundException, ContratoNotFoundException, EmpleadoNotFoundException,
-			ContratoNotValidException, NominaNotValidException, EmpleadoNotValidException {
+			ContratoNotValidException, NominaNotValidException, EmpleadoNotValidException, ParseException {
 		Nomina nuevaNomina = new Nomina();
 		PeriodoNomina periodoNominaEncontrado = obtenerPeriodoNominaValido(nominaDto.getIdPeriodoNomina());
 		nuevaNomina.setPeriodoNomina(periodoNominaEncontrado);
-		nuevaNomina.setFecha(this.arreglarZonaHorariaFechaGeneracion(nominaDto.getFecha()));
+		nuevaNomina.setFecha(this.utilidades.arreglarZonaHorariaFecha(nominaDto.getFecha()));
 		nuevaNomina.setDescripcion(nominaDto.getDescripcion());
 		if (periodoNominaEncontrado != null && nuevaNomina.validarNomina(nuevaNomina)
 				&& nuevaNomina.validarDescripcion(nuevaNomina.getDescripcion())) {
@@ -103,11 +108,11 @@ public class ImplServicioNomina implements ServicioNomina {
 	@Override
 	public List<BoletaDePago> guardarNuevaNomina(Date fecha, String descripcion, String idPeriodoNomina)
 			throws NumberFormatException, NominaNotValidException, PeriodoNominaNotFoundException,
-			ContratoNotFoundException, EmpleadoNotFoundException, ContratoNotValidException, EmpleadoNotValidException {
+			ContratoNotFoundException, EmpleadoNotFoundException, ContratoNotValidException, EmpleadoNotValidException, ParseException {
 		Nomina nuevaNomina = new Nomina();
 		PeriodoNomina periodoNominaEncontrado = obtenerPeriodoNominaValido(idPeriodoNomina);
 		nuevaNomina.setPeriodoNomina(periodoNominaEncontrado);
-		nuevaNomina.setFecha(arreglarZonaHorariaFechaGeneracion(fecha));
+		nuevaNomina.setFecha(this.utilidades.arreglarZonaHorariaFecha(fecha));
 		nuevaNomina.setDescripcion(descripcion);
 		if (periodoNominaEncontrado != null && this.validarNuevaNomina(nuevaNomina)) {
 			this.repositorioNomina.save(nuevaNomina);
@@ -123,13 +128,8 @@ public class ImplServicioNomina implements ServicioNomina {
 		return nuevaNomina.validarNomina(nuevaNomina) && nuevaNomina.validarDescripcion(nuevaNomina.getDescripcion());
 	}
 
-	public Date arreglarZonaHorariaFechaGeneracion(Date fechaGeneracion) {
-		fechaGeneracion.setMinutes(fechaGeneracion.getMinutes() + fechaGeneracion.getTimezoneOffset());
-		return fechaGeneracion;
-	}
-
 	private List<BoletaDePago> guardarBoletasDePago(Nomina nuevaNomina)
-			throws ContratoNotValidException, NominaNotValidException, EmpleadoNotValidException {
+			throws ContratoNotValidException, NominaNotValidException {
 		List<BoletaDePago> boletasDePagoGeneradas = new ArrayList<>();
 		boolean noHayNingunContrato = true;
 		if (nuevaNomina.validarNomina(nuevaNomina)) {
@@ -156,11 +156,11 @@ public class ImplServicioNomina implements ServicioNomina {
 	@Override
 	public List<BoletaDePago> generarNuevaNomina(NominaDto nominaDto)
 			throws ContratoNotFoundException, EmpleadoNotFoundException, ContratoNotValidException,
-			NominaNotValidException, PeriodoNominaNotFoundException, EmpleadoNotValidException {
+			NominaNotValidException, PeriodoNominaNotFoundException, EmpleadoNotValidException, ParseException {
 		Nomina nuevaNomina = new Nomina();
 		PeriodoNomina periodoNominaEncontrado = obtenerPeriodoNominaValido(nominaDto.getIdPeriodoNomina());
 		nuevaNomina.setPeriodoNomina(periodoNominaEncontrado);
-		nuevaNomina.setFecha(this.arreglarZonaHorariaFechaGeneracion(nominaDto.getFecha()));
+		nuevaNomina.setFecha(this.utilidades.arreglarZonaHorariaFecha(nominaDto.getFecha()));
 		nuevaNomina.setDescripcion(nominaDto.getDescripcion());
 		if (periodoNominaEncontrado != null && nuevaNomina.validarNomina(nuevaNomina)
 				&& nuevaNomina.validarDescripcion(nuevaNomina.getDescripcion())) {
@@ -174,11 +174,11 @@ public class ImplServicioNomina implements ServicioNomina {
 	@Override
 	public List<BoletaDePago> generarNuevaNomina(Date fecha, String descripcion, String idPeriodoNomina)
 			throws NumberFormatException, NominaNotValidException, PeriodoNominaNotFoundException,
-			ContratoNotFoundException, EmpleadoNotFoundException, ContratoNotValidException, EmpleadoNotValidException {
+			ContratoNotFoundException, EmpleadoNotFoundException, ContratoNotValidException, EmpleadoNotValidException, ParseException {
 		Nomina nuevaNomina = new Nomina();
 		PeriodoNomina periodoNominaEncontrado = obtenerPeriodoNominaValido(idPeriodoNomina);
 		nuevaNomina.setPeriodoNomina(periodoNominaEncontrado);
-		nuevaNomina.setFecha(arreglarZonaHorariaFechaGeneracion(fecha));
+		nuevaNomina.setFecha(this.utilidades.arreglarZonaHorariaFecha(fecha));
 		nuevaNomina.setDescripcion(descripcion);
 		if (periodoNominaEncontrado != null && this.validarNuevaNomina(nuevaNomina)) {
 			nuevaNomina.setEstaCerrada(false);

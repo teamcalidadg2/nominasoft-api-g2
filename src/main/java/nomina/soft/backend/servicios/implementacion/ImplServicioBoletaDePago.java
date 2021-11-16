@@ -6,9 +6,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import nomina.soft.backend.dao.BoletaDePagoDao;
-import nomina.soft.backend.models.BoletaDePago;
-import nomina.soft.backend.models.Contrato;
-import nomina.soft.backend.models.Nomina;
+import nomina.soft.backend.entidades.BoletaDePago;
+import nomina.soft.backend.entidades.Contrato;
+import nomina.soft.backend.entidades.Nomina;
 import nomina.soft.backend.servicios.declaracion.ServicioBoletaDePago;
 
 @Service

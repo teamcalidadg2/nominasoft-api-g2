@@ -3,11 +3,11 @@ package nomina.soft.backend.servicios.declaracion;
 import java.util.List;
 
 import nomina.soft.backend.dto.EmpleadoDto;
+import nomina.soft.backend.entidades.Empleado;
 import nomina.soft.backend.excepciones.clases.ContratoNotValidException;
 import nomina.soft.backend.excepciones.clases.EmpleadoExistsException;
 import nomina.soft.backend.excepciones.clases.EmpleadoNotFoundException;
 import nomina.soft.backend.excepciones.clases.EmpleadoNotValidException;
-import nomina.soft.backend.models.Empleado;
 
 
 public interface ServicioEmpleado {

@@ -10,7 +10,7 @@ import java.util.Date;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
-import nomina.soft.backend.models.BoletaDePago;
+import nomina.soft.backend.entidades.BoletaDePago;
 
 
 @SpringBootTest
@@ -32,7 +32,7 @@ public class BoletaDePagoTests {
         boolean tieneAsignacionFamiliar=true;
         int sueldoBasico=2000;
         float result=boleta.calcularMontoPorAsignacionFamiliar(tieneAsignacionFamiliar,sueldoBasico);
-        assertEquals(result,200);
+        assertEquals(200,result);
     }
 
     @Test
@@ -41,7 +41,7 @@ public class BoletaDePagoTests {
         boolean tieneAsignacionFamiliar=false;
         int sueldoBasico=2500;
         float result=boleta.calcularMontoPorAsignacionFamiliar(tieneAsignacionFamiliar,sueldoBasico);
-        assertEquals(result,0);
+        assertEquals(0,result);
     }
 
     @Test
@@ -50,7 +50,7 @@ public class BoletaDePagoTests {
         int sueldoBasico=1500;
         int porcentajeAFP=20;
         float result =boleta.calcularRegimenPensionario(sueldoBasico,porcentajeAFP);
-        assertEquals(result,300);
+        assertEquals(300,result);
     }
 
     @Test
@@ -59,7 +59,7 @@ public class BoletaDePagoTests {
         int totalHorasDeFaltaIncidenciaLaboral= 10;
         int pagoPorHoraContrato = 20;
         float result = boleta.calcularMontoPorHorasDeFalta(totalHorasDeFaltaIncidenciaLaboral, pagoPorHoraContrato);
-        assertEquals(result,200);
+        assertEquals(200,result);
     }
 
     @Test
@@ -68,7 +68,7 @@ public class BoletaDePagoTests {
         float totalIngresos=5000;
         float totalRetenciones=400;
         float result = boleta.calcularNetoAPagar(totalIngresos, totalRetenciones);
-        assertEquals(result,4600);
+        assertEquals(4600,result);
     }
 
     @Test
